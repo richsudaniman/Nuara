@@ -1,0 +1,160 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { UserPlus, UserMinus, Search, User } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function TrainerAssignClients() {
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { data: trainer } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: allUsers, isLoading: usersLoading } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
+  const { data: assignments, isLoading: assignmentsLoading } = useQuery({
+    queryKey: ['allAssignments', trainer?.id],
+    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: trainer.id }),
+    initialData: [],
+    enabled: !!trainer?.id,
+  });
+
+  const assignClientMutation = useMutation({
+    mutationFn: (clientId) => base44.entities.TrainerClientAssignment.create({
+      trainer_id: trainer.id,
+      client_id: clientId,
+      assigned_date: new Date().toISOString().split('T')[0],
+      is_active: true,
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
+    },
+  });
+
+  const unassignClientMutation = useMutation({
+    mutationFn: (assignmentId) => base44.entities.TrainerClientAssignment.delete(assignmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
+    },
+  });
+
+  const clients = allUsers.filter(u => u.role === 'user' || !u.role);
+  
+  const filteredClients = clients.filter(client => {
+    const query = searchQuery.toLowerCase();
+    return client.full_name?.toLowerCase().includes(query) || 
+           client.email?.toLowerCase().includes(query);
+  });
+
+  const isAssigned = (clientId) => {
+    return assignments.find(a => a.client_id === clientId && a.is_active);
+  };
+
+  const handleAssign = async (clientId) => {
+    await assignClientMutation.mutateAsync(clientId);
+  };
+
+  const handleUnassign = async (clientId) => {
+    const assignment = assignments.find(a => a.client_id === clientId && a.is_active);
+    if (assignment) {
+      await unassignClientMutation.mutateAsync(assignment.id);
+    }
+  };
+
+  const isLoading = usersLoading || assignmentsLoading;
+
+  return (
+    <div className="p-6 space-y-5 relative">
+      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
+
+      <div>
+        <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">ASSIGN CLIENTS</h1>
+        <p className="text-gray-600 italic">Manage which clients you're training</p>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Input
+          placeholder="Search users..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 bg-white border-gray-300"
+        />
+      </div>
+
+      {/* Clients List */}
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-lg bg-gray-100" />)}
+        </div>
+      ) : filteredClients.length > 0 ? (
+        <div className="space-y-3">
+          {filteredClients.map(client => {
+            const assignment = isAssigned(client.id);
+            return (
+              <Card key={client.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-all">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
+                      {client.profile_photo_url ? (
+                        <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        <User className="w-8 h-8 text-[#0ea5e9]" />
+                      )}
+                    </div>
+
+                    <div className="flex-1">
+                      <h3 className="font-black italic text-[#1a1a1a]">
+                        {client.full_name || 'User'}
+                      </h3>
+                      <p className="text-sm text-gray-500">{client.email}</p>
+                      <p className="text-xs text-gray-400 mt-1">ID: {client.id}</p>
+                    </div>
+
+                    {assignment ? (
+                      <Button
+                        onClick={() => handleUnassign(client.id)}
+                        disabled={unassignClientMutation.isPending}
+                        variant="outline"
+                        className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
+                      >
+                        <UserMinus className="w-4 h-4" />
+                        Unassign
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => handleAssign(client.id)}
+                        disabled={assignClientMutation.isPending}
+                        className="gap-2 bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        Assign
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-gray-500 italic">
+          {searchQuery ? "No users found matching your search" : "No users available"}
+        </div>
+      )}
+    </div>
+  );
+}
