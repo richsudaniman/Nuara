@@ -15,10 +15,10 @@ export default function Learn() {
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   const { data: videos, isLoading } = useQuery({
-    queryKey: ['educationalVideos'],
+    queryKey: ['allVideos'],
     queryFn: async () => {
       const allVideos = await base44.entities.ExerciseVideo.list('-created_date');
-      return allVideos.filter(v => v.category === 'education' || v.category === 'tutorial');
+      return allVideos;
     },
     initialData: [],
     staleTime: 15 * 60 * 1000,
@@ -48,7 +48,7 @@ export default function Learn() {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
-            placeholder="Search tutorials..."
+            placeholder="Search videos..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 bg-white border-gray-300"
@@ -60,8 +60,16 @@ export default function Learn() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="education">Education</SelectItem>
+            <SelectItem value="chest">Chest</SelectItem>
+            <SelectItem value="back">Back</SelectItem>
+            <SelectItem value="legs">Legs</SelectItem>
+            <SelectItem value="shoulders">Shoulders</SelectItem>
+            <SelectItem value="arms">Arms</SelectItem>
+            <SelectItem value="core">Core</SelectItem>
+            <SelectItem value="cardio">Cardio</SelectItem>
+            <SelectItem value="mobility">Mobility</SelectItem>
             <SelectItem value="tutorial">Tutorial</SelectItem>
+            <SelectItem value="education">Education</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -109,11 +117,11 @@ export default function Learn() {
                           <span className="font-semibold">{video.duration_minutes} min</span>
                         </div>
                       )}
-                      <span className="px-2 py-0.5 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full">
+                      <span className="px-2 py-0.5 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full capitalize">
                         {video.category}
                       </span>
                       {video.difficulty_level && (
-                        <span className="px-2 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">
+                        <span className="px-2 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 rounded-full capitalize">
                           {video.difficulty_level}
                         </span>
                       )}
@@ -127,8 +135,8 @@ export default function Learn() {
       ) : (
         <EmptyState
           icon={GraduationCap}
-          title={searchQuery ? "No Videos Found" : "No Educational Content Yet"}
-          description={searchQuery ? "Try adjusting your search or filters" : "Check back soon for tutorials and educational content from your trainers!"}
+          title={searchQuery ? "No Videos Found" : "No Videos Yet"}
+          description={searchQuery ? "Try adjusting your search or filters" : "Check back soon for exercise videos and educational content from your trainers!"}
           variant="info"
         />
       )}
@@ -171,11 +179,11 @@ export default function Learn() {
                     <span className="text-xs font-bold text-gray-700">{selectedVideo.duration_minutes} min</span>
                   </div>
                 )}
-                <span className="px-2 py-1 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full">
+                <span className="px-2 py-1 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full capitalize">
                   {selectedVideo.category}
                 </span>
                 {selectedVideo.difficulty_level && (
-                  <span className="px-2 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">
+                  <span className="px-2 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full capitalize">
                     {selectedVideo.difficulty_level}
                   </span>
                 )}
