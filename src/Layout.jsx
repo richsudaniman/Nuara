@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -66,6 +65,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Workout", path: createPageUrl("Workout"), icon: Dumbbell },
     { name: "Nutrition", path: createPageUrl("Nutrition"), icon: UtensilsCrossed },
     { name: "Progress", path: createPageUrl("Progress"), icon: TrendingUp },
+    { name: "Learn", path: createPageUrl("Learn"), icon: GraduationCap },
     { name: "Messages", path: createPageUrl("Messages"), icon: MessageCircle, badge: unreadCount },
   ];
 
