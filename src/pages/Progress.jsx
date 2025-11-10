@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Camera, Plus, Calendar, AlertCircle } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { TrendingUp, Camera, Plus, Calendar, AlertCircle, Flame, Target, Dumbbell, UtensilsCrossed, Award, TrendingDown, Activity } from "lucide-react";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
+import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
 import EmptyState from "../components/EmptyState";
 
 export default function Progress() {
@@ -50,6 +50,24 @@ export default function Progress() {
     initialData: [],
     enabled: !!user?.id,
     staleTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: workoutLogs, isLoading: logsLoading } = useQuery({
+    queryKey: ['workoutLogs', user?.id],
+    queryFn: () => base44.entities.WorkoutLog.filter({ logged_by_client_id: user.id }, '-completed_date'),
+    initialData: [],
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: calorieLogs, isLoading: calorieLogsLoading } = useQuery({
+    queryKey: ['calorieLogs', user?.id],
+    queryFn: () => base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date'),
+    initialData: [],
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
@@ -121,7 +139,7 @@ export default function Progress() {
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       alert('Image is too large. Maximum size is 10MB');
       e.target.value = '';
@@ -137,6 +155,98 @@ export default function Progress() {
       setUploadingPhoto(false);
       e.target.value = '';
     }
+  };
+
+  // Calculate dashboard metrics
+  const calculateDashboardMetrics = () => {
+    const today = new Date();
+    const thirtyDaysAgo = subDays(today, 30);
+    const sevenDaysAgo = subDays(today, 7);
+
+    // Workout consistency (last 30 days)
+    const recentWorkouts = workoutLogs.filter(log => 
+      new Date(log.completed_date) >= thirtyDaysAgo
+    );
+    const uniqueWorkoutDays = new Set(recentWorkouts.map(log => log.completed_date)).size;
+    const workoutConsistency = Math.round((uniqueWorkoutDays / 30) * 100);
+
+    // Current streak
+    let currentStreak = 0;
+    const sortedDates = [...new Set(workoutLogs.map(log => log.completed_date))].sort((a, b) => 
+      new Date(b) - new Date(a)
+    );
+    
+    let checkDate = new Date();
+    for (const dateStr of sortedDates) {
+      const logDate = new Date(dateStr);
+      const daysDiff = Math.floor((checkDate - logDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff <= 1) {
+        currentStreak++;
+        checkDate = logDate;
+      } else {
+        break;
+      }
+    }
+
+    // Nutrition adherence (days logged in last 7 days)
+    const recentCalorieLogs = calorieLogs.filter(log => 
+      new Date(log.date) >= sevenDaysAgo
+    );
+    const uniqueCalorieDays = new Set(recentCalorieLogs.map(log => log.date)).size;
+    const nutritionAdherence = Math.round((uniqueCalorieDays / 7) * 100);
+
+    // Weight progress
+    const weightMetrics = metrics
+      .filter(m => m.metric_type === 'weight')
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    const weightChange = weightMetrics.length >= 2 
+      ? (weightMetrics[weightMetrics.length - 1].value - weightMetrics[0].value).toFixed(1)
+      : 0;
+
+    // Strength progress (total of max lifts)
+    const strengthMetrics = metrics.filter(m => 
+      ['max_bench', 'max_squat', 'max_deadlift'].includes(m.metric_type)
+    );
+    
+    const latestStrength = {};
+    strengthMetrics.forEach(m => {
+      if (!latestStrength[m.metric_type] || new Date(m.date) > new Date(latestStrength[m.metric_type].date)) {
+        latestStrength[m.metric_type] = m;
+      }
+    });
+    
+    const totalStrength = Object.values(latestStrength).reduce((sum, m) => sum + m.value, 0);
+
+    return {
+      workoutConsistency,
+      currentStreak,
+      nutritionAdherence,
+      weightChange,
+      totalStrength,
+      totalWorkouts: recentWorkouts.length,
+    };
+  };
+
+  // Get weekly workout data for chart
+  const getWeeklyWorkoutData = () => {
+    const last8Weeks = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = startOfWeek(subDays(new Date(), i * 7));
+      const weekEnd = endOfWeek(weekStart);
+      
+      const workoutsInWeek = workoutLogs.filter(log => {
+        const logDate = new Date(log.completed_date);
+        return logDate >= weekStart && logDate <= weekEnd;
+      }).length;
+
+      last8Weeks.push({
+        week: format(weekStart, 'MMM d'),
+        workouts: workoutsInWeek,
+      });
+    }
+    return last8Weeks;
   };
 
   const getChartData = (metricType) => {
@@ -161,7 +271,9 @@ export default function Progress() {
     { value: "max_deadlift", label: "Max Deadlift", icon: TrendingUp },
   ];
 
-  const isLoading = metricsLoading || photosLoading || goalsLoading;
+  const isLoading = metricsLoading || photosLoading || goalsLoading || logsLoading || calorieLogsLoading;
+  const dashboardMetrics = calculateDashboardMetrics();
+  const weeklyWorkoutData = getWeeklyWorkoutData();
 
   return (
     <div className="p-6 space-y-5 relative">
@@ -173,6 +285,113 @@ export default function Progress() {
         </div>
         <h1 className="text-3xl font-black italic text-[#1a1a1a]">YOUR PROGRESS</h1>
       </div>
+
+      {/* Dashboard Overview */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-28 rounded-lg bg-gray-100" />)}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="bg-gradient-to-br from-orange-500 to-red-500 border-none">
+              <CardContent className="p-4">
+                <Flame className="w-8 h-8 text-white/80 mb-2" />
+                <p className="text-xs text-white/80 uppercase font-bold">Current Streak</p>
+                <p className="text-3xl font-black italic text-white">{dashboardMetrics.currentStreak} days</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none">
+              <CardContent className="p-4">
+                <Dumbbell className="w-8 h-8 text-white/80 mb-2" />
+                <p className="text-xs text-white/80 uppercase font-bold">Workout Rate</p>
+                <p className="text-3xl font-black italic text-white">{dashboardMetrics.workoutConsistency}%</p>
+                <p className="text-xs text-white/70 mt-1">{dashboardMetrics.totalWorkouts} workouts (30d)</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none">
+              <CardContent className="p-4">
+                <UtensilsCrossed className="w-8 h-8 text-white/80 mb-2" />
+                <p className="text-xs text-white/80 uppercase font-bold">Nutrition</p>
+                <p className="text-3xl font-black italic text-white">{dashboardMetrics.nutritionAdherence}%</p>
+                <p className="text-xs text-white/70 mt-1">Logged this week</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none">
+              <CardContent className="p-4">
+                <Award className="w-8 h-8 text-white/80 mb-2" />
+                <p className="text-xs text-white/80 uppercase font-bold">Strength Total</p>
+                <p className="text-3xl font-black italic text-white">{dashboardMetrics.totalStrength} lbs</p>
+                <p className="text-xs text-white/70 mt-1">Combined max lifts</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Weight Change Card */}
+          {Math.abs(dashboardMetrics.weightChange) > 0 && (
+            <Card className={`border-2 ${
+              dashboardMetrics.weightChange < 0 
+                ? 'bg-green-50 border-green-500' 
+                : 'bg-blue-50 border-blue-500'
+            }`}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {dashboardMetrics.weightChange < 0 ? (
+                      <TrendingDown className="w-10 h-10 text-green-600" />
+                    ) : (
+                      <TrendingUp className="w-10 h-10 text-blue-600" />
+                    )}
+                    <div>
+                      <p className="text-sm font-bold text-gray-600 uppercase">Weight Change</p>
+                      <p className="text-2xl font-black italic text-[#1a1a1a]">
+                        {dashboardMetrics.weightChange > 0 ? '+' : ''}{dashboardMetrics.weightChange} lbs
+                      </p>
+                    </div>
+                  </div>
+                  <div className={`px-4 py-2 rounded-full ${
+                    dashboardMetrics.weightChange < 0 
+                      ? 'bg-green-500' 
+                      : 'bg-blue-500'
+                  }`}>
+                    <p className="text-white font-black italic">
+                      {dashboardMetrics.weightChange < 0 ? 'Down' : 'Up'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Weekly Workout Chart */}
+          {weeklyWorkoutData.some(d => d.workouts > 0) && (
+            <Card className="bg-white border-2 border-gray-200">
+              <CardContent className="p-5">
+                <h3 className="font-black italic text-[#1a1a1a] mb-4">WEEKLY WORKOUT CONSISTENCY</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={weeklyWorkoutData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="week" stroke="#6b7280" style={{ fontSize: '11px' }} />
+                    <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#fff', 
+                        border: '2px solid #0ea5e9',
+                        borderRadius: '4px',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                    <Bar dataKey="workouts" fill="#0ea5e9" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
 
       <Tabs defaultValue="metrics" className="w-full">
         <TabsList className="grid w-full grid-cols-3 bg-gray-100">
@@ -247,7 +466,13 @@ export default function Progress() {
                   <CardContent className="p-5">
                     <h3 className="font-black italic text-[#1a1a1a] mb-4">{type.label}</h3>
                     <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={chartData}>
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                         <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '12px' }} />
                         <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
@@ -259,15 +484,17 @@ export default function Progress() {
                             fontWeight: 'bold'
                           }}
                         />
-                        <Line 
+                        <Area 
                           type="monotone" 
                           dataKey="value" 
                           stroke="#0ea5e9" 
                           strokeWidth={3}
+                          fillOpacity={1}
+                          fill="url(#colorValue)"
                           dot={{ fill: '#0ea5e9', r: 5 }}
                           activeDot={{ r: 7 }}
                         />
-                      </LineChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                     <div className="mt-3 text-center">
                       <p className="text-sm text-gray-600">
