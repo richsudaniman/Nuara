@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -22,11 +21,9 @@ export default function SwitchRole() {
   });
 
   const switchView = (viewMode) => {
-    // Update localStorage
     localStorage.setItem('viewMode', viewMode);
     setCurrentView(viewMode);
     
-    // Force navigation to the appropriate home page
     setTimeout(() => {
       if (viewMode === 'admin') {
         window.location.href = createPageUrl('AdminDashboard');
@@ -38,36 +35,33 @@ export default function SwitchRole() {
     }, 100);
   };
 
-  const availableRoles = [];
-  
-  if (user?.role === 'admin') {
-    availableRoles.push({
-      id: 'admin',
-      name: 'Admin Portal',
-      description: 'Manage users, trainers, and platform settings',
-      icon: Shield,
-      mainColorClass: 'red-600', // Adjusted to match existing admin button color
-    });
-  }
-  
-  if (user?.user_type === 'trainer') { // Changed from user?.role to user?.user_type
-    availableRoles.push({
+  // Always show all three roles for testing purposes
+  const availableRoles = [
+    {
+      id: 'client',
+      name: 'Client View',
+      description: 'Access your workouts, nutrition, and progress',
+      icon: User,
+      bgColor: 'bg-[#0ea5e9]',
+      textColor: 'text-[#0ea5e9]',
+    },
+    {
       id: 'trainer',
       name: 'Trainer Portal',
       description: 'Manage your clients and their programs',
       icon: Award,
-      mainColorClass: 'purple-600', // Adjusted to match existing trainer button color
-    });
-  }
-  
-  // Everyone can access client view
-  availableRoles.push({
-    id: 'client',
-    name: 'Client View',
-    description: 'Access your workouts, nutrition, and progress',
-    icon: User,
-    mainColorClass: '[#0ea5e9]', // Adjusted to match existing client button color
-  });
+      bgColor: 'bg-purple-600',
+      textColor: 'text-purple-600',
+    },
+    {
+      id: 'admin',
+      name: 'Admin Portal',
+      description: 'Manage users, trainers, and platform settings',
+      icon: Shield,
+      bgColor: 'bg-red-600',
+      textColor: 'text-red-600',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
@@ -88,23 +82,23 @@ export default function SwitchRole() {
             {availableRoles.map((role) => {
               const IconComponent = role.icon;
               const isSelected = currentView === role.id;
-              
-              // Construct dynamic classes based on selection and mainColorClass
-              const bgColorClass = isSelected ? `bg-${role.mainColorClass}` : 'bg-white';
-              const textColorClass = isSelected ? 'text-white' : 'text-[#1a1a1a]';
-              const borderColorClass = isSelected ? `border-${role.mainColorClass}` : ''; // Default border-2 will apply if not selected
-              const iconColorClass = isSelected ? 'text-white' : `text-${role.mainColorClass}`;
 
               return (
                 <Button
                   key={role.id}
                   onClick={() => switchView(role.id)}
-                  className={`w-full h-20 ${bgColorClass} ${textColorClass} ${borderColorClass} border-2 font-bold italic flex items-center justify-start gap-4 px-6 transition-all hover:bg-gray-50`}
+                  className={`w-full h-20 ${
+                    isSelected 
+                      ? `${role.bgColor} text-white border-2 border-transparent` 
+                      : `bg-white text-[#1a1a1a] border-2 border-gray-200 hover:border-gray-300`
+                  } font-bold italic flex items-center justify-start gap-4 px-6 transition-all`}
                 >
-                  <IconComponent className={`w-8 h-8 ${iconColorClass}`} />
+                  <IconComponent className={`w-8 h-8 ${isSelected ? 'text-white' : role.textColor}`} />
                   <div className="text-left">
                     <div className="text-lg">{role.name}</div>
-                    <div className="text-xs font-normal opacity-80">{role.description}</div>
+                    <div className={`text-xs font-normal ${isSelected ? 'text-white/80' : 'text-gray-600'}`}>
+                      {role.description}
+                    </div>
                   </div>
                 </Button>
               );
@@ -113,7 +107,7 @@ export default function SwitchRole() {
 
           <div className="mt-6 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
             <p className="text-xs text-blue-800">
-              <strong>Testing Mode:</strong> Switch between roles to test different user experiences. In production, roles are set by admins.
+              <strong>Testing Mode:</strong> Switch between roles to test different user experiences. All views are available for testing.
             </p>
           </div>
         </CardContent>
