@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -41,14 +42,17 @@ export default function Layout({ children, currentPageName }) {
     refetchInterval: 60 * 1000, // Refresh every minute
   });
 
-  // Determine view mode
+  // Determine view mode - PRIORITIZE localStorage for testing
   const getViewMode = () => {
     if (typeof window === 'undefined') return 'client';
     
+    // Always check localStorage first (for Switch Role testing)
     const storedView = localStorage.getItem('viewMode');
-    if (storedView) return storedView;
+    if (storedView && ['client', 'trainer', 'admin'].includes(storedView)) {
+      return storedView;
+    }
     
-    // Check user_type for trainers, role for admins
+    // Fallback to actual user role/type
     if (user?.role === 'admin') return 'admin';
     if (user?.user_type === 'trainer') return 'trainer';
     return 'client';
