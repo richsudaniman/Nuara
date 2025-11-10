@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import ClientNutritionPlans from "../components/trainer/ClientNutritionPlans";
 import ClientGoals from "../components/trainer/ClientGoals";
 import ClientProgress from "../components/trainer/ClientProgress";
 import ClientNotes from "../components/trainer/ClientNotes";
+import ClientMessages from "../components/trainer/ClientMessages"; // New import
 
 export default function TrainerClientDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -87,7 +89,7 @@ export default function TrainerClientDetail() {
       )}
 
       <Tabs defaultValue="workouts" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-6 bg-gray-100"> {/* Changed grid-cols-5 to grid-cols-6 */}
           <TabsTrigger value="workouts" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
             <Dumbbell className="w-4 h-4 mr-1" />
             Workouts
@@ -102,6 +104,9 @@ export default function TrainerClientDetail() {
           </TabsTrigger>
           <TabsTrigger value="progress" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
             Progress
+          </TabsTrigger>
+          <TabsTrigger value="messages" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs"> {/* New TabsTrigger for Messages */}
+            Messages
           </TabsTrigger>
           <TabsTrigger value="notes" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
             <FileText className="w-4 h-4 mr-1" />
@@ -123,6 +128,14 @@ export default function TrainerClientDetail() {
 
         <TabsContent value="progress" className="mt-4">
           <ClientProgress clientId={clientId} />
+        </TabsContent>
+
+        <TabsContent value="messages" className="mt-4"> {/* New TabsContent for Messages */}
+          {userLoading ? (
+            <Skeleton className="h-96 rounded-lg bg-gray-100" />
+          ) : (
+            <ClientMessages clientId={clientId} trainerId={user?.id} />
+          )}
         </TabsContent>
 
         <TabsContent value="notes" className="mt-4">
