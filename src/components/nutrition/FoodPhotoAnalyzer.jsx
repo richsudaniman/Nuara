@@ -47,8 +47,11 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       
       if (response.data.success && response.data.foods.length > 0) {
         setDetectedFoods(response.data.foods);
+        if (response.data.warning) {
+          setError('⚠️ ' + response.data.warning);
+        }
       } else {
-        setError(response.data.message || 'No food items detected. Try a clearer photo.');
+        setError(response.data.message || response.data.error || 'No food items detected. Try a clearer photo.');
       }
     } catch (err) {
       console.error('Error analyzing food:', err);
