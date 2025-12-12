@@ -22,9 +22,52 @@ Deno.serve(async (req) => {
 
         console.log('=== Starting Food Analysis ===');
         console.log('Image URL:', image_url);
-        console.log('API Key present:', !!apiKey, 'Length:', apiKey?.length);
+        console.log('API Key present:', !!apiKey);
 
-        // Fetch the image from the URL
+        // Step 1: Get access token from Passio
+        console.log('Step 1: Getting access token...');
+        const tokenEndpoint = `https://api.passiolife.com/v2/token-cache/unified/oauth/token/${apiKey}`;
+        
+        const tokenResponse = await fetch(tokenEndpoint, {
+            method: 'POST',
+        });
+
+        console.log('Token response status:', tokenResponse.status);
+        const tokenText = await tokenResponse.text();
+        console.log('Token response body:', tokenText);
+
+        if (!tokenResponse.ok) {
+            console.error('Failed to get access token');
+            return Response.json({
+                error: 'Failed to authenticate with Passio',
+                details: tokenText,
+            }, { status: 500 });
+        }
+
+        let tokenData;
+        try {
+            tokenData = JSON.parse(tokenText);
+        } catch (e) {
+            console.error('Failed to parse token response');
+            return Response.json({
+                error: 'Invalid token response',
+                details: tokenText,
+            }, { status: 500 });
+        }
+
+        const accessToken = tokenData.access_token || tokenData.accessToken;
+        if (!accessToken) {
+            console.error('No access token in response:', tokenData);
+            return Response.json({
+                error: 'No access token received',
+                details: tokenData,
+            }, { status: 500 });
+        }
+
+        console.log('Access token received successfully');
+
+        // Step 2: Fetch the image from the URL
+        console.log('Step 2: Fetching image...');
         const imageResponse = await fetch(image_url);
         if (!imageResponse.ok) {
             console.error('Failed to fetch image:', imageResponse.status);
@@ -34,18 +77,18 @@ Deno.serve(async (req) => {
         const imageBlob = await imageResponse.blob();
         console.log('Image fetched successfully - Size:', imageBlob.size, 'Type:', imageBlob.type);
         
-        // Create form data with the image
+        // Step 3: Create form data with the image
         const formData = new FormData();
         formData.append('image', imageBlob, 'food.jpg');
 
-        // Correct Passio API endpoint for food recognition
+        // Step 4: Call Passio recognition API with access token
+        console.log('Step 3: Calling Passio recognition API...');
         const endpoint = 'https://api.passiolife.com/v2/recognize';
-        console.log('Calling Passio API:', endpoint);
 
         const passioResponse = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                'Authorization': `Bearer ${accessToken}`,
             },
             body: formData,
         });
