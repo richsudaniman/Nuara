@@ -101,26 +101,45 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           </div>
         </div>
 
-        {/* Upload Button */}
-        <label className="block">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoUpload}
-            className="hidden"
-            disabled={uploading || analyzing}
-          />
-          <Button
-            as="span"
-            disabled={uploading || analyzing}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black italic cursor-pointer"
-          >
-            {uploading && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
-            {analyzing && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
-            {!uploading && !analyzing && <Camera className="w-5 h-5 mr-2" />}
-            {uploading ? "UPLOADING..." : analyzing ? "ANALYZING..." : "TAKE PHOTO"}
-          </Button>
-        </label>
+        {/* Upload Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handlePhotoUpload}
+              className="hidden"
+              disabled={uploading || analyzing}
+            />
+            <div className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black italic cursor-pointer px-4 py-3 rounded-md flex items-center justify-center transition-colors">
+              {uploading || analyzing ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <Camera className="w-5 h-5 mr-2" />
+              )}
+              {uploading ? "UPLOADING..." : analyzing ? "ANALYZING..." : "TAKE PHOTO"}
+            </div>
+          </label>
+
+          <label className="block">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+              disabled={uploading || analyzing}
+            />
+            <div className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic cursor-pointer px-4 py-3 rounded-md flex items-center justify-center transition-colors">
+              {uploading || analyzing ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <Plus className="w-5 h-5 mr-2" />
+              )}
+              {uploading ? "UPLOADING..." : analyzing ? "ANALYZING..." : "UPLOAD"}
+            </div>
+          </label>
+        </div>
 
         {/* Error Message */}
         {error && (
