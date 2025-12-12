@@ -36,8 +36,8 @@ Deno.serve(async (req) => {
         const formData = new FormData();
         formData.append('image', imageBlob, 'food.jpg');
 
-        // Correct Passio API endpoint (without /products/)
-        const endpoint = 'https://api.passiolife.com/v2/napi/tools/extractFoodsFromImage';
+        // Correct Passio API endpoint for food recognition
+        const endpoint = 'https://api.passiolife.com/v2/recognize';
         console.log('Using Passio endpoint:', endpoint);
 
         const passioResponse = await fetch(endpoint, {
