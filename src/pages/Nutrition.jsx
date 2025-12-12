@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MealPlanCard from "../components/nutrition/MealPlanCard";
 import CalorieTracker from "../components/nutrition/CalorieTracker";
+import FoodPhotoAnalyzer from "../components/nutrition/FoodPhotoAnalyzer";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 import { UtensilsCrossed } from "lucide-react";
@@ -76,6 +77,10 @@ export default function Nutrition() {
           ) : (
             <MealPlanCard meals={meals} />
           )}
+          
+          <FoodPhotoAnalyzer 
+            onFoodAnalyzed={(data) => addLogMutation.mutate(data)}
+          />
           
           <CalorieTracker
             logs={calorieLogs}
