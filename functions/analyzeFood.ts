@@ -36,89 +36,57 @@ Deno.serve(async (req) => {
         const formData = new FormData();
         formData.append('image', imageBlob, 'food.jpg');
 
-        // Try different Passio API endpoints
-        const endpoints = [
-            'https://api.passiolife.com/v2/products/food-recognition',
-            'https://api.passiolife.com/v2/recognize',
-            'https://api.passiolife.com/v2/food/recognize',
-        ];
+        // Correct Passio API endpoint (without /products/)
+        const endpoint = 'https://api.passiolife.com/v2/napi/tools/extractFoodsFromImage';
+        console.log('Using Passio endpoint:', endpoint);
 
-        let lastError = null;
+        const passioResponse = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+            },
+            body: formData,
+        });
 
-        for (const endpoint of endpoints) {
-            try {
-                console.log('Trying endpoint:', endpoint);
-                
-                const passioResponse = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                    },
-                    body: formData,
-                });
+        console.log('Response status:', passioResponse.status);
+        const responseText = await passioResponse.text();
+        console.log('Response body:', responseText);
 
-                console.log('Response status:', passioResponse.status);
-                const responseText = await passioResponse.text();
-                console.log('Response body:', responseText);
-
-                if (passioResponse.ok) {
-                    const passioData = JSON.parse(responseText);
-                    
-                    // Parse response
-                    let foods = [];
-                    
-                    if (passioData.results && Array.isArray(passioData.results)) {
-                        foods = passioData.results.map(item => ({
-                            name: item.foodName || item.name || 'Unknown Food',
-                            calories: item.nutritionPreview?.calories || item.calories || 150,
-                            protein: item.nutritionPreview?.protein || item.protein || 5,
-                            carbs: item.nutritionPreview?.carbs || item.carbs || 20,
-                            fats: item.nutritionPreview?.fat || item.fats || 5,
-                            serving_size: '1 serving',
-                            confidence: item.confidence || 0.8,
-                        }));
-                    } else if (passioData.candidates && Array.isArray(passioData.candidates)) {
-                        foods = passioData.candidates.map(item => ({
-                            name: item.foodName || item.name || 'Unknown Food',
-                            calories: item.nutritionPreview?.calories || item.calories || 150,
-                            protein: item.nutritionPreview?.protein || item.protein || 5,
-                            carbs: item.nutritionPreview?.carbs || item.carbs || 20,
-                            fats: item.nutritionPreview?.fat || item.fats || 5,
-                            serving_size: '1 serving',
-                            confidence: item.confidence || 0.8,
-                        }));
-                    }
-                    
-                    if (foods.length > 0) {
-                        console.log('Successfully detected', foods.length, 'food items');
-                        return Response.json({
-                            success: true,
-                            foods: foods,
-                        });
-                    }
-                }
-                
-                lastError = `${endpoint} returned ${passioResponse.status}: ${responseText}`;
-            } catch (endpointError) {
-                console.error('Error with endpoint', endpoint, ':', endpointError);
-                lastError = endpointError.message;
-            }
+        if (!passioResponse.ok) {
+            console.error('Passio API error:', passioResponse.status, responseText);
+            return Response.json({
+                error: 'Failed to analyze food image',
+                details: `Passio API returned ${passioResponse.status}: ${responseText}`,
+            }, { status: 500 });
         }
 
-        // If all endpoints failed, return mock data with error info
-        console.log('All endpoints failed, using mock data');
+        const passioData = JSON.parse(responseText);
+        
+        let foods = [];
+        
+        if (passioData.results && Array.isArray(passioData.results)) {
+            foods = passioData.results.map(item => ({
+                name: item.foodName || item.name || 'Unknown Food',
+                calories: item.nutritionPreview?.calories || item.calories || 150,
+                protein: item.nutritionPreview?.protein || item.protein || 5,
+                carbs: item.nutritionPreview?.carbs || item.carbs || 20,
+                fats: item.nutritionPreview?.fat || item.fats || 5,
+                serving_size: '1 serving',
+                confidence: item.confidence || 0.8,
+            }));
+        }
+        
+        if (foods.length === 0) {
+            return Response.json({
+                success: true,
+                foods: [],
+                message: 'No food items detected in the image',
+            });
+        }
+
         return Response.json({
             success: true,
-            foods: [{
-                name: 'Sample Food Item',
-                calories: 200,
-                protein: 10,
-                carbs: 30,
-                fats: 8,
-                serving_size: '1 serving',
-                confidence: 0.5,
-            }],
-            warning: 'API integration issue - showing sample data. Last error: ' + lastError,
+            foods: foods,
         });
 
     } catch (error) {
