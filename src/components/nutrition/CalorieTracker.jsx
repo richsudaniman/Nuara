@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2, Calendar } from "lucide-react";
 import { format } from "date-fns";
 
-export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, dailyTarget, proteinTarget = 150, carbsTarget = 250, fatsTarget = 70 }) {
+export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, dailyTarget }) {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     meal_name: "",
@@ -25,10 +25,6 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
   const todayCarbs = todayLogs.reduce((sum, log) => sum + (parseFloat(log.carbs) || 0), 0);
   const todayFats = todayLogs.reduce((sum, log) => sum + (parseFloat(log.fats) || 0), 0);
   const percentage = dailyTarget > 0 ? Math.min((todayCalories / dailyTarget) * 100, 100) : 0;
-  
-  const proteinPercent = proteinTarget > 0 ? Math.min((todayProtein / proteinTarget) * 100, 100) : 0;
-  const carbsPercent = carbsTarget > 0 ? Math.min((todayCarbs / carbsTarget) * 100, 100) : 0;
-  const fatsPercent = fatsTarget > 0 ? Math.min((todayFats / fatsTarget) * 100, 100) : 0;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -177,36 +173,18 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
             ></div>
           </div>
           
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white/50 p-2 rounded">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-gray-600 font-bold">Protein</p>
-                <p className="text-xs text-purple-600 font-bold">{Math.round(proteinPercent)}%</p>
-              </div>
-              <div className="h-1.5 bg-purple-100 rounded-full overflow-hidden mb-1">
-                <div className="h-full bg-purple-600 transition-all" style={{width: `${proteinPercent}%`}}></div>
-              </div>
-              <p className="text-xs font-black text-purple-600 text-center">{Math.round(todayProtein)}g / {proteinTarget}g</p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="bg-white/50 py-2 rounded">
+              <p className="text-xs text-gray-600 font-bold">Protein</p>
+              <p className="text-sm font-black text-[#1a1a1a]">{Math.round(todayProtein)}g</p>
             </div>
-            <div className="bg-white/50 p-2 rounded">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-gray-600 font-bold">Carbs</p>
-                <p className="text-xs text-orange-600 font-bold">{Math.round(carbsPercent)}%</p>
-              </div>
-              <div className="h-1.5 bg-orange-100 rounded-full overflow-hidden mb-1">
-                <div className="h-full bg-orange-600 transition-all" style={{width: `${carbsPercent}%`}}></div>
-              </div>
-              <p className="text-xs font-black text-orange-600 text-center">{Math.round(todayCarbs)}g / {carbsTarget}g</p>
+            <div className="bg-white/50 py-2 rounded">
+              <p className="text-xs text-gray-600 font-bold">Carbs</p>
+              <p className="text-sm font-black text-[#1a1a1a]">{Math.round(todayCarbs)}g</p>
             </div>
-            <div className="bg-white/50 p-2 rounded">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-gray-600 font-bold">Fats</p>
-                <p className="text-xs text-yellow-600 font-bold">{Math.round(fatsPercent)}%</p>
-              </div>
-              <div className="h-1.5 bg-yellow-100 rounded-full overflow-hidden mb-1">
-                <div className="h-full bg-yellow-600 transition-all" style={{width: `${fatsPercent}%`}}></div>
-              </div>
-              <p className="text-xs font-black text-yellow-600 text-center">{Math.round(todayFats)}g / {fatsTarget}g</p>
+            <div className="bg-white/50 py-2 rounded">
+              <p className="text-xs text-gray-600 font-bold">Fats</p>
+              <p className="text-sm font-black text-[#1a1a1a]">{Math.round(todayFats)}g</p>
             </div>
           </div>
         </div>
