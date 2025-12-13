@@ -48,29 +48,14 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Downloading image...');
-        const imgRes = await fetch(imageUrl);
-        if (!imgRes.ok) {
-            console.error('Image download failed:', imgRes.status);
-            return Response.json({ success: false, error: 'Failed to download image' }, { status: 400 });
-        }
-
-        console.log('Converting image to base64...');
-        const imgBuffer = await imgRes.arrayBuffer();
-        const bytes = new Uint8Array(imgBuffer);
-        
-        // More reliable base64 encoding for large images
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
-        
-        console.log('Base64 length:', base64.length);
-        console.log('Base64 preview:', base64.substring(0, 50) + '...');
-
-        console.log('Calling recognition API...');
-        const payload = { image: { content: base64 } };
+        console.log('Calling recognition API with image URL...');
+        const payload = { 
+            image: { 
+                source: { 
+                    imageUri: imageUrl 
+                } 
+            } 
+        };
         
         const recognizeRes = await fetch('https://api.passiolife.com/v2/recognize/image', {
             method: 'POST',
