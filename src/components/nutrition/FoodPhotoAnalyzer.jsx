@@ -44,14 +44,26 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
 
       // Analyze food with Passio API
       const response = await base44.functions.invoke('analyzeFood', { image_url: file_url });
-      
+
+      console.log('Full API Response:', response);
+
       if (response.data.success && response.data.foods.length > 0) {
         setDetectedFoods(response.data.foods);
         if (response.data.warning) {
           setError('⚠️ ' + response.data.warning);
         }
       } else {
-        setError(response.data.message || response.data.error || 'No food items detected. Try a clearer photo.');
+        // Show detailed error information
+        const errorMsg = response.data.error || 'Analysis failed';
+        const errorDetails = response.data.details || response.data.message || '';
+        const statusCode = response.data.status || '';
+
+        let fullError = errorMsg;
+        if (statusCode) fullError += ` (Status: ${statusCode})`;
+        if (errorDetails) fullError += ` - ${errorDetails}`;
+
+        console.error('Analysis Error:', fullError);
+        setError(fullError);
       }
     } catch (err) {
       console.error('Error analyzing food:', err);
