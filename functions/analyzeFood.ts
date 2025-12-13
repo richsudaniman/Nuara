@@ -74,25 +74,28 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Failed to fetch image from storage' }, { status: 400 });
         }
 
-        const imageBlob = await imageResponse.blob();
-        console.log('Image fetched successfully - Size:', imageBlob.size, 'Type:', imageBlob.type);
-        
-        // Step 3: Create form data with the image
-        const formData = new FormData();
-        formData.append('image', imageBlob, 'food.jpg');
+        const imageBuffer = await imageResponse.arrayBuffer();
+        console.log('Image fetched successfully - Size:', imageBuffer.byteLength);
+
+        // Step 3: Convert image to base64
+        const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+        console.log('Image converted to base64 - Length:', base64Image.length);
 
         // Step 4: Call Passio recognition API with access token
         console.log('Step 3: Calling Passio recognition API...');
-        // Try the N-API endpoint pattern based on their documentation
-        const endpoint = 'https://api.passiolife.com/v2/products/napi/food/recognition';
+        const endpoint = 'https://api.passiolife.com/v2/recognize/image';
 
         const passioResponse = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'customer-id': tokenData.customer_id,
+                'Content-Type': 'application/json',
             },
-            body: formData,
+            body: JSON.stringify({
+                image: {
+                    content: base64Image
+                }
+            }),
         });
 
         console.log('=== Passio API Response ===');
