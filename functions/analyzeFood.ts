@@ -83,12 +83,14 @@ Deno.serve(async (req) => {
 
         // Step 4: Call Passio recognition API with access token
         console.log('Step 3: Calling Passio recognition API...');
-        const endpoint = 'https://api.passiolife.com/v2/recognize/image';
+        // Try the N-API endpoint pattern based on their documentation
+        const endpoint = 'https://api.passiolife.com/v2/products/napi/food/recognition';
 
         const passioResponse = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
+                'customer-id': tokenData.customer_id,
             },
             body: formData,
         });
