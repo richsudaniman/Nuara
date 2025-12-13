@@ -67,7 +67,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           <input
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={handlePhotoUpload}
             disabled={analyzing}
             className="hidden"
@@ -85,7 +84,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
             ) : (
               <>
                 <Camera className="w-5 h-5 mr-2" />
-                TAKE PHOTO
+                UPLOAD PHOTO
               </>
             )}
           </Button>
