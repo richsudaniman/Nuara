@@ -12,24 +12,31 @@ Deno.serve(async (req) => {
         const body = await req.json();
         const imageUrl = body.image_url;
         
+        console.log('Received image URL:', imageUrl);
+        
         if (!imageUrl) {
             return Response.json({ success: false, error: 'No image URL provided' }, { status: 400 });
         }
 
         const apiKey = Deno.env.get('PASSIO_API_KEY');
         if (!apiKey) {
+            console.error('API key not found');
             return Response.json({ success: false, error: 'API key not configured' }, { status: 500 });
         }
 
-        // Step 1: Get token
+        console.log('Getting access token...');
         const tokenUrl = `https://api.passiolife.com/v2/token-cache/unified/oauth/token/${apiKey}`;
         const tokenRes = await fetch(tokenUrl, { method: 'POST' });
         
+        console.log('Token response status:', tokenRes.status);
+        
         if (!tokenRes.ok) {
+            const errorText = await tokenRes.text();
+            console.error('Token error:', errorText);
             return Response.json({ 
                 success: false, 
-                error: 'Token request failed',
-                statusCode: tokenRes.status 
+                error: 'Failed to get access token',
+                details: errorText
             }, { status: 500 });
         }
 
@@ -37,19 +44,22 @@ Deno.serve(async (req) => {
         const token = tokenJson.access_token;
 
         if (!token) {
+            console.error('No token in response');
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        // Step 2: Download and encode image
+        console.log('Downloading image...');
         const imgRes = await fetch(imageUrl);
         if (!imgRes.ok) {
+            console.error('Image download failed:', imgRes.status);
             return Response.json({ success: false, error: 'Failed to download image' }, { status: 400 });
         }
 
+        console.log('Converting image to base64...');
         const imgBuffer = await imgRes.arrayBuffer();
         const base64 = btoa(String.fromCharCode(...new Uint8Array(imgBuffer)));
 
-        // Step 3: Recognize food
+        console.log('Calling recognition API...');
         const recognizeRes = await fetch('https://api.passiolife.com/v2/recognize/image', {
             method: 'POST',
             headers: {
@@ -59,23 +69,28 @@ Deno.serve(async (req) => {
             body: JSON.stringify({ image: { content: base64 } })
         });
 
+        console.log('Recognition response status:', recognizeRes.status);
+
         if (!recognizeRes.ok) {
             const errText = await recognizeRes.text();
+            console.error('Recognition error:', errText);
             return Response.json({ 
                 success: false, 
-                error: 'Recognition failed',
-                details: errText,
-                statusCode: recognizeRes.status
+                error: 'Recognition API failed',
+                statusCode: recognizeRes.status,
+                details: errText
             }, { status: 500 });
         }
 
         const data = await recognizeRes.json();
+        console.log('Recognition data:', JSON.stringify(data));
+        
         const results = data.results || data.candidates || [];
 
         if (results.length === 0) {
             return Response.json({ 
                 success: false, 
-                error: 'No food detected in the image' 
+                error: 'No food detected' 
             });
         }
 
@@ -88,10 +103,11 @@ Deno.serve(async (req) => {
             confidence: r.confidence || 0.5
         }));
 
+        console.log('Success! Found foods:', foods);
         return Response.json({ success: true, foods });
 
     } catch (err) {
-        console.error('Error in analyzeFood:', err);
+        console.error('Caught error:', err.message, err.stack);
         return Response.json({ 
             success: false, 
             error: err.message || 'Unknown error' 
