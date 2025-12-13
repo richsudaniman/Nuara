@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
         console.log('=== Starting Food Analysis ===');
         console.log('Image URL:', image_url);
         console.log('API Key present:', !!apiKey);
+        console.log('API Key value:', apiKey);
 
         // Step 1: Get access token from Passio
         console.log('Step 1: Getting access token...');
