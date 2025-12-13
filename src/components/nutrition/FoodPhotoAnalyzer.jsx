@@ -3,8 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Camera, Loader2, CheckCircle, XCircle, Plus, Edit2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Camera, Loader2, Plus, Edit2 } from "lucide-react";
 
 export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
   const [uploading, setUploading] = useState(false);
@@ -24,53 +23,30 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      setError('Image is too large. Maximum size is 10MB');
-      e.target.value = '';
-      return;
-    }
-
     setUploading(true);
+    setAnalyzing(false);
     setError(null);
     setDetectedFoods([]);
 
     try {
-      // Upload image to Base44 storage
+      // Upload image
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
+      
       setUploading(false);
       setAnalyzing(true);
 
-      // Analyze food with Passio API
+      // Analyze food
       const response = await base44.functions.invoke('analyzeFood', { image_url: file_url });
-
-      console.log('Full API Response:', response);
-      console.log('Response data:', response.data);
 
       if (response.data.success && response.data.foods && response.data.foods.length > 0) {
         setDetectedFoods(response.data.foods);
-        if (response.data.warning) {
-          setError('⚠️ ' + response.data.warning);
-        }
-      } else if (response.data.success && response.data.foods && response.data.foods.length === 0) {
-        setError('No food detected in image. Try a clearer photo with food visible.');
+      } else if (response.data.success) {
+        setError('No food detected in image. Try a clearer photo.');
       } else {
-        // Show detailed error information
-        const errorMsg = response.data.error || 'Analysis failed';
-        const errorDetails = response.data.details || response.data.message || '';
-        const statusCode = response.data.status || '';
-
-        let fullError = errorMsg;
-        if (statusCode) fullError += ` (Status: ${statusCode})`;
-        if (errorDetails) fullError += ` - ${errorDetails}`;
-
-        console.error('Analysis Error:', fullError);
-        console.error('Full error response:', response.data);
-        setError(fullError);
+        setError(response.data.error || 'Analysis failed. Please try again.');
       }
     } catch (err) {
-      console.error('Error analyzing food:', err);
+      console.error('Error:', err);
       setError('Failed to analyze food. Please try again.');
     } finally {
       setUploading(false);
@@ -103,7 +79,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       meal_type: 'Snack',
     });
 
-    // Remove the added food from the list
     setDetectedFoods(detectedFoods.filter((_, i) => i !== index));
   };
 
@@ -116,7 +91,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           </div>
           <div>
             <h3 className="font-black italic text-[#1a1a1a]">SNAP & LOG CALORIES</h3>
-            <p className="text-xs text-gray-600">Take a photo of your food to log nutrition</p>
+            <p className="text-xs text-gray-600">Take a photo of your food</p>
           </div>
         </div>
 
@@ -162,8 +137,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
 
         {/* Error Message */}
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 border-l-4 border-red-500 rounded">
-            <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded">
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
@@ -171,10 +145,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
         {/* Detected Foods */}
         {detectedFoods.length > 0 && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <h4 className="font-bold text-gray-700">Detected Food Items</h4>
-            </div>
+            <h4 className="font-bold text-gray-700">Detected Foods</h4>
 
             {detectedFoods.map((food, index) => (
               <Card key={index} className="bg-white border-2 border-gray-200">
@@ -238,9 +209,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
                         <div className="flex-1">
                           <h4 className="font-black italic text-[#1a1a1a] text-lg">{food.name}</h4>
                           <p className="text-xs text-gray-500">{food.serving_size}</p>
-                          {food.confidence < 0.7 && (
-                            <p className="text-xs text-yellow-600 mt-1">⚠️ Low confidence - verify data</p>
-                          )}
                         </div>
                         <Button
                           onClick={() => handleEditFood(index)}
@@ -285,10 +253,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
             ))}
           </div>
         )}
-
-        <p className="text-xs text-gray-500 text-center">
-          📸 Max size: 10MB • Supported: JPG, PNG, HEIC
-        </p>
       </CardContent>
     </Card>
   );
