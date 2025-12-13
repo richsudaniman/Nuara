@@ -20,6 +20,7 @@ import AdminAnnouncements from './pages/AdminAnnouncements';
 import AdminEducationalContent from './pages/AdminEducationalContent';
 import Messages from './pages/Messages';
 import TrainerMessages from './pages/TrainerMessages';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "AdminEducationalContent": AdminEducationalContent,
     "Messages": Messages,
     "TrainerMessages": TrainerMessages,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {

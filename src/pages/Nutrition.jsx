@@ -87,6 +87,9 @@ export default function Nutrition() {
             onAddLog={(data) => addLogMutation.mutate(data)}
             onDeleteLog={(id) => deleteLogMutation.mutate(id)}
             dailyTarget={user?.daily_calorie_target || 2200}
+            proteinTarget={user?.daily_protein_target || 150}
+            carbsTarget={user?.daily_carbs_target || 250}
+            fatsTarget={user?.daily_fats_target || 70}
           />
         </>
       )}
