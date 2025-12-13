@@ -1,104 +1,100 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
 
 Deno.serve(async (req) => {
+    const base44 = createClientFromRequest(req);
+    
     try {
-        const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
-        
         if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+            return Response.json({ success: false, error: 'Not authenticated' }, { status: 401 });
         }
 
-        const { image_url } = await req.json();
+        const body = await req.json();
+        const imageUrl = body.image_url;
         
-        if (!image_url) {
-            return Response.json({ error: 'Image URL is required' }, { status: 400 });
+        if (!imageUrl) {
+            return Response.json({ success: false, error: 'No image URL provided' }, { status: 400 });
         }
 
-        const API_KEY = Deno.env.get('PASSIO_API_KEY')?.trim();
-        if (!API_KEY) {
-            return Response.json({ error: 'API key not configured' }, { status: 500 });
+        const apiKey = Deno.env.get('PASSIO_API_KEY');
+        if (!apiKey) {
+            return Response.json({ success: false, error: 'API key not configured' }, { status: 500 });
         }
 
-        // STEP 1: Get Access Token
-        const TOKEN_URL = `https://api.passiolife.com/v2/token-cache/unified/oauth/token/${API_KEY}`;
-        const tokenResponse = await fetch(TOKEN_URL, { method: 'POST' });
+        // Step 1: Get token
+        const tokenUrl = `https://api.passiolife.com/v2/token-cache/unified/oauth/token/${apiKey}`;
+        const tokenRes = await fetch(tokenUrl, { method: 'POST' });
         
-        if (!tokenResponse.ok) {
-            const errorText = await tokenResponse.text();
-            return Response.json({
-                error: 'Failed to get access token',
-                status: tokenResponse.status,
-                details: errorText
+        if (!tokenRes.ok) {
+            return Response.json({ 
+                success: false, 
+                error: 'Token request failed',
+                statusCode: tokenRes.status 
             }, { status: 500 });
         }
 
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
+        const tokenJson = await tokenRes.json();
+        const token = tokenJson.access_token;
 
-        if (!accessToken) {
-            return Response.json({ error: 'No access token received' }, { status: 500 });
+        if (!token) {
+            return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        // STEP 2: Fetch and convert image
-        const imageResponse = await fetch(image_url);
-        if (!imageResponse.ok) {
-            return Response.json({ error: 'Failed to fetch image' }, { status: 400 });
+        // Step 2: Download and encode image
+        const imgRes = await fetch(imageUrl);
+        if (!imgRes.ok) {
+            return Response.json({ success: false, error: 'Failed to download image' }, { status: 400 });
         }
 
-        const imageBuffer = await imageResponse.arrayBuffer();
-        const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+        const imgBuffer = await imgRes.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(imgBuffer)));
 
-        // STEP 3: Call Recognition API
-        const RECOGNIZE_URL = 'https://api.passiolife.com/v2/recognize/image';
-        const recognitionPayload = {
-            image: { content: base64Image }
-        };
-
-        const recognitionResponse = await fetch(RECOGNIZE_URL, {
+        // Step 3: Recognize food
+        const recognizeRes = await fetch('https://api.passiolife.com/v2/recognize/image', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(recognitionPayload)
+            body: JSON.stringify({ image: { content: base64 } })
         });
 
-        if (!recognitionResponse.ok) {
-            const errorText = await recognitionResponse.text();
-            return Response.json({
-                error: 'Food recognition failed',
-                status: recognitionResponse.status,
-                details: errorText
-            }, { status: recognitionResponse.status });
+        if (!recognizeRes.ok) {
+            const errText = await recognizeRes.text();
+            return Response.json({ 
+                success: false, 
+                error: 'Recognition failed',
+                details: errText,
+                statusCode: recognizeRes.status
+            }, { status: 500 });
         }
 
-        const foodData = await recognitionResponse.json();
+        const data = await recognizeRes.json();
+        const results = data.results || data.candidates || [];
 
-        // Parse results
-        let foods = [];
-        const results = foodData.results || foodData.candidates || [];
-        
-        foods = results.map(item => ({
-            name: item.foodName || item.name || 'Unknown Food',
-            calories: item.nutritionPreview?.calories || 150,
-            protein: item.nutritionPreview?.protein || 5,
-            carbs: item.nutritionPreview?.carbs || 20,
-            fats: item.nutritionPreview?.fat || 5,
-            serving_size: item.servingSize || '1 serving',
-            confidence: item.confidence || 0.8
+        if (results.length === 0) {
+            return Response.json({ 
+                success: false, 
+                error: 'No food detected in the image' 
+            });
+        }
+
+        const foods = results.map(r => ({
+            name: r.foodName || r.name || 'Unknown',
+            calories: r.nutritionPreview?.calories || 200,
+            protein: r.nutritionPreview?.protein || 8,
+            carbs: r.nutritionPreview?.carbs || 25,
+            fats: r.nutritionPreview?.fat || 8,
+            confidence: r.confidence || 0.5
         }));
 
-        return Response.json({
-            success: true,
-            foods: foods
-        });
+        return Response.json({ success: true, foods });
 
-    } catch (error) {
-        console.error('Error:', error);
+    } catch (err) {
+        console.error('Error in analyzeFood:', err);
         return Response.json({ 
-            error: 'Internal server error',
-            details: error.message
+            success: false, 
+            error: err.message || 'Unknown error' 
         }, { status: 500 });
     }
 });
