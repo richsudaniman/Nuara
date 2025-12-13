@@ -63,18 +63,23 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           </div>
         </div>
 
-        <label className="block">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoUpload}
-            disabled={analyzing}
-            className="hidden"
-          />
+        <input
+          id="food-photo-upload"
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoUpload}
+          disabled={analyzing}
+          className="hidden"
+        />
+        <label htmlFor="food-photo-upload" className="block">
           <Button
-            as="span"
+            type="button"
             disabled={analyzing}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('food-photo-upload').click();
+            }}
           >
             {analyzing ? (
               <>
