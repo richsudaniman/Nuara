@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
 
         // Step 4: Call Passio recognition API with access token
         console.log('Step 3: Calling Passio recognition API...');
-        const endpoint = 'https://api.passiolife.com/v2/recognize';
+        const endpoint = 'https://api.passiolife.com/v2/recognize/image';
 
         const passioResponse = await fetch(endpoint, {
             method: 'POST',
