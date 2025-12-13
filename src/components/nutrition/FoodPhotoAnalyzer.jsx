@@ -46,12 +46,15 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       const response = await base44.functions.invoke('analyzeFood', { image_url: file_url });
 
       console.log('Full API Response:', response);
+      console.log('Response data:', response.data);
 
-      if (response.data.success && response.data.foods.length > 0) {
+      if (response.data.success && response.data.foods && response.data.foods.length > 0) {
         setDetectedFoods(response.data.foods);
         if (response.data.warning) {
           setError('⚠️ ' + response.data.warning);
         }
+      } else if (response.data.success && response.data.foods && response.data.foods.length === 0) {
+        setError('No food detected in image. Try a clearer photo with food visible.');
       } else {
         // Show detailed error information
         const errorMsg = response.data.error || 'Analysis failed';
@@ -63,6 +66,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
         if (errorDetails) fullError += ` - ${errorDetails}`;
 
         console.error('Analysis Error:', fullError);
+        console.error('Full error response:', response.data);
         setError(fullError);
       }
     } catch (err) {
