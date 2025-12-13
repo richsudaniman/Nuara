@@ -1,7 +1,8 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Dumbbell, UtensilsCrossed, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Target } from "lucide-react";
+import { Home, Dumbbell, UtensilsCrossed, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -69,7 +70,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Nutrition", path: createPageUrl("Nutrition"), icon: UtensilsCrossed },
     { name: "Progress", path: createPageUrl("Progress"), icon: TrendingUp },
     { name: "Learn", path: createPageUrl("Learn"), icon: GraduationCap },
-    { name: "Settings", path: createPageUrl("Settings"), icon: Target },
+    { name: "Messages", path: createPageUrl("Messages"), icon: MessageCircle, badge: unreadCount },
   ];
 
   // Trainer navigation
