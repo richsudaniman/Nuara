@@ -96,33 +96,42 @@ Deno.serve(async (req) => {
         console.log('=== Passio API Response ===');
         console.log('Status:', passioResponse.status);
         console.log('Status Text:', passioResponse.statusText);
-        console.log('Headers:', Object.fromEntries(passioResponse.headers.entries()));
+        console.log('Headers:', JSON.stringify(Object.fromEntries(passioResponse.headers.entries()), null, 2));
         
         const responseText = await passioResponse.text();
-        console.log('Response Body:', responseText);
+        console.log('Response Body (raw):', responseText);
+        console.log('Response Body Length:', responseText.length);
 
         if (!passioResponse.ok) {
-            console.error('=== API ERROR ===');
-            console.error('Status:', passioResponse.status);
-            console.error('Body:', responseText);
+            console.error('=== API ERROR DETAILS ===');
+            console.error('Status Code:', passioResponse.status);
+            console.error('Status Text:', passioResponse.statusText);
+            console.error('Response Body:', responseText);
+            console.error('Endpoint Called:', endpoint);
+            console.error('Authorization Header Present:', !!accessToken);
+            
             return Response.json({
                 error: 'Passio API Error',
                 status: passioResponse.status,
+                statusText: passioResponse.statusText,
                 details: responseText,
-                message: 'Failed to analyze food image',
-            }, { status: 500 });
+                endpoint: endpoint,
+            }, { status: passioResponse.status });
         }
 
         let passioData;
         try {
             passioData = JSON.parse(responseText);
-            console.log('Parsed response structure:', Object.keys(passioData));
-            console.log('Full parsed data:', JSON.stringify(passioData, null, 2));
+            console.log('Successfully parsed JSON');
+            console.log('Response Keys:', Object.keys(passioData));
+            console.log('Full Response:', JSON.stringify(passioData, null, 2));
         } catch (parseError) {
-            console.error('Failed to parse response:', parseError);
+            console.error('JSON Parse Error:', parseError.message);
+            console.error('Raw Response:', responseText);
             return Response.json({
-                error: 'Invalid response from Passio',
+                error: 'Invalid JSON response from Passio',
                 details: responseText,
+                parseError: parseError.message,
             }, { status: 500 });
         }
         
