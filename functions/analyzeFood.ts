@@ -26,8 +26,8 @@ Deno.serve(async (req) => {
 
         // Step 1: Get access token from Passio
         console.log('Step 1: Getting access token...');
-        const tokenEndpoint = `https://api.passiolife.com/v2/token-cache/unified/oauth/token/${apiKey}`;
-        
+        const tokenEndpoint = `https://api.passiolife.com/v2/token-cache/napi/oauth/licence/${apiKey}`;
+
         const tokenResponse = await fetch(tokenEndpoint, {
             method: 'POST',
         });
