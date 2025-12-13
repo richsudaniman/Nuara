@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { analyzeFood } from "@/functions/analyzeFood";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +44,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       setAnalyzing(true);
 
       // Analyze food with Passio API
-      const response = await base44.functions.invoke('analyzeFood', { image_url: file_url });
+      const response = await analyzeFood({ image_url: file_url });
 
       console.log('Full API Response:', response);
 
