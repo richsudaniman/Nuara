@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Image URL is required' }, { status: 400 });
         }
 
-        const apiKey = Deno.env.get('PASSIO_API_KEY');
+        const apiKey = Deno.env.get('PASSIO_API_KEY')?.trim();
         if (!apiKey) {
             return Response.json({ error: 'Passio API key not configured' }, { status: 500 });
         }
