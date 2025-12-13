@@ -57,27 +57,43 @@ Deno.serve(async (req) => {
 
         console.log('Converting image to base64...');
         const imgBuffer = await imgRes.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(imgBuffer)));
+        const bytes = new Uint8Array(imgBuffer);
+        
+        // More reliable base64 encoding for large images
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
+        
+        console.log('Base64 length:', base64.length);
+        console.log('Base64 preview:', base64.substring(0, 50) + '...');
 
         console.log('Calling recognition API...');
+        const payload = { image: { content: base64 } };
+        
         const recognizeRes = await fetch('https://api.passiolife.com/v2/recognize/image', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ image: { content: base64 } })
+            body: JSON.stringify(payload)
         });
 
         console.log('Recognition response status:', recognizeRes.status);
+        const requestId = recognizeRes.headers.get('X-Request-Id');
+        console.log('X-Request-Id:', requestId);
 
         if (!recognizeRes.ok) {
             const errText = await recognizeRes.text();
             console.error('Recognition error:', errText);
+            console.error('X-Request-Id for support:', requestId);
             return Response.json({ 
                 success: false, 
                 error: 'Recognition API failed',
                 statusCode: recognizeRes.status,
+                requestId: requestId,
                 details: errText
             }, { status: 500 });
         }
