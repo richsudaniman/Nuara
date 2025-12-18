@@ -22,7 +22,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       
       // Analyze food
-      const response = await base44.functions.invoke('analyzeFood', { image_url: file_url });
+      const response = await base44.functions.invoke('analyzeFoodV2', { image_url: file_url });
       
       if (response.data.success && response.data.foods?.length > 0) {
         const food = response.data.foods[0];
