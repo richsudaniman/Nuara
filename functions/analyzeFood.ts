@@ -57,14 +57,29 @@ Deno.serve(async (req) => {
             } 
         };
         
-        const recognizeRes = await fetch('https://api.passiolife.com/v2/recognize/image', {
+        const recognizeUrl = 'https://api.passiolife.com/v2/recognize/image';
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+        
+        console.log('=== DEBUG INFO ===');
+        console.log('Full URL:', recognizeUrl);
+        console.log('Method:', 'POST');
+        console.log('Headers:', JSON.stringify(headers, null, 2));
+        console.log('Payload preview:', JSON.stringify(payload).substring(0, 200));
+        console.log('Token exists:', !!token);
+        console.log('Token length:', token?.length);
+        console.log('==================');
+        
+        const recognizeRes = await fetch(recognizeUrl, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             body: JSON.stringify(payload)
         });
+        
+        console.log('Response status:', recognizeRes.status);
+        console.log('Response headers:', Object.fromEntries(recognizeRes.headers.entries()));
 
         console.log('Recognition response status:', recognizeRes.status);
         const requestId = recognizeRes.headers.get('X-Request-Id');
