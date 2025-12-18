@@ -4,6 +4,9 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     
     try {
+        console.log('=== FUNCTION VERSION: 2024-12-18-18:00 ===');
+        console.log('Using simple image_url format (NOT nested)');
+        
         const user = await base44.auth.me();
         if (!user) {
             return Response.json({ success: false, error: 'Not authenticated' }, { status: 401 });
