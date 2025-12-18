@@ -48,29 +48,11 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Fetching image from URL to convert to base64...');
-        // Fetch the image from Base44 URL
-        const imageResponse = await fetch(imageUrl);
-        if (!imageResponse.ok) {
-        console.error('Failed to fetch image:', imageResponse.status);
-        return Response.json({ 
-            success: false, 
-            error: 'Failed to fetch image from URL' 
-        }, { status: 500 });
-        }
+        console.log('Calling recognition API with image_url format...');
 
-        // Convert to base64
-        const imageBlob = await imageResponse.blob();
-        const imageBuffer = await imageBlob.arrayBuffer();
-        const base64Image = btoa(
-        String.fromCharCode(...new Uint8Array(imageBuffer))
-        );
-
-        console.log('Image converted to base64, length:', base64Image.length);
-
-        // Correct Passio format: just { "image": "base64string" }
+        // Try simpler image_url format (not nested)
         const payload = { 
-        image: base64Image
+        image_url: imageUrl
         };
 
         const recognizeUrl = 'https://api.passiolife.com/v2/recognize/image';
