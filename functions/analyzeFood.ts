@@ -48,21 +48,37 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Calling recognition API with image URL...');
+        console.log('Fetching image from URL to convert to base64...');
+        // Fetch the image from Base44 URL
+        const imageResponse = await fetch(imageUrl);
+        if (!imageResponse.ok) {
+        console.error('Failed to fetch image:', imageResponse.status);
+        return Response.json({ 
+            success: false, 
+            error: 'Failed to fetch image from URL' 
+        }, { status: 500 });
+        }
+
+        // Convert to base64
+        const imageBlob = await imageResponse.blob();
+        const imageBuffer = await imageBlob.arrayBuffer();
+        const base64Image = btoa(
+        String.fromCharCode(...new Uint8Array(imageBuffer))
+        );
+
+        console.log('Image converted to base64, length:', base64Image.length);
+
+        // Correct Passio format: just { "image": "base64string" }
         const payload = { 
-            image: { 
-                source: { 
-                    imageUri: imageUrl 
-                } 
-            } 
+        image: base64Image
         };
-        
+
         const recognizeUrl = 'https://api.passiolife.com/v2/recognize/image';
         const headers = {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
         };
-        
+
         console.log('=== DEBUG INFO ===');
         console.log('Full URL:', recognizeUrl);
         console.log('Method:', 'POST');
@@ -71,13 +87,13 @@ Deno.serve(async (req) => {
         console.log('Token exists:', !!token);
         console.log('Token length:', token?.length);
         console.log('==================');
-        
+
         const recognizeRes = await fetch(recognizeUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload)
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
         });
-        
+
         console.log('Response status:', recognizeRes.status);
         console.log('Response headers:', Object.fromEntries(recognizeRes.headers.entries()));
 
