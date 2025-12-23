@@ -4,8 +4,7 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     
     try {
-        console.log('=== FUNCTION VERSION: V2 - 2024-12-18-18:05 ===');
-        console.log('Using simple image_url format (NOT nested)');
+        console.log('=== FUNCTION VERSION: V3 - BASE64 - 2024-12-18-18:20 ===');
         
         const user = await base44.auth.me();
         if (!user) {
@@ -13,12 +12,12 @@ Deno.serve(async (req) => {
         }
 
         const body = await req.json();
-        const imageUrl = body.image_url;
+        const imageBase64 = body.image_base64;
         
-        console.log('Received image URL:', imageUrl);
+        console.log('Received base64 image, length:', imageBase64?.length);
         
-        if (!imageUrl) {
-            return Response.json({ success: false, error: 'No image URL provided' }, { status: 400 });
+        if (!imageBase64) {
+            return Response.json({ success: false, error: 'No image data provided' }, { status: 400 });
         }
 
         const apiKey = Deno.env.get('PASSIO_API_KEY');
@@ -51,28 +50,12 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Fetching image to convert to base64...');
-        
-        // Fetch the image from Base44 URL (backend has access)
-        const imageResponse = await fetch(imageUrl);
-        if (!imageResponse.ok) {
-            return Response.json({ 
-                success: false, 
-                error: 'Failed to fetch image from Base44' 
-            }, { status: 500 });
-        }
-        
-        const imageBuffer = await imageResponse.arrayBuffer();
-        const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
-        
-        console.log('Calling recognition API with base64 image...');
+        console.log('Calling recognition API with BASE64 in image.content...');
 
-        // Use base64 format instead of URL (since URL not publicly accessible)
+        // Correct Base64 format - using image.content
         const payload = { 
             image: {
-                source: {
-                    base64: base64Image
-                }
+                content: imageBase64
             }
         };
 
@@ -84,7 +67,7 @@ Deno.serve(async (req) => {
 
         console.log('=== REQUEST DEBUG ===');
         console.log('URL:', recognizeUrl);
-        console.log('Base64 length:', base64Image.length);
+        console.log('Payload structure: image.content with', imageBase64.length, 'bytes');
         console.log('Token length:', token?.length);
         console.log('====================');
 

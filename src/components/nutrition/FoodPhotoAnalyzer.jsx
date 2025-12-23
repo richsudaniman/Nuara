@@ -18,11 +18,18 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
     setResults(null);
 
     try {
-      // Upload photo
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // Convert to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      
+      const imageBase64 = await base64Promise;
       
       // Analyze food
-      const response = await base44.functions.invoke('analyzeFoodV2', { image_url: file_url });
+      const response = await base44.functions.invoke('analyzeFoodV2', { image_base64: imageBase64 });
       
       if (response.data.success && response.data.foods?.length > 0) {
         const food = response.data.foods[0];
