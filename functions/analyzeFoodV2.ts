@@ -51,13 +51,27 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Calling recognition API with NESTED format...');
+        console.log('Fetching image to convert to base64...');
+        
+        // Fetch the image from Base44 URL (backend has access)
+        const imageResponse = await fetch(imageUrl);
+        if (!imageResponse.ok) {
+            return Response.json({ 
+                success: false, 
+                error: 'Failed to fetch image from Base44' 
+            }, { status: 500 });
+        }
+        
+        const imageBuffer = await imageResponse.arrayBuffer();
+        const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+        
+        console.log('Calling recognition API with base64 image...');
 
-        // Nested format - required by Passio API
+        // Use base64 format instead of URL (since URL not publicly accessible)
         const payload = { 
             image: {
                 source: {
-                    imageUri: imageUrl
+                    base64: base64Image
                 }
             }
         };
@@ -70,7 +84,7 @@ Deno.serve(async (req) => {
 
         console.log('=== REQUEST DEBUG ===');
         console.log('URL:', recognizeUrl);
-        console.log('Payload:', JSON.stringify(payload));
+        console.log('Base64 length:', base64Image.length);
         console.log('Token length:', token?.length);
         console.log('====================');
 
