@@ -51,11 +51,15 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Calling recognition API with simple image_url format...');
+        console.log('Calling recognition API with NESTED format...');
 
-        // Simple format - just image_url property
+        // Nested format - required by Passio API
         const payload = { 
-            image_url: imageUrl
+            image: {
+                source: {
+                    imageUri: imageUrl
+                }
+            }
         };
 
         const recognizeUrl = 'https://api.passiolife.com/v2/recognize/image';
