@@ -254,66 +254,62 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-purple-600 flex items-center justify-center">
-            {mode === 'photo' ? <Camera className="w-5 h-5 text-white" /> : <Scan className="w-5 h-5 text-white" />}
+            <Camera className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="font-black italic text-[#1a1a1a]">
-              {mode === 'photo' ? 'SNAP & TRACK' : 'SCAN BARCODE'}
-            </h3>
-            <p className="text-xs text-gray-600">
-              {mode === 'photo' ? 'Take a photo to analyze nutrition' : 'Scan packaged foods instantly'}
-            </p>
+            <h3 className="font-black italic text-[#1a1a1a]">SNAP & TRACK</h3>
+            <p className="text-xs text-gray-600">Choose your tracking method</p>
           </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          <input
+            id="food-photo-upload"
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            disabled={analyzing}
+            className="hidden"
+          />
+          <label htmlFor="food-photo-upload" className="block">
+            <Button
+              type="button"
+              disabled={analyzing}
+              variant="outline"
+              className="w-full h-20 flex flex-col items-center justify-center gap-1 border-2 border-purple-300 hover:bg-purple-100 cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('food-photo-upload').click();
+              }}
+            >
+              <Plus className="w-6 h-6 text-purple-600" />
+              <span className="text-xs font-bold text-purple-900">Upload</span>
+            </Button>
+          </label>
+
           <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setMode(mode === 'photo' ? 'barcode' : 'photo');
-              setError('');
-              setResults(null);
-            }}
-            className="text-xs"
+            onClick={startCamera}
+            disabled={analyzing}
+            variant="outline"
+            className="w-full h-20 flex flex-col items-center justify-center gap-1 border-2 border-purple-300 hover:bg-purple-100"
           >
-            {mode === 'photo' ? <Package className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
+            <Camera className="w-6 h-6 text-purple-600" />
+            <span className="text-xs font-bold text-purple-900">Camera</span>
+          </Button>
+
+          <Button
+            onClick={() => setMode('barcode')}
+            disabled={analyzing}
+            variant="outline"
+            className="w-full h-20 flex flex-col items-center justify-center gap-1 border-2 border-purple-300 hover:bg-purple-100"
+          >
+            <Scan className="w-6 h-6 text-purple-600" />
+            <span className="text-xs font-bold text-purple-900">Barcode</span>
           </Button>
         </div>
 
-        {mode === 'photo' ? (
-          <>
-            <input
-              id="food-photo-upload"
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              disabled={analyzing}
-              className="hidden"
-            />
-            <label htmlFor="food-photo-upload" className="block">
-              <Button
-                type="button"
-                disabled={analyzing}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('food-photo-upload').click();
-                }}
-              >
-                {analyzing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    ANALYZING...
-                  </>
-                ) : (
-                  <>
-                    <Camera className="w-5 h-5 mr-2" />
-                    UPLOAD PHOTO
-                  </>
-                )}
-              </Button>
-            </label>
-          </>
-        ) : (
-          <div className="space-y-3">
+        {mode === 'barcode' && (
+          <div className="space-y-3 pt-2">
             <Input
               placeholder="Enter barcode number..."
               value={barcode}
@@ -333,15 +329,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
               ) : (
                 'LOOK UP PRODUCT'
               )}
-            </Button>
-            <Button
-              onClick={startCamera}
-              variant="outline"
-              className="w-full border-purple-300"
-              disabled={analyzing}
-            >
-              <Scan className="w-4 h-4 mr-2" />
-              OPEN CAMERA
             </Button>
           </div>
         )}
