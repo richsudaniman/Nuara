@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MealPlanCard from "../components/nutrition/MealPlanCard";
 import CalorieTracker from "../components/nutrition/CalorieTracker";
 import FoodPhotoAnalyzer from "../components/nutrition/FoodPhotoAnalyzer";
+import NutritionAnalytics from "../components/nutrition/NutritionAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 import { UtensilsCrossed } from "lucide-react";
@@ -80,6 +81,11 @@ export default function Nutrition() {
           
           <FoodPhotoAnalyzer 
             onFoodAnalyzed={(data) => addLogMutation.mutate(data)}
+          />
+          
+          <NutritionAnalytics 
+            logs={calorieLogs}
+            dailyTarget={user?.daily_calorie_target || 2200}
           />
           
           <CalorieTracker
