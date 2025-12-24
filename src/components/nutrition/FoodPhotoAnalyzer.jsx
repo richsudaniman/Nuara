@@ -39,6 +39,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        videoRef.current.play();
       }
     } catch (err) {
       console.error("Camera access error:", err);
