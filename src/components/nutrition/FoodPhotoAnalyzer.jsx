@@ -366,7 +366,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
 
         {results && (
           <div className="p-4 bg-white border-2 border-purple-300 rounded space-y-2">
-            <h4 className="font-black italic text-purple-900">{results.name.toUpperCase()}</h4>
+            <h4 className="font-black italic text-purple-900">{results.name?.toUpperCase() || 'FOOD ITEM'}</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
                 <span className="text-gray-600">Calories:</span>
