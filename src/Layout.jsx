@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -154,15 +153,9 @@ export default function Layout({ children, currentPageName }) {
                         {isAdminView ? 'Admin Portal' : (isTrainerView ? 'Trainer Portal' : 'Your Daily Hub')}
                       </p>
                     </div>
-                  </div>
-                </Link>
-                
-                <Link to={createPageUrl("SwitchRole")}>
-                  <button className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded font-bold italic text-gray-700 transition-colors">
-                    Switch View
-                  </button>
-                </Link>
-              </div>
+                    </div>
+                    </Link>
+                    </div>
             </div>
           </header>
 

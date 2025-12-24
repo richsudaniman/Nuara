@@ -1,51 +1,51 @@
+import AdminAnalytics from './pages/AdminAnalytics';
+import AdminAnnouncements from './pages/AdminAnnouncements';
+import AdminClientAssignments from './pages/AdminClientAssignments';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminEducationalContent from './pages/AdminEducationalContent';
+import AdminInviteUser from './pages/AdminInviteUser';
+import AdminTrainers from './pages/AdminTrainers';
+import AdminUsers from './pages/AdminUsers';
+import AdminVideos from './pages/AdminVideos';
 import Home from './pages/Home';
-import Workout from './pages/Workout';
+import Learn from './pages/Learn';
+import Messages from './pages/Messages';
 import Nutrition from './pages/Nutrition';
 import Progress from './pages/Progress';
-import Learn from './pages/Learn';
-import TrainerClients from './pages/TrainerClients';
-import TrainerDashboard from './pages/TrainerDashboard';
-import TrainerClientDetail from './pages/TrainerClientDetail';
-import TrainerVideos from './pages/TrainerVideos';
 import SwitchRole from './pages/SwitchRole';
 import TrainerAssignClients from './pages/TrainerAssignClients';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminUsers from './pages/AdminUsers';
-import AdminTrainers from './pages/AdminTrainers';
-import AdminVideos from './pages/AdminVideos';
-import AdminAnalytics from './pages/AdminAnalytics';
-import AdminInviteUser from './pages/AdminInviteUser';
-import AdminClientAssignments from './pages/AdminClientAssignments';
-import AdminAnnouncements from './pages/AdminAnnouncements';
-import AdminEducationalContent from './pages/AdminEducationalContent';
-import Messages from './pages/Messages';
+import TrainerClientDetail from './pages/TrainerClientDetail';
+import TrainerClients from './pages/TrainerClients';
+import TrainerDashboard from './pages/TrainerDashboard';
 import TrainerMessages from './pages/TrainerMessages';
+import TrainerVideos from './pages/TrainerVideos';
+import Workout from './pages/Workout';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AdminAnalytics": AdminAnalytics,
+    "AdminAnnouncements": AdminAnnouncements,
+    "AdminClientAssignments": AdminClientAssignments,
+    "AdminDashboard": AdminDashboard,
+    "AdminEducationalContent": AdminEducationalContent,
+    "AdminInviteUser": AdminInviteUser,
+    "AdminTrainers": AdminTrainers,
+    "AdminUsers": AdminUsers,
+    "AdminVideos": AdminVideos,
     "Home": Home,
-    "Workout": Workout,
+    "Learn": Learn,
+    "Messages": Messages,
     "Nutrition": Nutrition,
     "Progress": Progress,
-    "Learn": Learn,
-    "TrainerClients": TrainerClients,
-    "TrainerDashboard": TrainerDashboard,
-    "TrainerClientDetail": TrainerClientDetail,
-    "TrainerVideos": TrainerVideos,
     "SwitchRole": SwitchRole,
     "TrainerAssignClients": TrainerAssignClients,
-    "AdminDashboard": AdminDashboard,
-    "AdminUsers": AdminUsers,
-    "AdminTrainers": AdminTrainers,
-    "AdminVideos": AdminVideos,
-    "AdminAnalytics": AdminAnalytics,
-    "AdminInviteUser": AdminInviteUser,
-    "AdminClientAssignments": AdminClientAssignments,
-    "AdminAnnouncements": AdminAnnouncements,
-    "AdminEducationalContent": AdminEducationalContent,
-    "Messages": Messages,
+    "TrainerClientDetail": TrainerClientDetail,
+    "TrainerClients": TrainerClients,
+    "TrainerDashboard": TrainerDashboard,
     "TrainerMessages": TrainerMessages,
+    "TrainerVideos": TrainerVideos,
+    "Workout": Workout,
 }
 
 export const pagesConfig = {
