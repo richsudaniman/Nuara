@@ -80,13 +80,6 @@ export default function TrainerDashboard() {
     <div className="p-6 space-y-5 relative">
       <div className="absolute top-20 right-5 w-16 h-16 border-2 border-gray-200 rotate-45 pointer-events-none"></div>
 
-      {/* Role Switcher Link */}
-      <Link to={createPageUrl("SwitchRole")}>
-        <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold italic shadow-lg">
-          🔄 Switch Role (Client / Trainer / Admin)
-        </Button>
-      </Link>
-
       <div>
         <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">TRAINER DASHBOARD</h1>
         <p className="text-gray-600 italic">Manage your clients and their progress</p>

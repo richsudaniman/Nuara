@@ -1,4 +1,3 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -129,13 +128,6 @@ export default function AdminDashboard() {
   return (
     <div className="p-6 space-y-5 relative">
       <div className="absolute top-20 right-5 w-16 h-16 border-2 border-[#0ea5e9]/20 rotate-12 pointer-events-none"></div>
-
-      {/* Role Switcher Link */}
-      <Link to={createPageUrl("SwitchRole")}>
-        <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold italic shadow-lg">
-          🔄 Switch Role (Client / Trainer / Admin)
-        </Button>
-      </Link>
 
       <div>
         <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">ADMIN DASHBOARD</h1>
