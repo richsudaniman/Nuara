@@ -4,7 +4,7 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     
     try {
-        console.log('=== FUNCTION VERSION: V3 - BASE64 - 2024-12-18-18:20 ===');
+        console.log('=== FUNCTION VERSION: V3 - FRESH DEPLOYMENT ===');
         
         const user = await base44.auth.me();
         if (!user) {
@@ -50,9 +50,8 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'No token received' }, { status: 500 });
         }
 
-        console.log('Calling recognition API with BASE64 in image.content...');
+        console.log('Calling Passio recognition API...');
 
-        // Correct Base64 format - using image.content
         const payload = { 
             image: {
                 content: imageBase64
@@ -67,8 +66,8 @@ Deno.serve(async (req) => {
 
         console.log('=== REQUEST DEBUG ===');
         console.log('URL:', recognizeUrl);
-        console.log('Payload structure: image.content with', imageBase64.length, 'bytes');
-        console.log('Token length:', token?.length);
+        console.log('Base64 length:', imageBase64.length);
+        console.log('Token length:', token.length);
         console.log('====================');
 
         const recognizeRes = await fetch(recognizeUrl, {
@@ -84,7 +83,6 @@ Deno.serve(async (req) => {
         if (!recognizeRes.ok) {
             const errText = await recognizeRes.text();
             console.error('Recognition error:', errText);
-            console.error('X-Request-Id for support:', requestId);
             return Response.json({ 
                 success: false, 
                 error: 'Recognition API failed',
@@ -95,7 +93,7 @@ Deno.serve(async (req) => {
         }
 
         const data = await recognizeRes.json();
-        console.log('Recognition data:', JSON.stringify(data));
+        console.log('Recognition SUCCESS! Data:', JSON.stringify(data));
         
         const results = data.results || data.candidates || [];
 
@@ -115,7 +113,7 @@ Deno.serve(async (req) => {
             confidence: r.confidence || 0.5
         }));
 
-        console.log('Success! Found foods:', foods);
+        console.log('Returning foods:', foods);
         return Response.json({ success: true, foods });
 
     } catch (err) {

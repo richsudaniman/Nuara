@@ -60,7 +60,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       const imageBase64 = await compressImage(file);
       
       // Analyze food
-      const response = await base44.functions.invoke('analyzeFoodV2', { image_base64: imageBase64 });
+      const response = await base44.functions.invoke('analyzeFoodV3', { image_base64: imageBase64 });
       
       if (response.data.success && response.data.foods?.length > 0) {
         const food = response.data.foods[0];
