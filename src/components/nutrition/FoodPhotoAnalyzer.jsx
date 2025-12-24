@@ -316,20 +316,30 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
               onChange={(e) => setBarcode(e.target.value)}
               className="text-center font-mono"
             />
-            <Button
-              onClick={() => handleBarcodeSearch()}
-              disabled={!barcode.trim() || analyzing}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black"
-            >
-              {analyzing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  SEARCHING...
-                </>
-              ) : (
-                'LOOK UP PRODUCT'
-              )}
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                onClick={() => handleBarcodeSearch()}
+                disabled={!barcode.trim() || analyzing}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-black"
+              >
+                {analyzing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  </>
+                ) : (
+                  'LOOK UP'
+                )}
+              </Button>
+              <Button
+                onClick={startCamera}
+                disabled={analyzing}
+                variant="outline"
+                className="border-2 border-purple-300 font-black"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                SCAN
+              </Button>
+            </div>
           </div>
         )}
 
