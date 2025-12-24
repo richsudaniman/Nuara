@@ -9,44 +9,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
   const [error, setError] = useState('');
   const [results, setResults] = useState(null);
 
-  const compressImage = (file) => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 512;
-          const MAX_HEIGHT = 512;
-          
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          resolve(canvas.toDataURL('image/jpeg', 0.5).split(',')[1]);
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -56,30 +18,41 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
     setResults(null);
 
     try {
-      // Compress and convert to base64
-      const imageBase64 = await compressImage(file);
+      // Upload file
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
       
-      // Analyze food
-      const response = await base44.functions.invoke('analyzeFoodV3', { image_base64: imageBase64 });
+      // Analyze with LLM
+      const nutritionSchema = {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Food name" },
+          calories: { type: "number", description: "Total calories" },
+          protein: { type: "number", description: "Protein in grams" },
+          carbs: { type: "number", description: "Carbs in grams" },
+          fats: { type: "number", description: "Fats in grams" }
+        },
+        required: ["name", "calories", "protein", "carbs", "fats"]
+      };
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: "Analyze this food image. Identify the food, estimate realistic portion sizes, and provide accurate nutritional information for calories, protein, carbs, and fats.",
+        file_urls: [file_url],
+        response_json_schema: nutritionSchema
+      });
+
+      setResults(result);
       
-      if (response.data.success && response.data.foods?.length > 0) {
-        const food = response.data.foods[0];
-        setResults(food);
-        
-        // Add to log
-        const today = new Date().toISOString().split('T')[0];
-        await onFoodAnalyzed({
-          date: today,
-          meal_name: food.name,
-          calories: food.calories,
-          protein: food.protein,
-          carbs: food.carbs,
-          fats: food.fats,
-          meal_type: 'Snack'
-        });
-      } else {
-        setError(response.data.error || 'No food detected');
-      }
+      // Add to log
+      const today = new Date().toISOString().split('T')[0];
+      await onFoodAnalyzed({
+        date: today,
+        meal_name: result.name,
+        calories: result.calories,
+        protein: result.protein,
+        carbs: result.carbs,
+        fats: result.fats,
+        meal_type: 'Snack'
+      });
     } catch (err) {
       setError(err.message || 'Analysis failed');
     } finally {
