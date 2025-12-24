@@ -239,7 +239,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           >
             <X className="w-5 h-5" />
           </Button>
-          <h1 className="text-white font-semibold">Scan Barcode</h1>
+          <h1 className="text-white font-semibold">Capture Food</h1>
           <div className="w-10"></div>
         </div>
 
@@ -250,14 +250,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           muted
           className="absolute inset-0 w-full h-full object-cover"
         />
-
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-64 h-32 border-4 border-white border-dashed rounded-lg">
-            <p className="text-white text-sm text-center px-4 mt-12">
-              Scan barcode or capture food
-            </p>
-          </div>
-        </div>
 
         {analyzing && (
           <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-4 z-30">
