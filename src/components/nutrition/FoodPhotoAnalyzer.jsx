@@ -74,8 +74,9 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           
           const { file_url } = await base44.integrations.Core.UploadFile({ file: blob });
           
-          const result = await base44.integrations.Core.InvokeLLM({
-            prompt: "Detect any barcodes in this image. Extract the barcode number if found.",
+          // Try to detect barcode first
+          const barcodeResult = await base44.integrations.Core.InvokeLLM({
+            prompt: "Detect any barcodes in this image. Extract the barcode number if found. If no barcode is visible, return false.",
             file_urls: [file_url],
             response_json_schema: {
               type: "object",
@@ -86,15 +87,46 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
             }
           });
 
-          if (result.barcode_detected && result.barcode_number) {
-            setBarcode(result.barcode_number);
+          if (barcodeResult.barcode_detected && barcodeResult.barcode_number) {
+            setBarcode(barcodeResult.barcode_number);
             stopCamera();
-            await handleBarcodeSearch(result.barcode_number);
+            await handleBarcodeSearch(barcodeResult.barcode_number);
           } else {
-            setError("No barcode detected. Try better lighting or enter manually.");
+            // No barcode, analyze as food instead
+            const nutritionSchema = {
+              type: "object",
+              properties: {
+                name: { type: "string", description: "Food name" },
+                calories: { type: "number", description: "Total calories" },
+                protein: { type: "number", description: "Protein in grams" },
+                carbs: { type: "number", description: "Carbs in grams" },
+                fats: { type: "number", description: "Fats in grams" }
+              },
+              required: ["name", "calories", "protein", "carbs", "fats"]
+            };
+
+            const foodResult = await base44.integrations.Core.InvokeLLM({
+              prompt: "Analyze this food image. Identify the food, estimate realistic portion sizes, and provide accurate nutritional information for calories, protein, carbs, and fats.",
+              file_urls: [file_url],
+              response_json_schema: nutritionSchema
+            });
+
+            setResults(foodResult);
+            stopCamera();
+            
+            const today = new Date().toISOString().split('T')[0];
+            await onFoodAnalyzed({
+              date: today,
+              meal_name: foodResult.name,
+              calories: foodResult.calories,
+              protein: foodResult.protein,
+              carbs: foodResult.carbs,
+              fats: foodResult.fats,
+              meal_type: 'Snack'
+            });
           }
         } catch (error) {
-          setError("Failed to scan barcode. Please try again.");
+          setError("Failed to analyze image. Please try again.");
         }
         setAnalyzing(false);
       }
@@ -222,7 +254,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-64 h-32 border-4 border-white border-dashed rounded-lg">
             <p className="text-white text-sm text-center px-4 mt-12">
-              Position barcode here
+              Scan barcode or capture food
             </p>
           </div>
         </div>
