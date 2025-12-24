@@ -233,47 +233,82 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
 
   if (isCameraOpen) {
     return (
-      <div className="fixed inset-0 z-50 bg-black">
-        <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={stopCamera}
-            className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-          >
-            <X className="w-5 h-5" />
-          </Button>
-          <h1 className="text-white font-semibold">Capture Food</h1>
-          <div className="w-10"></div>
-        </div>
+      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 overflow-hidden">
+        <CardContent className="p-0">
+          <div className="relative bg-black rounded-lg overflow-hidden" style={{ height: '400px' }}>
+            <div className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-3 bg-gradient-to-b from-black/60 to-transparent">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={stopCamera}
+                className="rounded-full bg-white/20 hover:bg-white/30 text-white h-9 w-9"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+              <span className="text-white text-sm font-bold">📸 Capture Food</span>
+              <div className="w-9"></div>
+            </div>
 
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="absolute inset-0 w-full h-full object-cover"
+            />
 
-        {analyzing && (
-          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-4 z-30">
-            <Loader2 className="w-12 h-12 animate-spin text-white" />
-            <p className="text-white text-lg font-semibold">Scanning...</p>
+            {/* Scanner Frame */}
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+              <div className="relative w-64 h-48">
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-purple-400"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-purple-400"></div>
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-purple-400"></div>
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-purple-400"></div>
+                
+                {/* Scanning line animation */}
+                {!analyzing && (
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className="w-full h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-scan"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {analyzing && (
+              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-3 z-30">
+                <Loader2 className="w-10 h-10 animate-spin text-purple-400" />
+                <p className="text-white text-sm font-semibold">Analyzing...</p>
+              </div>
+            )}
+
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+              <Button
+                onClick={captureAndScanBarcode}
+                disabled={analyzing}
+                className="bg-purple-600 hover:bg-purple-700 text-white rounded-full w-16 h-16 p-0 shadow-xl border-4 border-white"
+              >
+                <Camera className="w-6 h-6" />
+              </Button>
+              <p className="text-white text-xs font-semibold bg-black/40 px-3 py-1 rounded-full">
+                Tap to capture
+              </p>
+            </div>
+
+            <canvas ref={canvasRef} className="hidden" />
           </div>
-        )}
-
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-          <Button
-            onClick={captureAndScanBarcode}
-            disabled={analyzing}
-            className="bg-white text-black rounded-full w-20 h-20 p-0 shadow-lg"
-          >
-            <Scan className="w-8 h-8" />
-          </Button>
-        </div>
-
-        <canvas ref={canvasRef} className="hidden" />
-      </div>
+        </CardContent>
+        
+        <style>{`
+          @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(192px); }
+          }
+          .animate-scan {
+            animation: scan 2s ease-in-out infinite;
+          }
+        `}</style>
+      </Card>
     );
   }
 
