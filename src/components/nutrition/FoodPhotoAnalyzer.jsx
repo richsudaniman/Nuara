@@ -16,6 +16,15 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    if (stream && videoRef.current && isCameraOpen) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(err => {
+        console.error("Error playing video:", err);
+      });
+    }
+  }, [stream, isCameraOpen]);
+
+  useEffect(() => {
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -36,11 +45,6 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
       
       setStream(mediaStream);
       setIsCameraOpen(true);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.play();
-      }
     } catch (err) {
       console.error("Camera access error:", err);
       setError("Camera access denied. Please enable camera permissions.");
