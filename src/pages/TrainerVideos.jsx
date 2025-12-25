@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -116,7 +115,7 @@ export default function TrainerVideos() {
   const categories = ["chest", "back", "legs", "shoulders", "arms", "core", "cardio", "mobility", "tutorial", "education"];
 
   return (
-    <div className="p-6 space-y-5 relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
       <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
 
       <div className="flex items-center justify-between">

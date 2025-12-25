@@ -159,21 +159,21 @@ export default function TrainerDashboard() {
   const isLoading = assignmentsLoading || plansLoading || nutritionLoading || goalsLoading || clientsLoading || workoutLogsLoading || calorieLogsLoading;
 
   return (
-    <div className="p-6 space-y-5 relative">
-      <div className="absolute top-20 right-5 w-16 h-16 border-2 border-gray-200 rotate-45 pointer-events-none"></div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="absolute top-20 right-5 w-16 h-16 border-2 border-gray-200 rotate-45 pointer-events-none lg:hidden"></div>
 
-      <div>
+      <div className="max-w-md lg:max-w-none">
         <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">TRAINER DASHBOARD</h1>
         <p className="text-gray-600 italic">Manage your clients and their progress</p>
       </div>
 
       {/* Stats Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-28 rounded-lg bg-gray-100" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {stats.map((stat, index) => (
             <Link key={index} to={stat.link}>
               <Card className="bg-white border border-gray-200 hover:border-[#0ea5e9] transition-colors cursor-pointer">
@@ -194,7 +194,7 @@ export default function TrainerDashboard() {
       <Card className="bg-white border-2 border-gray-200">
         <CardContent className="p-5">
           <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">QUICK ACTIONS</h3>
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <Link to={createPageUrl("TrainerAssignClients")}>
               <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 hover:shadow-md transition-all cursor-pointer">
                 <div className="flex items-center gap-3">
@@ -224,12 +224,13 @@ export default function TrainerDashboard() {
         </CardContent>
       </Card>
 
-      {/* My Clients - Quick View */}
-      {clients.length > 0 && (
-        <Card className="bg-white border-2 border-gray-200">
-          <CardContent className="p-5">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-black italic text-[#1a1a1a] text-lg">MY CLIENTS</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* My Clients - Quick View */}
+        {clients.length > 0 && (
+          <Card className="bg-white border-2 border-gray-200">
+            <CardContent className="p-5">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-black italic text-[#1a1a1a] text-lg">MY CLIENTS</h3>
               <Link to={createPageUrl("TrainerClients")}>
                 <Button variant="ghost" className="text-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-[#0ea5e9]/10 font-bold italic text-xs">
                   View All
@@ -266,13 +267,13 @@ export default function TrainerDashboard() {
                   </Link>
                 );
               })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Recent Activity */}
-      <Card className="bg-white border-2 border-gray-200">
+        {/* Recent Activity */}
+        <Card className="bg-white border-2 border-gray-200">
         <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-[#0ea5e9]" />
@@ -341,6 +342,7 @@ export default function TrainerDashboard() {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Messages from './pages/Messages';
 import Nutrition from './pages/Nutrition';
+import Progress from './pages/Progress';
 import SwitchRole from './pages/SwitchRole';
 import TrainerAssignClients from './pages/TrainerAssignClients';
 import TrainerClientDetail from './pages/TrainerClientDetail';
@@ -19,7 +20,6 @@ import TrainerDashboard from './pages/TrainerDashboard';
 import TrainerMessages from './pages/TrainerMessages';
 import TrainerVideos from './pages/TrainerVideos';
 import Workout from './pages/Workout';
-import Progress from './pages/Progress';
 import __Layout from './Layout.jsx';
 
 
@@ -37,6 +37,7 @@ export const PAGES = {
     "Learn": Learn,
     "Messages": Messages,
     "Nutrition": Nutrition,
+    "Progress": Progress,
     "SwitchRole": SwitchRole,
     "TrainerAssignClients": TrainerAssignClients,
     "TrainerClientDetail": TrainerClientDetail,
@@ -45,7 +46,6 @@ export const PAGES = {
     "TrainerMessages": TrainerMessages,
     "TrainerVideos": TrainerVideos,
     "Workout": Workout,
-    "Progress": Progress,
 }
 
 export const pagesConfig = {
