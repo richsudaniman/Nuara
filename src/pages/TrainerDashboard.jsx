@@ -232,6 +232,64 @@ export default function TrainerDashboard() {
   const compliance = calculateCompliance();
   const clientsNeedingAttention = getClientsRequiringAttention();
 
+  // Calculate individual client compliance scores for leaderboard
+  const getClientComplianceScore = (clientId) => {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) return 0;
+
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Workout compliance (50%): 3+ workouts = 100%
+    const clientWorkouts = recentWorkoutLogs.filter(log => 
+      log.logged_by_client_id === clientId &&
+      new Date(log.completed_date) >= sevenDaysAgo
+    );
+    const uniqueWorkoutDays = new Set(clientWorkouts.map(w => w.completed_date)).size;
+    const workoutScore = Math.min((uniqueWorkoutDays / 3) * 100, 100);
+
+    // Nutrition compliance (30%): within 1000 cal of target = 100%
+    const calorieTarget = client.daily_calorie_target || 2200;
+    const clientCalorieLogs = recentCalorieLogs.filter(log =>
+      log.logged_by_client_id === clientId &&
+      new Date(log.date) >= sevenDaysAgo
+    );
+    
+    const dailyCalories = {};
+    clientCalorieLogs.forEach(log => {
+      if (!dailyCalories[log.date]) dailyCalories[log.date] = 0;
+      dailyCalories[log.date] += log.calories || 0;
+    });
+    
+    const avgCalories = Object.keys(dailyCalories).length > 0
+      ? Object.values(dailyCalories).reduce((sum, cal) => sum + cal, 0) / Object.keys(dailyCalories).length
+      : 0;
+    
+    let nutritionScore = 0;
+    if (avgCalories > 0) {
+      const deviation = Math.abs(avgCalories - calorieTarget);
+      nutritionScore = Math.max(0, 100 - (deviation / 1000) * 100);
+    }
+
+    // Logging consistency (20%): 7 days logged = 100%
+    const totalLogsThisWeek = clientWorkouts.length + clientCalorieLogs.length;
+    const loggingScore = Math.min((totalLogsThisWeek / 7) * 100, 100);
+
+    return Math.round((workoutScore * 0.5) + (nutritionScore * 0.3) + (loggingScore * 0.2));
+  };
+
+  // Build leaderboard
+  const clientLeaderboard = clients.map(client => ({
+    client,
+    score: getClientComplianceScore(client.id)
+  })).sort((a, b) => b.score - a.score);
+
+  // Overall trainer score (average of all clients)
+  const overallTrainerScore = clientLeaderboard.length > 0
+    ? Math.round(clientLeaderboard.reduce((sum, item) => sum + item.score, 0) / clientLeaderboard.length)
+    : 0;
+
   // Combine and sort workout completions and meal logs
   const getRecentActivity = () => {
     const clientIds = assignments.map(a => a.client_id);
@@ -347,41 +405,83 @@ export default function TrainerDashboard() {
         </CardContent>
       </Card>
 
-      {/* Overall Compliance */}
+      {/* Overall Compliance Leaderboard */}
       {!isLoading && (
         <Card className="bg-white border-2 border-gray-200">
           <CardContent className="p-5">
-            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">OVERALL COMPLIANCE</h3>
+            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">COMPLIANCE LEADERBOARD</h3>
             {assignments.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={[
-                  { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
-                  { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
-                  { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="metric" stroke="#6b7280" style={{ fontSize: '14px', fontWeight: 'bold' }} />
-                  <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} domain={[0, 100]} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#fff', 
-                      border: '2px solid #0ea5e9',
-                      borderRadius: '8px',
-                      fontWeight: 'bold'
-                    }}
-                    formatter={(value) => `${value}%`}
-                  />
-                  <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                    {[
-                      { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
-                      { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
-                      { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
-                    ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <>
+                {/* Overall Trainer Score */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-[#0ea5e9]/10 to-blue-50 rounded-lg border-2 border-[#0ea5e9]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-gray-600 uppercase">Your Overall Score</p>
+                      <p className="text-xs text-gray-500 mt-1">Average of all {clientLeaderboard.length} clients</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-black ${
+                        overallTrainerScore >= 80 ? 'bg-green-500 text-white' :
+                        overallTrainerScore >= 50 ? 'bg-yellow-500 text-white' :
+                        'bg-red-500 text-white'
+                      }`}>
+                        {overallTrainerScore}
+                      </div>
+                      <TrendingUp className={`w-8 h-8 ${
+                        overallTrainerScore >= 80 ? 'text-green-500' :
+                        overallTrainerScore >= 50 ? 'text-yellow-500' :
+                        'text-red-500'
+                      }`} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Client Leaderboard */}
+                <div className="space-y-2">
+                  {clientLeaderboard.map((item, index) => (
+                    <Link key={item.client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${item.client.id}`}>
+                      <div className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                        item.score >= 80 ? 'bg-green-50 border-green-200 hover:border-green-400' :
+                        item.score >= 50 ? 'bg-yellow-50 border-yellow-200 hover:border-yellow-400' :
+                        'bg-red-50 border-red-200 hover:border-red-400'
+                      }`}>
+                        {/* Rank */}
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex-shrink-0">
+                          <span className="text-sm font-black text-gray-700">#{index + 1}</span>
+                        </div>
+
+                        {/* Client Avatar */}
+                        <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
+                          {item.client.profile_photo_url ? (
+                            <img src={item.client.profile_photo_url} alt={item.client.full_name} className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <span className="text-[#0ea5e9] font-black italic text-lg">
+                              {item.client.full_name?.charAt(0) || 'C'}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Client Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-[#1a1a1a] text-sm truncate">{item.client.full_name || 'Client'}</p>
+                          <p className="text-xs text-gray-500 truncate">{item.client.email}</p>
+                        </div>
+
+                        {/* Compliance Score */}
+                        <div className={`px-4 py-2 rounded-full font-black text-lg ${
+                          item.score >= 80 ? 'bg-green-500 text-white' :
+                          item.score >= 50 ? 'bg-yellow-500 text-white' :
+                          'bg-red-500 text-white'
+                        }`}>
+                          {item.score}%
+                        </div>
+
+                        <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="text-center py-8">
                 <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
