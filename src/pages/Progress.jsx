@@ -158,75 +158,90 @@ export default function Progress() {
     }
   };
 
+  const { data: workoutPlans } = useQuery({
+    queryKey: ['workoutPlans', user?.id],
+    queryFn: () => base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }),
+    initialData: [],
+    enabled: !!user?.id,
+    staleTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
   // Calculate dashboard metrics
   const calculateDashboardMetrics = () => {
     const today = new Date();
-    const thirtyDaysAgo = subDays(today, 30);
     const sevenDaysAgo = subDays(today, 7);
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
 
-    // Workout consistency (last 30 days)
-    const recentWorkouts = workoutLogs.filter(log => 
-      new Date(log.completed_date) >= thirtyDaysAgo
-    );
-    const uniqueWorkoutDays = new Set(recentWorkouts.map(log => log.completed_date)).size;
-    const workoutConsistency = Math.round((uniqueWorkoutDays / 30) * 100);
+    // 1. Weekly Workout Adherence
+    const assignedThisWeek = workoutPlans.filter(plan => {
+      const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(plan.day_of_week);
+      const planDate = new Date(weekStart);
+      planDate.setDate(planDate.getDate() + dayIndex);
+      return planDate >= weekStart && planDate <= today;
+    }).length;
 
-    // Current streak
-    let currentStreak = 0;
-    const sortedDates = [...new Set(workoutLogs.map(log => log.completed_date))].sort((a, b) => 
-      new Date(b) - new Date(a)
-    );
-    
-    let checkDate = new Date();
-    for (const dateStr of sortedDates) {
-      const logDate = new Date(dateStr);
-      const daysDiff = Math.floor((checkDate - logDate) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff <= 1) {
-        currentStreak++;
-        checkDate = logDate;
-      } else {
-        break;
-      }
-    }
+    const completedThisWeek = new Set(
+      workoutLogs
+        .filter(log => new Date(log.completed_date) >= weekStart && new Date(log.completed_date) <= today)
+        .map(log => log.completed_date)
+    ).size;
 
-    // Nutrition adherence (days logged in last 7 days)
-    const recentCalorieLogs = calorieLogs.filter(log => 
-      new Date(log.date) >= sevenDaysAgo
-    );
-    const uniqueCalorieDays = new Set(recentCalorieLogs.map(log => log.date)).size;
-    const nutritionAdherence = Math.round((uniqueCalorieDays / 7) * 100);
-
-    // Weight progress
-    const weightMetrics = metrics
-      .filter(m => m.metric_type === 'weight')
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    const weightChange = weightMetrics.length >= 2 
-      ? (weightMetrics[weightMetrics.length - 1].value - weightMetrics[0].value).toFixed(1)
+    const workoutAdherence = assignedThisWeek > 0 
+      ? Math.min(Math.round((completedThisWeek / assignedThisWeek) * 100), 100)
       : 0;
 
-    // Strength progress (total of max lifts)
-    const strengthMetrics = metrics.filter(m => 
-      ['max_bench', 'max_squat', 'max_deadlift'].includes(m.metric_type)
+    // 2. Total Volume (This Week)
+    const thisWeekLogs = workoutLogs.filter(log => 
+      new Date(log.completed_date) >= weekStart && new Date(log.completed_date) <= today
     );
+    const thisWeekVolume = thisWeekLogs.reduce((sum, log) => {
+      const weight = log.weight_used || 0;
+      const reps = log.reps_completed || 0;
+      const sets = log.sets_completed || 1;
+      return sum + (weight * reps * sets);
+    }, 0);
+
+    // Last week volume for comparison
+    const lastWeekStart = subDays(weekStart, 7);
+    const lastWeekLogs = workoutLogs.filter(log => 
+      new Date(log.completed_date) >= lastWeekStart && new Date(log.completed_date) < weekStart
+    );
+    const lastWeekVolume = lastWeekLogs.reduce((sum, log) => {
+      const weight = log.weight_used || 0;
+      const reps = log.reps_completed || 0;
+      const sets = log.sets_completed || 1;
+      return sum + (weight * reps * sets);
+    }, 0);
+
+    const volumeChange = lastWeekVolume > 0 
+      ? Math.round(((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100)
+      : 0;
+
+    // 3. 7-Day Nutrition Consistency
+    const calorieTarget = user?.daily_calorie_target || 2200;
+    const buffer = Math.round(calorieTarget * 0.1); // 10% buffer
     
-    const latestStrength = {};
-    strengthMetrics.forEach(m => {
-      if (!latestStrength[m.metric_type] || new Date(m.date) > new Date(latestStrength[m.metric_type].date)) {
-        latestStrength[m.metric_type] = m;
-      }
-    });
-    
-    const totalStrength = Object.values(latestStrength).reduce((sum, m) => sum + m.value, 0);
+    const last7Days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = subDays(today, i).toISOString().split('T')[0];
+      const dayLogs = calorieLogs.filter(log => log.date === date);
+      const dayCalories = dayLogs.reduce((sum, log) => sum + (log.calories || 0), 0);
+      const onTarget = dayCalories >= (calorieTarget - buffer) && dayCalories <= (calorieTarget + buffer);
+      last7Days.push({ date, onTarget });
+    }
+
+    const daysOnTarget = last7Days.filter(d => d.onTarget).length;
+    const nutritionConsistency = Math.round((daysOnTarget / 7) * 100);
 
     return {
-      workoutConsistency,
-      currentStreak,
-      nutritionAdherence,
-      weightChange,
-      totalStrength,
-      totalWorkouts: recentWorkouts.length,
+      workoutAdherence,
+      assignedThisWeek,
+      completedThisWeek,
+      thisWeekVolume: Math.round(thisWeekVolume),
+      volumeChange,
+      nutritionConsistency,
+      daysOnTarget,
     };
   };
 
@@ -277,95 +292,51 @@ export default function Progress() {
   const weeklyWorkoutData = getWeeklyWorkoutData();
 
   return (
-    <div className="p-6 space-y-5 relative">
-      <div className="absolute top-10 right-10 w-20 h-20 border-2 border-[#0ea5e9]/20 rotate-12 pointer-events-none"></div>
-
+    <div className="p-5 space-y-5 relative">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
+        <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
           <TrendingUp className="w-5 h-5 text-white" />
         </div>
-        <h1 className="text-3xl font-black italic text-[#1a1a1a]">YOUR PROGRESS</h1>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">Your Progress</h1>
       </div>
 
       {/* Dashboard Overview */}
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-28 rounded-lg bg-gray-100" />)}
+          {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-lg bg-gray-100" />)}
         </div>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-orange-500 to-red-500 border-none">
-              <CardContent className="p-4">
-                <Flame className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Current Streak</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.currentStreak} days</p>
+            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none rounded-3xl">
+              <CardContent className="p-5">
+                <Target className="w-8 h-8 text-white/80 mb-2" />
+                <p className="text-xs text-white/80 uppercase font-semibold">Workout Adherence</p>
+                <p className="text-6xl font-bold text-white mt-2">{dashboardMetrics.workoutAdherence}%</p>
+                <p className="text-xs text-white/70 mt-2">{dashboardMetrics.completedThisWeek}/{dashboardMetrics.assignedThisWeek} workouts this week</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none">
-              <CardContent className="p-4">
+            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none rounded-3xl">
+              <CardContent className="p-5">
                 <Dumbbell className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Workout Rate</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.workoutConsistency}%</p>
-                <p className="text-xs text-white/70 mt-1">{dashboardMetrics.totalWorkouts} workouts (30d)</p>
+                <p className="text-xs text-white/80 uppercase font-semibold">Total Volume</p>
+                <p className="text-6xl font-bold text-white mt-2">{(dashboardMetrics.thisWeekVolume / 1000).toFixed(1)}k</p>
+                <p className="text-xs text-white/70 mt-2">
+                  {dashboardMetrics.volumeChange > 0 ? '+' : ''}{dashboardMetrics.volumeChange}% vs last week
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none">
-              <CardContent className="p-4">
+            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none rounded-3xl col-span-2">
+              <CardContent className="p-5">
                 <UtensilsCrossed className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Nutrition</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.nutritionAdherence}%</p>
-                <p className="text-xs text-white/70 mt-1">Logged this week</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none">
-              <CardContent className="p-4">
-                <Award className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Strength Total</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.totalStrength} lbs</p>
-                <p className="text-xs text-white/70 mt-1">Combined max lifts</p>
+                <p className="text-xs text-white/80 uppercase font-semibold">Nutrition Consistency</p>
+                <p className="text-6xl font-bold text-white mt-2">{dashboardMetrics.nutritionConsistency}%</p>
+                <p className="text-xs text-white/70 mt-2">{dashboardMetrics.daysOnTarget}/7 days on target</p>
               </CardContent>
             </Card>
           </div>
-
-          {/* Weight Change Card */}
-          {Math.abs(dashboardMetrics.weightChange) > 0 && (
-            <Card className={`border-2 ${
-              dashboardMetrics.weightChange < 0 
-                ? 'bg-green-50 border-green-500' 
-                : 'bg-blue-50 border-blue-500'
-            }`}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {dashboardMetrics.weightChange < 0 ? (
-                      <TrendingDown className="w-10 h-10 text-green-600" />
-                    ) : (
-                      <TrendingUp className="w-10 h-10 text-blue-600" />
-                    )}
-                    <div>
-                      <p className="text-sm font-bold text-gray-600 uppercase">Weight Change</p>
-                      <p className="text-2xl font-black italic text-[#1a1a1a]">
-                        {dashboardMetrics.weightChange > 0 ? '+' : ''}{dashboardMetrics.weightChange} lbs
-                      </p>
-                    </div>
-                  </div>
-                  <div className={`px-4 py-2 rounded-full ${
-                    dashboardMetrics.weightChange < 0 
-                      ? 'bg-green-500' 
-                      : 'bg-blue-500'
-                  }`}>
-                    <p className="text-white font-black italic">
-                      {dashboardMetrics.weightChange < 0 ? 'Down' : 'Up'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Weekly Workout Chart */}
           {weeklyWorkoutData.some(d => d.workouts > 0) && (
