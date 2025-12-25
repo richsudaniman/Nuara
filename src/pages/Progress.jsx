@@ -307,33 +307,33 @@ export default function Progress() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none rounded-3xl">
-              <CardContent className="p-5">
-                <Target className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-semibold">Workout Adherence</p>
-                <p className="text-6xl font-bold text-white mt-2">{dashboardMetrics.workoutAdherence}%</p>
-                <p className="text-xs text-white/70 mt-2">{dashboardMetrics.completedThisWeek}/{dashboardMetrics.assignedThisWeek} workouts this week</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none rounded-2xl">
+              <CardContent className="p-3">
+                <Target className="w-6 h-6 text-white/80 mb-1" />
+                <p className="text-[10px] text-white/80 uppercase font-semibold">Workout Adherence</p>
+                <p className="text-5xl font-bold text-white mt-1">{dashboardMetrics.workoutAdherence}%</p>
+                <p className="text-[10px] text-white/70 mt-1">{dashboardMetrics.completedThisWeek}/{dashboardMetrics.assignedThisWeek} workouts</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none rounded-3xl">
-              <CardContent className="p-5">
-                <Dumbbell className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-semibold">Total Volume</p>
-                <p className="text-6xl font-bold text-white mt-2">{(dashboardMetrics.thisWeekVolume / 1000).toFixed(1)}k</p>
-                <p className="text-xs text-white/70 mt-2">
+            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none rounded-2xl">
+              <CardContent className="p-3">
+                <Dumbbell className="w-6 h-6 text-white/80 mb-1" />
+                <p className="text-[10px] text-white/80 uppercase font-semibold">Total Volume</p>
+                <p className="text-5xl font-bold text-white mt-1">{(dashboardMetrics.thisWeekVolume / 1000).toFixed(1)}k</p>
+                <p className="text-[10px] text-white/70 mt-1">
                   {dashboardMetrics.volumeChange > 0 ? '+' : ''}{dashboardMetrics.volumeChange}% vs last week
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none rounded-3xl col-span-2">
-              <CardContent className="p-5">
-                <UtensilsCrossed className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-semibold">Nutrition Consistency</p>
-                <p className="text-6xl font-bold text-white mt-2">{dashboardMetrics.nutritionConsistency}%</p>
-                <p className="text-xs text-white/70 mt-2">{dashboardMetrics.daysOnTarget}/7 days on target</p>
+            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none rounded-2xl col-span-2">
+              <CardContent className="p-3">
+                <UtensilsCrossed className="w-6 h-6 text-white/80 mb-1" />
+                <p className="text-[10px] text-white/80 uppercase font-semibold">Nutrition Consistency</p>
+                <p className="text-5xl font-bold text-white mt-1">{dashboardMetrics.nutritionConsistency}%</p>
+                <p className="text-[10px] text-white/70 mt-1">{dashboardMetrics.daysOnTarget}/7 days on target</p>
               </CardContent>
             </Card>
           </div>
