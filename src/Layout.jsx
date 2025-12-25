@@ -41,23 +41,25 @@ export default function Layout({ children, currentPageName }) {
     refetchInterval: 60 * 1000, // Refresh every minute
   });
 
-  // Determine view mode - PRIORITIZE localStorage for testing
+  // Determine view mode based on user role/type
   const getViewMode = () => {
-    if (typeof window === 'undefined') return 'client';
+    if (!user) return 'client';
     
-    // Always check localStorage first (for Switch Role testing)
-    const storedView = localStorage.getItem('viewMode');
-    if (storedView && ['client', 'trainer', 'admin'].includes(storedView)) {
-      return storedView;
-    }
-    
-    // Fallback to actual user role/type
-    if (user?.role === 'admin') return 'admin';
-    if (user?.role === 'trainer' || user?.user_type === 'trainer') return 'trainer';
+    // Check actual user role/type
+    if (user.role === 'admin') return 'admin';
+    if (user.role === 'trainer' || user.user_type === 'trainer') return 'trainer';
     return 'client';
   };
 
   const viewMode = getViewMode();
+  
+  // Debug log to see what's happening
+  React.useEffect(() => {
+    console.log('Current user:', user);
+    console.log('View mode:', viewMode);
+    console.log('User role:', user?.role);
+    console.log('User type:', user?.user_type);
+  }, [user, viewMode]);
   const isTrainerView = viewMode === 'trainer';
   const isAdminView = viewMode === 'admin';
   const isClientView = viewMode === 'client';
