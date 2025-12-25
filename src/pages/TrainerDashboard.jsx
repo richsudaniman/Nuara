@@ -193,7 +193,7 @@ export default function TrainerDashboard() {
               {clients.slice(0, 5).map(client => {
                 const weeklyWorkouts = getClientWeeklyWorkouts(client.id);
                 return (
-                  <Link key={client.id} to={createPageUrl(`TrainerClientDetail?clientId=${client.id}`)}>
+                  <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
                     <div className="p-3 bg-gray-50 rounded border border-gray-200 hover:border-[#0ea5e9] hover:shadow-sm transition-all cursor-pointer">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
