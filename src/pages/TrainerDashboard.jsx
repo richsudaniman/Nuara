@@ -109,6 +109,128 @@ export default function TrainerDashboard() {
     return workoutDates.size;
   };
 
+  // Calculate compliance metrics
+  const calculateCompliance = () => {
+    const clientIds = assignments.map(a => a.client_id);
+    if (clientIds.length === 0) return { workout: 0, nutrition: 0, tracking: 0 };
+
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    let workoutCompliant = 0;
+    let nutritionCompliant = 0;
+    let trackingCompliant = 0;
+
+    clientIds.forEach(clientId => {
+      const client = clients.find(c => c.id === clientId);
+      
+      // Workout compliance: has logged at least 3 workouts in last 7 days
+      const clientWorkouts = recentWorkoutLogs.filter(log => 
+        log.logged_by_client_id === clientId &&
+        new Date(log.completed_date) >= sevenDaysAgo
+      );
+      const uniqueWorkoutDays = new Set(clientWorkouts.map(w => w.completed_date)).size;
+      if (uniqueWorkoutDays >= 3) workoutCompliant++;
+
+      // Nutrition compliance: average calories within 1000 of target
+      const calorieTarget = client?.daily_calorie_target || 2200;
+      const clientCalorieLogs = recentCalorieLogs.filter(log =>
+        log.logged_by_client_id === clientId &&
+        new Date(log.date) >= sevenDaysAgo
+      );
+      
+      const dailyCalories = {};
+      clientCalorieLogs.forEach(log => {
+        if (!dailyCalories[log.date]) dailyCalories[log.date] = 0;
+        dailyCalories[log.date] += log.calories || 0;
+      });
+      
+      const avgCalories = Object.keys(dailyCalories).length > 0
+        ? Object.values(dailyCalories).reduce((sum, cal) => sum + cal, 0) / Object.keys(dailyCalories).length
+        : 0;
+      
+      if (avgCalories > 0 && Math.abs(avgCalories - calorieTarget) <= 1000) {
+        nutritionCompliant++;
+      }
+
+      // Tracking compliance: has logged something in last 7 days
+      const hasRecentActivity = clientWorkouts.length > 0 || clientCalorieLogs.length > 0;
+      if (hasRecentActivity) trackingCompliant++;
+    });
+
+    return {
+      workout: clientIds.length > 0 ? Math.round((workoutCompliant / clientIds.length) * 100) : 0,
+      nutrition: clientIds.length > 0 ? Math.round((nutritionCompliant / clientIds.length) * 100) : 0,
+      tracking: clientIds.length > 0 ? Math.round((trackingCompliant / clientIds.length) * 100) : 0,
+    };
+  };
+
+  // Identify clients requiring attention
+  const getClientsRequiringAttention = () => {
+    const clientIds = assignments.map(a => a.client_id);
+    const attention = [];
+
+    clientIds.forEach(clientId => {
+      const client = clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      const reasons = [];
+      const today = new Date();
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+      // Check for missed workouts (no workout logs in last 7 days but has assigned plans)
+      const clientPlans = allWorkoutPlans.filter(p => p.assigned_to_client_id === clientId);
+      const recentWorkouts = recentWorkoutLogs.filter(log =>
+        log.logged_by_client_id === clientId &&
+        new Date(log.completed_date) >= sevenDaysAgo
+      );
+      
+      if (clientPlans.length > 0 && recentWorkouts.length === 0) {
+        reasons.push('No workouts logged in 7+ days');
+      }
+
+      // Check calorie adherence
+      const calorieTarget = client.daily_calorie_target || 2200;
+      const clientCalorieLogs = recentCalorieLogs.filter(log =>
+        log.logged_by_client_id === clientId &&
+        new Date(log.date) >= sevenDaysAgo
+      );
+
+      const dailyCalories = {};
+      clientCalorieLogs.forEach(log => {
+        if (!dailyCalories[log.date]) dailyCalories[log.date] = 0;
+        dailyCalories[log.date] += log.calories || 0;
+      });
+
+      if (Object.keys(dailyCalories).length >= 7) {
+        const avgCalories = Object.values(dailyCalories).reduce((sum, cal) => sum + cal, 0) / Object.keys(dailyCalories).length;
+        if (Math.abs(avgCalories - calorieTarget) > 1000) {
+          const diff = avgCalories - calorieTarget;
+          reasons.push(`${diff > 0 ? 'Over' : 'Under'} by ${Math.abs(Math.round(diff))} cal/day`);
+        }
+      }
+
+      // Check for no logging activity
+      if (recentWorkouts.length === 0 && clientCalorieLogs.length === 0) {
+        reasons.push('Not tracking at all');
+      }
+
+      if (reasons.length > 0) {
+        attention.push({
+          client,
+          reasons
+        });
+      }
+    });
+
+    return attention;
+  };
+
+  const compliance = calculateCompliance();
+  const clientsNeedingAttention = getClientsRequiringAttention();
+
   // Combine and sort workout completions and meal logs
   const getRecentActivity = () => {
     const clientIds = assignments.map(a => a.client_id);
@@ -188,6 +310,89 @@ export default function TrainerDashboard() {
             </Link>
           ))}
         </div>
+      )}
+
+      {/* Overall Compliance */}
+      {!isLoading && assignments.length > 0 && (
+        <Card className="bg-white border-2 border-gray-200">
+          <CardContent className="p-5">
+            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">OVERALL COMPLIANCE</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold text-gray-600">Workout Adherence</span>
+                  <span className="text-lg font-black italic text-purple-600">{compliance.workout}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-purple-600 transition-all" style={{ width: `${compliance.workout}%` }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold text-gray-600">Nutrition Adherence</span>
+                  <span className="text-lg font-black italic text-green-600">{compliance.nutrition}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-green-600 transition-all" style={{ width: `${compliance.nutrition}%` }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold text-gray-600">Active Tracking</span>
+                  <span className="text-lg font-black italic text-[#0ea5e9]">{compliance.tracking}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#0ea5e9] transition-all" style={{ width: `${compliance.tracking}%` }}></div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Clients Requiring Attention */}
+      {!isLoading && clientsNeedingAttention.length > 0 && (
+        <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <h3 className="font-black italic text-[#1a1a1a] text-lg">CLIENTS REQUIRING ATTENTION</h3>
+              <span className="ml-auto bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                {clientsNeedingAttention.length}
+              </span>
+            </div>
+            <div className="space-y-2">
+              {clientsNeedingAttention.map(({ client, reasons }) => (
+                <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
+                  <div className="p-3 bg-white rounded-lg border-l-4 border-red-500 hover:shadow-md transition-all cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                        {client.profile_photo_url ? (
+                          <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <span className="text-red-600 font-black italic text-sm">
+                            {client.full_name?.charAt(0) || 'C'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[#1a1a1a] text-sm">{client.full_name || 'Client'}</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {reasons.map((reason, idx) => (
+                            <span key={idx} className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">
+                              {reason}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-red-400 flex-shrink-0" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Quick Actions */}
