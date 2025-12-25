@@ -2,7 +2,7 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Dumbbell, UtensilsCrossed, TrendingUp, Calendar, Award, MessageCircle, UserPlus, ChevronRight, Flame, Activity } from "lucide-react";
+import { Users, Dumbbell, UtensilsCrossed, TrendingUp, Calendar, Award, MessageCircle, UserPlus, ChevronRight, Flame, Activity, BarChart as BarChartIcon } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
@@ -407,89 +407,167 @@ export default function TrainerDashboard() {
 
       {/* Overall Compliance Leaderboard */}
       {!isLoading && (
-        <Card className="bg-white border-2 border-gray-200">
-          <CardContent className="p-5">
-            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">COMPLIANCE LEADERBOARD</h3>
-            {assignments.length > 0 ? (
-              <>
-                {/* Overall Trainer Score */}
-                <div className="mb-6 p-4 bg-gradient-to-r from-[#0ea5e9]/10 to-blue-50 rounded-lg border-2 border-[#0ea5e9]">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-bold text-gray-600 uppercase">Your Overall Score</p>
-                      <p className="text-xs text-gray-500 mt-1">Average of all {clientLeaderboard.length} clients</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-black ${
-                        overallTrainerScore >= 80 ? 'bg-green-500 text-white' :
-                        overallTrainerScore >= 50 ? 'bg-yellow-500 text-white' :
-                        'bg-red-500 text-white'
-                      }`}>
-                        {overallTrainerScore}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Leaderboard */}
+          <Card className="bg-white border-2 border-gray-200">
+            <CardContent className="p-5">
+              <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">COMPLIANCE LEADERBOARD</h3>
+              {assignments.length > 0 ? (
+                <>
+                  {/* Overall Trainer Score */}
+                  <div className="mb-6 p-4 bg-gradient-to-r from-[#0ea5e9]/10 to-blue-50 rounded-lg border-2 border-[#0ea5e9]">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-bold text-gray-600 uppercase">Your Overall Score</p>
+                        <p className="text-xs text-gray-500 mt-1">Average of all {clientLeaderboard.length} clients</p>
                       </div>
-                      <TrendingUp className={`w-8 h-8 ${
-                        overallTrainerScore >= 80 ? 'text-green-500' :
-                        overallTrainerScore >= 50 ? 'text-yellow-500' :
-                        'text-red-500'
-                      }`} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Client Leaderboard */}
-                <div className="space-y-2">
-                  {clientLeaderboard.map((item, index) => (
-                    <Link key={item.client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${item.client.id}`}>
-                      <div className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
-                        item.score >= 80 ? 'bg-green-50 border-green-200 hover:border-green-400' :
-                        item.score >= 50 ? 'bg-yellow-50 border-yellow-200 hover:border-yellow-400' :
-                        'bg-red-50 border-red-200 hover:border-red-400'
-                      }`}>
-                        {/* Rank */}
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex-shrink-0">
-                          <span className="text-sm font-black text-gray-700">#{index + 1}</span>
-                        </div>
-
-                        {/* Client Avatar */}
-                        <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
-                          {item.client.profile_photo_url ? (
-                            <img src={item.client.profile_photo_url} alt={item.client.full_name} className="w-full h-full rounded-full object-cover" />
-                          ) : (
-                            <span className="text-[#0ea5e9] font-black italic text-lg">
-                              {item.client.full_name?.charAt(0) || 'C'}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Client Info */}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-[#1a1a1a] text-sm truncate">{item.client.full_name || 'Client'}</p>
-                          <p className="text-xs text-gray-500 truncate">{item.client.email}</p>
-                        </div>
-
-                        {/* Compliance Score */}
-                        <div className={`px-4 py-2 rounded-full font-black text-lg ${
-                          item.score >= 80 ? 'bg-green-500 text-white' :
-                          item.score >= 50 ? 'bg-yellow-500 text-white' :
+                      <div className="flex items-center gap-3">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-black ${
+                          overallTrainerScore >= 80 ? 'bg-green-500 text-white' :
+                          overallTrainerScore >= 50 ? 'bg-yellow-500 text-white' :
                           'bg-red-500 text-white'
                         }`}>
-                          {item.score}%
+                          {overallTrainerScore}
                         </div>
-
-                        <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                        <TrendingUp className={`w-8 h-8 ${
+                          overallTrainerScore >= 80 ? 'text-green-500' :
+                          overallTrainerScore >= 50 ? 'text-yellow-500' :
+                          'text-red-500'
+                        }`} />
                       </div>
-                    </Link>
-                  ))}
+                    </div>
+                  </div>
+
+                  {/* Client Leaderboard */}
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {clientLeaderboard.map((item, index) => (
+                      <Link key={item.client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${item.client.id}`}>
+                        <div className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                          item.score >= 80 ? 'bg-green-50 border-green-200 hover:border-green-400' :
+                          item.score >= 50 ? 'bg-yellow-50 border-yellow-200 hover:border-yellow-400' :
+                          'bg-red-50 border-red-200 hover:border-red-400'
+                        }`}>
+                          {/* Rank */}
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex-shrink-0">
+                            <span className="text-sm font-black text-gray-700">#{index + 1}</span>
+                          </div>
+
+                          {/* Client Avatar */}
+                          <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
+                            {item.client.profile_photo_url ? (
+                              <img src={item.client.profile_photo_url} alt={item.client.full_name} className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                              <span className="text-[#0ea5e9] font-black italic text-lg">
+                                {item.client.full_name?.charAt(0) || 'C'}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Client Info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-[#1a1a1a] text-sm truncate">{item.client.full_name || 'Client'}</p>
+                            <p className="text-xs text-gray-500 truncate">{item.client.email}</p>
+                          </div>
+
+                          {/* Compliance Score */}
+                          <div className={`px-4 py-2 rounded-full font-black text-lg ${
+                            item.score >= 80 ? 'bg-green-500 text-white' :
+                            item.score >= 50 ? 'bg-yellow-500 text-white' :
+                            'bg-red-500 text-white'
+                          }`}>
+                            {item.score}%
+                          </div>
+
+                          <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 italic">Assign clients to track compliance metrics</p>
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 italic">Assign clients to track compliance metrics</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Analytics Chart */}
+          <Card className="bg-white border-2 border-gray-200">
+            <CardContent className="p-5">
+              <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">COMPLIANCE ANALYTICS</h3>
+              {assignments.length > 0 ? (
+                <>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={[
+                      { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
+                      { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
+                      { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis dataKey="metric" stroke="#6b7280" style={{ fontSize: '14px', fontWeight: 'bold' }} />
+                      <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} domain={[0, 100]} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#fff', 
+                          border: '2px solid #0ea5e9',
+                          borderRadius: '8px',
+                          fontWeight: 'bold'
+                        }}
+                        formatter={(value) => `${value}%`}
+                      />
+                      <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                        {[
+                          { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
+                          { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
+                          { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+
+                  {/* Breakdown Stats */}
+                  <div className="mt-6 grid grid-cols-3 gap-3">
+                    <div className="p-3 bg-purple-50 rounded-lg border-2 border-purple-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Dumbbell className="w-4 h-4 text-purple-600" />
+                        <p className="text-xs font-bold text-purple-900 uppercase">Workouts</p>
+                      </div>
+                      <p className="text-2xl font-black text-purple-600">{compliance.workout}%</p>
+                      <p className="text-xs text-purple-700 mt-1">3+ per week</p>
+                    </div>
+
+                    <div className="p-3 bg-green-50 rounded-lg border-2 border-green-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <UtensilsCrossed className="w-4 h-4 text-green-600" />
+                        <p className="text-xs font-bold text-green-900 uppercase">Nutrition</p>
+                      </div>
+                      <p className="text-2xl font-black text-green-600">{compliance.nutrition}%</p>
+                      <p className="text-xs text-green-700 mt-1">Within target</p>
+                    </div>
+
+                    <div className="p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Activity className="w-4 h-4 text-blue-600" />
+                        <p className="text-xs font-bold text-blue-900 uppercase">Tracking</p>
+                      </div>
+                      <p className="text-2xl font-black text-blue-600">{compliance.tracking}%</p>
+                      <p className="text-xs text-blue-700 mt-1">Daily logs</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <BarChart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 italic">Assign clients to view analytics</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Clients Requiring Attention */}
