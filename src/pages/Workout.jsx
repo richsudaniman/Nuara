@@ -15,7 +15,12 @@ export default function Workout() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      const userData = await base44.auth.me();
+      console.log('CLIENT USER ID IN WORKOUT PAGE:', userData?.id);
+      console.log('CLIENT USER EMAIL:', userData?.email);
+      return userData;
+    },
     staleTime: 30 * 60 * 1000,
     cacheTime: 60 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -26,7 +31,9 @@ export default function Workout() {
   const { data: workoutPlans, isLoading: plansLoading } = useQuery({
     queryKey: ['workoutPlans', user?.id],
     queryFn: async () => {
+      console.log('FILTERING WORKOUT PLANS FOR CLIENT ID:', user.id);
       const plans = await base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }, 'order');
+      console.log('FOUND WORKOUT PLANS:', plans.length, plans);
       return plans.sort((a, b) => {
         const orderA = daysOfWeek.indexOf(a.day_of_week);
         const orderB = daysOfWeek.indexOf(b.day_of_week);

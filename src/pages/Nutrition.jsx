@@ -14,7 +14,12 @@ export default function Nutrition() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      const userData = await base44.auth.me();
+      console.log('CLIENT USER ID IN NUTRITION PAGE:', userData?.id);
+      console.log('CLIENT USER EMAIL:', userData?.email);
+      return userData;
+    },
     staleTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,
@@ -22,7 +27,12 @@ export default function Nutrition() {
 
   const { data: meals, isLoading: mealsLoading } = useQuery({
     queryKey: ['meals', user?.id],
-    queryFn: () => base44.entities.NutritionPlan.filter({ assigned_to_client_id: user.id }, 'order'),
+    queryFn: async () => {
+      console.log('FILTERING NUTRITION PLANS FOR CLIENT ID:', user.id);
+      const plans = await base44.entities.NutritionPlan.filter({ assigned_to_client_id: user.id }, 'order');
+      console.log('FOUND NUTRITION PLANS:', plans.length, plans);
+      return plans;
+    },
     initialData: [],
     enabled: !!user?.id,
     staleTime: 15 * 60 * 1000,
