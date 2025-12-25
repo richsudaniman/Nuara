@@ -125,6 +125,8 @@ export default function Home() {
     }), { protein: 0, carbs: 0, fats: 0 });
 
   const stats = {
+    protein: todayMacros.protein,
+    proteinGoal: user?.daily_protein_target || 150,
     calories: todayCalories,
     calorieGoal: user?.daily_calorie_target || 2200,
     workoutsThisWeek: thisWeekLogs.length,

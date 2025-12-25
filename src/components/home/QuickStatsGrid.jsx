@@ -1,11 +1,21 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Flame, Dumbbell, Award } from "lucide-react";
+import { Flame, Dumbbell, Award, Beef } from "lucide-react";
 
 export default function QuickStatsGrid({ stats }) {
-  const { calories = 0, calorieGoal = 2200, workoutsThisWeek = 0, currentStreak = 0 } = stats;
+  const { protein = 0, proteinGoal = 150, calories = 0, calorieGoal = 2200, workoutsThisWeek = 0, currentStreak = 0 } = stats;
 
   const statCards = [
+    { 
+      icon: Beef, 
+      label: "Protein", 
+      value: Math.round(protein), 
+      goal: proteinGoal,
+      progress: Math.min((protein / proteinGoal) * 100, 100),
+      suffix: "g",
+      color: "text-[#10b981]",
+      bgColor: "bg-[#10b981]/10"
+    },
     { 
       icon: Flame, 
       label: "Calories", 
@@ -44,7 +54,7 @@ export default function QuickStatsGrid({ stats }) {
             <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">{stat.label}</p>
             <p className="text-2xl font-black italic text-[#1a1a1a]">
               {stat.value}
-              {stat.suffix && <span className="text-sm font-normal text-gray-600">{stat.suffix}</span>}
+              {stat.suffix && <span className="text-xs font-normal text-gray-600 ml-1">{stat.suffix}</span>}
             </p>
             {stat.goal && (
               <div className="mt-2">
