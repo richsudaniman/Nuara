@@ -29,16 +29,32 @@ export default function TrainerAssignClients() {
     enabled: !!trainer?.id,
   });
 
+  const { data: allAssignments, isLoading: allAssignmentsLoading } = useQuery({
+    queryKey: ['allTrainerAssignments'],
+    queryFn: () => base44.entities.TrainerClientAssignment.filter({ is_active: true }),
+    initialData: [],
+    enabled: !!trainer?.id,
+  });
+
   const assignClientMutation = useMutation({
-    mutationFn: (clientId) => base44.entities.TrainerClientAssignment.create({
-      trainer_id: trainer.id,
-      client_id: clientId,
-      assigned_date: new Date().toISOString().split('T')[0],
-      is_active: true,
-    }),
+    mutationFn: async (clientId) => {
+      // Check if client is already assigned to any trainer
+      const existingAssignment = allAssignments.find(a => a.client_id === clientId && a.is_active);
+      if (existingAssignment && existingAssignment.trainer_id !== trainer.id) {
+        throw new Error('This client is already assigned to another trainer');
+      }
+      
+      return base44.entities.TrainerClientAssignment.create({
+        trainer_id: trainer.id,
+        client_id: clientId,
+        assigned_date: new Date().toISOString().split('T')[0],
+        is_active: true,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['allTrainerAssignments'] });
     },
   });
 
@@ -62,6 +78,10 @@ export default function TrainerAssignClients() {
     return assignments.find(a => a.client_id === clientId && a.is_active);
   };
 
+  const isAssignedToOther = (clientId) => {
+    return allAssignments.find(a => a.client_id === clientId && a.is_active && a.trainer_id !== trainer.id);
+  };
+
   const handleAssign = async (clientId) => {
     await assignClientMutation.mutateAsync(clientId);
   };
@@ -73,7 +93,7 @@ export default function TrainerAssignClients() {
     }
   };
 
-  const isLoading = usersLoading || assignmentsLoading;
+  const isLoading = usersLoading || assignmentsLoading || allAssignmentsLoading;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
@@ -104,8 +124,9 @@ export default function TrainerAssignClients() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredClients.map(client => {
             const assignment = isAssigned(client.id);
+            const assignedToOther = isAssignedToOther(client.id);
             return (
-              <Card key={client.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-all">
+              <Card key={client.id} className={`bg-white border-2 transition-all ${assignedToOther ? 'border-gray-300 opacity-60' : 'border-gray-200 hover:border-[#0ea5e9]'}`}>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
@@ -121,7 +142,9 @@ export default function TrainerAssignClients() {
                         {client.full_name || 'User'}
                       </h3>
                       <p className="text-sm text-gray-500">{client.email}</p>
-                      <p className="text-xs text-gray-400 mt-1">ID: {client.id}</p>
+                      {assignedToOther && (
+                        <p className="text-xs text-red-500 font-bold mt-1">Already assigned to another trainer</p>
+                      )}
                     </div>
 
                     {assignment ? (
@@ -133,6 +156,14 @@ export default function TrainerAssignClients() {
                       >
                         <UserMinus className="w-4 h-4" />
                         Unassign
+                      </Button>
+                    ) : assignedToOther ? (
+                      <Button
+                        disabled
+                        variant="outline"
+                        className="gap-2 border-gray-300 text-gray-400 cursor-not-allowed"
+                      >
+                        Assigned
                       </Button>
                     ) : (
                       <Button
