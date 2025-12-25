@@ -313,6 +313,40 @@ export default function TrainerDashboard() {
         </div>
       )}
 
+      {/* Quick Actions */}
+      <Card className="bg-white border-2 border-gray-200">
+        <CardContent className="p-5">
+          <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">QUICK ACTIONS</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <Link to={createPageUrl("TrainerAssignClients")}>
+              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <UserPlus className="w-6 h-6 text-green-600" />
+                  <div>
+                    <p className="font-bold italic text-[#1a1a1a]">Assign New Clients</p>
+                    <p className="text-xs text-gray-600">Take on new clients to train</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link to={createPageUrl("TrainerClients")}>
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-[#0ea5e9] hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Users className="w-6 h-6 text-[#0ea5e9]" />
+                  <div>
+                    <p className="font-bold italic text-[#1a1a1a]">Manage Clients</p>
+                    <p className="text-xs text-gray-600">View and update client programs</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Overall Compliance */}
       {!isLoading && (
         <Card className="bg-white border-2 border-gray-200">
@@ -414,40 +448,6 @@ export default function TrainerDashboard() {
           </CardContent>
         </Card>
       )}
-
-      {/* Quick Actions */}
-      <Card className="bg-white border-2 border-gray-200">
-        <CardContent className="p-5">
-          <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">QUICK ACTIONS</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Link to={createPageUrl("TrainerAssignClients")}>
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <UserPlus className="w-6 h-6 text-green-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Assign New Clients</p>
-                    <p className="text-xs text-gray-600">Take on new clients to train</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("TrainerClients")}>
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-[#0ea5e9] hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <Users className="w-6 h-6 text-[#0ea5e9]" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Manage Clients</p>
-                    <p className="text-xs text-gray-600">View and update client programs</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* My Clients - Quick View */}
