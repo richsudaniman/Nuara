@@ -231,7 +231,7 @@ export default function TrainerDashboard() {
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-black italic text-[#1a1a1a] text-lg">MY CLIENTS</h3>
               <Link to={createPageUrl("TrainerClients")}>
-                <Button variant="ghost" className="text-[#0ea5e9] hover:text-[#0284c7] font-bold italic text-xs">
+                <Button variant="ghost" className="text-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-[#0ea5e9]/10 font-bold italic text-xs">
                   View All
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
@@ -331,7 +331,7 @@ export default function TrainerDashboard() {
               <p className="text-gray-500 italic">No recent activity from your clients</p>
               {assignments.length === 0 && (
                 <Link to={createPageUrl("TrainerAssignClients")} className="mt-3 inline-block">
-                  <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic">
+                  <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic shadow-md">
                     <UserPlus className="w-4 h-4 mr-2" />
                     Assign Your First Client
                   </Button>

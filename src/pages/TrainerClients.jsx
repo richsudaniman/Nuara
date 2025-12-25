@@ -111,7 +111,7 @@ export default function TrainerClients() {
           </div>
         </div>
         <Link to={createPageUrl("TrainerAssignClients")}>
-          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic">
+          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic shadow-md">
             <UserPlus className="w-4 h-4 mr-2" />
             Assign Client
           </Button>
@@ -207,7 +207,7 @@ export default function TrainerClients() {
             </p>
             {!searchQuery && (
               <Link to={createPageUrl("TrainerAssignClients")}>
-                <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic">
+                <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic shadow-md">
                   <UserPlus className="w-4 h-4 mr-2" />
                   Assign Your First Client
                 </Button>
