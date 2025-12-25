@@ -161,17 +161,7 @@ export default function TrainerDashboard() {
               </div>
             </Link>
 
-            <Link to={createPageUrl("TrainerMessages")}>
-              <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <MessageCircle className="w-6 h-6 text-purple-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Message Clients</p>
-                    <p className="text-xs text-gray-600">Send messages and motivation</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
+
           </div>
         </CardContent>
       </Card>

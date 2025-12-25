@@ -71,14 +71,12 @@ export default function Layout({ children, currentPageName }) {
     { name: "Nutrition", path: createPageUrl("Nutrition"), icon: UtensilsCrossed },
     { name: "Progress", path: createPageUrl("Progress"), icon: TrendingUp },
     { name: "Learn", path: createPageUrl("Learn"), icon: GraduationCap },
-    { name: "Messages", path: createPageUrl("Messages"), icon: MessageCircle, badge: unreadCount },
   ];
 
   // Trainer navigation
   const trainerNavItems = [
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home },
     { name: "Clients", path: createPageUrl("TrainerClients"), icon: Users },
-    { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, badge: unreadCount },
     { name: "Videos", path: createPageUrl("TrainerVideos"), icon: Video },
   ];
 
