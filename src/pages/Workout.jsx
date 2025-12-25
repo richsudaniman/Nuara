@@ -86,7 +86,7 @@ export default function Workout() {
   const isLoading = plansLoading || logsLoading;
 
   return (
-    <div className="p-5 space-y-5 relative">
+    <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
       
       {isLoading ? (
         <>

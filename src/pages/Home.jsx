@@ -160,7 +160,7 @@ export default function Home() {
   }
 
   return (
-    <div className="p-5 space-y-5 relative">
+    <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
       {/* Trainer Card */}
       {trainerLoading ? (
         <Skeleton className="h-24 rounded-lg bg-gray-100" />

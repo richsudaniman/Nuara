@@ -58,7 +58,7 @@ export default function Nutrition() {
   const isLoading = mealsLoading || logsLoading;
 
   return (
-    <div className="p-6 space-y-5 relative">
+    <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
       <div className="absolute top-5 left-5 w-16 h-16 border-2 border-gray-200" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}></div>
       
       {isLoading ? (

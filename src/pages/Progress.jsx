@@ -292,7 +292,7 @@ export default function Progress() {
   const weeklyWorkoutData = getWeeklyWorkoutData();
 
   return (
-    <div className="p-5 space-y-5 relative">
+    <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
           <TrendingUp className="w-5 h-5 text-white" />

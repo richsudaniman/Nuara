@@ -109,7 +109,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <ErrorBoundary>
       <AuthGuard>
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 relative overflow-hidden safe-area-inset">
               <style>{`
                 :root {
                   --primary-white: #ffffff;
@@ -117,6 +117,29 @@ export default function Layout({ children, currentPageName }) {
                   --text-dark: #1a1a1a;
                   --card-light: #f8fafc;
                   --border-gray: #e2e8f0;
+                }
+
+                /* PWA optimizations */
+                .safe-area-inset {
+                  padding-top: env(safe-area-inset-top);
+                  padding-bottom: env(safe-area-inset-bottom);
+                }
+
+                /* Touch optimizations */
+                * {
+                  -webkit-tap-highlight-color: transparent;
+                  -webkit-touch-callout: none;
+                }
+
+                /* Smooth scrolling */
+                html {
+                  -webkit-overflow-scrolling: touch;
+                  scroll-behavior: smooth;
+                }
+
+                /* Prevent pull-to-refresh on Chrome */
+                body {
+                  overscroll-behavior-y: contain;
                 }
               `}</style>
 
@@ -146,7 +169,7 @@ export default function Layout({ children, currentPageName }) {
           </main>
 
           {/* Bottom Navigation */}
-          <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-50">
+          <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
             <div className="max-w-md mx-auto flex justify-around items-center px-2 py-3">
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item.path);
