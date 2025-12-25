@@ -49,6 +49,18 @@ export default function TrainerClients() {
     enabled: !!user?.id && assignments.length > 0,
   });
 
+  const { data: calorieLogs, isLoading: calorieLogsLoading } = useQuery({
+    queryKey: ['allCalorieLogs', user?.id],
+    queryFn: async () => {
+      const clientIds = assignments.map(a => a.client_id);
+      if (clientIds.length === 0) return [];
+      const allLogs = await base44.entities.CalorieLog.list('-created_date', 200);
+      return allLogs.filter(log => clientIds.includes(log.logged_by_client_id));
+    },
+    initialData: [],
+    enabled: !!user?.id && assignments.length > 0,
+  });
+
   const { data: allGoals, isLoading: goalsLoading } = useQuery({
     queryKey: ['allClientGoals', user?.id],
     queryFn: async () => {
@@ -86,15 +98,56 @@ export default function TrainerClients() {
     const workoutPlans = allWorkoutPlans.filter(p => p.assigned_to_client_id === clientId);
     const assignment = assignments.find(a => a.client_id === clientId);
     
+    // Calculate compliance score
+    const client = clients.find(c => c.id === clientId);
+    
+    // Workout compliance (50%): 3+ workouts = 100%, scale down proportionally
+    const uniqueWorkoutDays = new Set(clientLogs.map(log => log.completed_date)).size;
+    const workoutScore = Math.min((uniqueWorkoutDays / 3) * 100, 100);
+    
+    // Nutrition compliance (30%): within 1000 cal of target = 100%
+    const calorieTarget = client?.daily_calorie_target || 2200;
+    const clientCalorieLogs = calorieLogs.filter(log =>
+      log.logged_by_client_id === clientId &&
+      new Date(log.date) >= thisWeekStart
+    );
+    
+    const dailyCalories = {};
+    clientCalorieLogs.forEach(log => {
+      if (!dailyCalories[log.date]) dailyCalories[log.date] = 0;
+      dailyCalories[log.date] += log.calories || 0;
+    });
+    
+    const avgCalories = Object.keys(dailyCalories).length > 0
+      ? Object.values(dailyCalories).reduce((sum, cal) => sum + cal, 0) / Object.keys(dailyCalories).length
+      : 0;
+    
+    let nutritionScore = 0;
+    if (avgCalories > 0) {
+      const deviation = Math.abs(avgCalories - calorieTarget);
+      // 100% if within 1000 cal, scale down to 0% at 2000+ cal deviation
+      nutritionScore = Math.max(0, 100 - (deviation / 1000) * 100);
+    }
+    
+    // Logging consistency (20%): 7 days logged = 100%
+    const totalLogsThisWeek = clientLogs.length + clientCalorieLogs.length;
+    const loggingScore = Math.min((totalLogsThisWeek / 7) * 100, 100);
+    
+    // Overall compliance score (weighted)
+    const complianceScore = Math.round(
+      (workoutScore * 0.5) + (nutritionScore * 0.3) + (loggingScore * 0.2)
+    );
+    
     return {
       weeklyWorkouts: clientLogs.length,
       activeGoals: activeGoals.length,
       workoutPlans: workoutPlans.length,
-      daysAssigned: assignment ? differenceInDays(new Date(), new Date(assignment.assigned_date)) : 0
+      daysAssigned: assignment ? differenceInDays(new Date(), new Date(assignment.assigned_date)) : 0,
+      complianceScore
     };
   };
 
-  const isLoading = assignmentsLoading || clientsLoading || logsLoading || goalsLoading || plansLoading;
+  const isLoading = assignmentsLoading || clientsLoading || logsLoading || calorieLogsLoading || goalsLoading || plansLoading;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
@@ -144,11 +197,11 @@ export default function TrainerClients() {
                   <CardContent className="p-0">
                     <div className="flex items-stretch">
                       {/* Left accent bar */}
-                      <div className={`w-2 ${stats.weeklyWorkouts >= 3 ? 'bg-green-500' : stats.weeklyWorkouts > 0 ? 'bg-yellow-500' : 'bg-gray-300'}`}></div>
-                      
+                      <div className={`w-2 ${stats.complianceScore >= 80 ? 'bg-green-500' : stats.complianceScore >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+
                       <div className="flex-1 p-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] flex items-center justify-center flex-shrink-0 shadow-lg">
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] flex items-center justify-center flex-shrink-0 shadow-lg relative">
                             {client.profile_photo_url ? (
                               <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
                             ) : (
@@ -156,12 +209,29 @@ export default function TrainerClients() {
                                 {client.full_name?.charAt(0) || 'C'}
                               </span>
                             )}
+                            {/* Compliance badge */}
+                            <div className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-white ${
+                              stats.complianceScore >= 80 ? 'bg-green-500 text-white' :
+                              stats.complianceScore >= 50 ? 'bg-yellow-500 text-white' :
+                              'bg-red-500 text-white'
+                            }`}>
+                              {stats.complianceScore}
+                            </div>
                           </div>
 
                           <div className="flex-1">
-                            <h3 className="font-black italic text-[#1a1a1a] text-lg">{client.full_name || 'Client'}</h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-black italic text-[#1a1a1a] text-lg">{client.full_name || 'Client'}</h3>
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                stats.complianceScore >= 80 ? 'bg-green-100 text-green-700' :
+                                stats.complianceScore >= 50 ? 'bg-yellow-100 text-yellow-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                {stats.complianceScore}% Compliant
+                              </span>
+                            </div>
                             <p className="text-sm text-gray-500">{client.email}</p>
-                            
+
                             {/* Stats Grid */}
                             <div className="grid grid-cols-2 gap-2 mt-3">
                               <div className="flex items-center gap-1.5 bg-orange-50 px-2 py-1 rounded">
