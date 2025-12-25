@@ -53,6 +53,12 @@ export default function Layout({ children, currentPageName }) {
       return 'admin';
     }
     
+    // Client pages - always show client view
+    const clientPages = ['Home', 'Workout', 'Nutrition', 'Progress', 'Learn', 'Messages'];
+    if (clientPages.includes(currentPageName)) {
+      return 'client';
+    }
+    
     // Fall back to user role/type
     if (user.role === 'admin') return 'admin';
     if (user.user_type === 'trainer') return 'trainer';
