@@ -8,8 +8,8 @@ export default function MotivationalMessage({ message }) {
   }
 
   return (
-    <Card className="bg-gradient-to-r from-white via-[#0ea5e9]/5 to-white border border-[#0ea5e9]/30 glow-blue">
-      <CardContent className="p-4">
+    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-0 shadow-sm rounded-3xl">
+      <CardContent className="p-6">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 bg-[#0ea5e9]/20 rounded-full flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-4 h-4 text-[#0ea5e9]" />
