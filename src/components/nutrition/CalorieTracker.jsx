@@ -160,11 +160,10 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
 
         {/* Today's Summary */}
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-2xl mb-5">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-semibold text-gray-700">Today's Calories</span>
-            <span className="text-4xl font-bold">
-              <span className="text-[#0ea5e9]">{Math.round(todayCalories)}</span>
-              <span className="text-gray-400 text-base ml-2">/ {dailyTarget}</span>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-bold text-gray-700">Today's Calories</span>
+            <span className="text-lg font-black italic">
+              <span className="text-[#0ea5e9]">{Math.round(todayCalories)}</span> / {dailyTarget}
             </span>
           </div>
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-3">
@@ -175,17 +174,17 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
           </div>
           
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="bg-white py-4 rounded-xl">
-              <p className="text-xs text-gray-400 font-medium mb-1">Protein</p>
-              <p className="text-2xl font-bold text-[#1a1a1a]">{Math.round(todayProtein)}<span className="text-sm text-gray-400">g</span></p>
+            <div className="bg-white py-3 rounded-xl">
+              <p className="text-xs text-gray-500 font-medium mb-1">Protein</p>
+              <p className="text-sm font-bold text-[#1a1a1a]">{Math.round(todayProtein)}g</p>
             </div>
-            <div className="bg-white py-4 rounded-xl">
-              <p className="text-xs text-gray-400 font-medium mb-1">Carbs</p>
-              <p className="text-2xl font-bold text-[#1a1a1a]">{Math.round(todayCarbs)}<span className="text-sm text-gray-400">g</span></p>
+            <div className="bg-white py-3 rounded-xl">
+              <p className="text-xs text-gray-500 font-medium mb-1">Carbs</p>
+              <p className="text-sm font-bold text-[#1a1a1a]">{Math.round(todayCarbs)}g</p>
             </div>
-            <div className="bg-white py-4 rounded-xl">
-              <p className="text-xs text-gray-400 font-medium mb-1">Fats</p>
-              <p className="text-2xl font-bold text-[#1a1a1a]">{Math.round(todayFats)}<span className="text-sm text-gray-400">g</span></p>
+            <div className="bg-white py-3 rounded-xl">
+              <p className="text-xs text-gray-500 font-medium mb-1">Fats</p>
+              <p className="text-sm font-bold text-[#1a1a1a]">{Math.round(todayFats)}g</p>
             </div>
           </div>
         </div>
