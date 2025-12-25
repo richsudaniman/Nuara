@@ -160,8 +160,7 @@ export default function Home() {
   }
 
   return (
-    <div className="p-4 space-y-4 relative"
-
+    <div className="p-4 space-y-4 relative">
       {/* Trainer Card */}
       {trainerLoading ? (
         <Skeleton className="h-24 rounded-lg bg-gray-100" />
