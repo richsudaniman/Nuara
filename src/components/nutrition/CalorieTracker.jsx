@@ -222,7 +222,7 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
                     }}
                     variant="ghost"
                     size="sm"
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-100"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
