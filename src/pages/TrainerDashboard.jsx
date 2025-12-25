@@ -318,35 +318,35 @@ export default function TrainerDashboard() {
           <CardContent className="p-5">
             <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">OVERALL COMPLIANCE</h3>
             {assignments.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-600">Workout Adherence</span>
-                    <span className="text-lg font-black italic text-purple-600">{compliance.workout}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-purple-600 transition-all" style={{ width: `${compliance.workout}%` }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-600">Nutrition Adherence</span>
-                    <span className="text-lg font-black italic text-green-600">{compliance.nutrition}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-600 transition-all" style={{ width: `${compliance.nutrition}%` }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-gray-600">Active Tracking</span>
-                    <span className="text-lg font-black italic text-[#0ea5e9]">{compliance.tracking}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#0ea5e9] transition-all" style={{ width: `${compliance.tracking}%` }}></div>
-                  </div>
-                </div>
-              </div>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={[
+                  { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
+                  { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
+                  { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="metric" stroke="#6b7280" style={{ fontSize: '14px', fontWeight: 'bold' }} />
+                  <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} domain={[0, 100]} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#fff', 
+                      border: '2px solid #0ea5e9',
+                      borderRadius: '8px',
+                      fontWeight: 'bold'
+                    }}
+                    formatter={(value) => `${value}%`}
+                  />
+                  <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                    {[
+                      { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
+                      { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
+                      { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
               <div className="text-center py-8">
                 <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
