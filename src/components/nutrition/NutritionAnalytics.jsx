@@ -72,36 +72,36 @@ export default function NutritionAnalytics({ logs, dailyTarget }) {
   ).length;
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
-      <CardContent className="p-5 space-y-5">
+    <Card className="bg-white border-0 shadow-sm rounded-3xl">
+      <CardContent className="p-6 space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-black italic text-[#1a1a1a]">ANALYTICS</h3>
-              <p className="text-xs text-gray-600">Your nutrition insights</p>
+              <h3 className="text-lg font-bold text-[#1a1a1a]">Analytics</h3>
+              <p className="text-xs text-gray-500">Your nutrition insights</p>
             </div>
           </div>
 
           <div className="flex gap-2">
             <button
               onClick={() => setTimeRange('week')}
-              className={`px-3 py-1 text-xs font-bold rounded ${
+              className={`px-4 py-2 text-xs font-semibold rounded-xl transition-colors ${
                 timeRange === 'week'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 border border-gray-300'
+                  ? 'bg-[#0ea5e9] text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               Week
             </button>
             <button
               onClick={() => setTimeRange('month')}
-              className={`px-3 py-1 text-xs font-bold rounded ${
+              className={`px-4 py-2 text-xs font-semibold rounded-xl transition-colors ${
                 timeRange === 'month'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 border border-gray-300'
+                  ? 'bg-[#0ea5e9] text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               Month
@@ -111,31 +111,31 @@ export default function NutritionAnalytics({ logs, dailyTarget }) {
 
         {/* Key Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white p-3 rounded border-2 border-blue-200">
-            <div className="flex items-center gap-2 mb-1">
+          <div className="bg-gray-50 p-4 rounded-2xl">
+            <div className="flex items-center gap-2 mb-2">
               <Flame className="w-4 h-4 text-orange-500" />
-              <span className="text-xs text-gray-600 font-semibold">Avg Calories</span>
+              <span className="text-xs text-gray-500 font-medium">Avg Calories</span>
             </div>
-            <p className="text-2xl font-black italic text-blue-900">{avgCalories}</p>
-            <p className="text-xs text-gray-500">Target: {dailyTarget}</p>
+            <p className="text-2xl font-bold text-[#1a1a1a]">{avgCalories}</p>
+            <p className="text-xs text-gray-400 mt-1">Target: {dailyTarget}</p>
           </div>
 
-          <div className="bg-white p-3 rounded border-2 border-blue-200">
-            <div className="flex items-center gap-2 mb-1">
+          <div className="bg-gray-50 p-4 rounded-2xl">
+            <div className="flex items-center gap-2 mb-2">
               <Target className="w-4 h-4 text-green-500" />
-              <span className="text-xs text-gray-600 font-semibold">On Target</span>
+              <span className="text-xs text-gray-500 font-medium">On Target</span>
             </div>
-            <p className="text-2xl font-black italic text-blue-900">{daysOnTarget}</p>
-            <p className="text-xs text-gray-500">of {dailyData.length} days</p>
+            <p className="text-2xl font-bold text-[#1a1a1a]">{daysOnTarget}</p>
+            <p className="text-xs text-gray-400 mt-1">of {dailyData.length} days</p>
           </div>
         </div>
 
         {/* Daily Calorie Trend */}
         {dailyData.length > 0 && (
-          <div className="bg-white p-4 rounded border-2 border-blue-200">
-            <h4 className="text-sm font-black italic text-[#1a1a1a] mb-3 flex items-center gap-2">
+          <div className="bg-gray-50 p-5 rounded-2xl">
+            <h4 className="text-sm font-bold text-[#1a1a1a] mb-4 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              DAILY CALORIES
+              Daily Calories
             </h4>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={dailyData}>
@@ -166,9 +166,9 @@ export default function NutritionAnalytics({ logs, dailyTarget }) {
 
         {/* Macro Breakdown */}
         {avgProtein + avgCarbs + avgFats > 0 && (
-          <div className="bg-white p-4 rounded border-2 border-blue-200">
-            <h4 className="text-sm font-black italic text-[#1a1a1a] mb-3">
-              AVG MACROS BREAKDOWN
+          <div className="bg-gray-50 p-5 rounded-2xl">
+            <h4 className="text-sm font-bold text-[#1a1a1a] mb-4">
+              Avg Macros Breakdown
             </h4>
             <div className="flex items-center justify-between gap-4">
               <ResponsiveContainer width="50%" height={120}>

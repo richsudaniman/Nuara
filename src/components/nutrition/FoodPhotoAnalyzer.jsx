@@ -313,15 +313,15 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
-      <CardContent className="p-5 space-y-4">
+    <Card className="bg-white border-0 shadow-sm rounded-3xl">
+      <CardContent className="p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-600 flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
             <Camera className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="font-black italic text-[#1a1a1a]">FOOD TRACKER</h3>
-            <p className="text-xs text-gray-600">Photo, camera, or barcode</p>
+            <h3 className="text-lg font-bold text-[#1a1a1a]">Food Tracker</h3>
+            <p className="text-xs text-gray-500">Photo, camera, or barcode</p>
           </div>
         </div>
 
@@ -339,7 +339,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
             <Button
               type="button"
               disabled={analyzing}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold"
+              className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold rounded-xl"
               onClick={(e) => {
                 e.preventDefault();
                 document.getElementById('food-photo-upload').click();
@@ -355,7 +355,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
         <Button
           onClick={startCamera}
           variant="outline"
-          className="w-full border-purple-300 font-bold"
+          className="w-full border-gray-200 font-semibold rounded-xl hover:bg-gray-50"
           disabled={analyzing}
         >
           <Scan className="w-4 h-4 mr-2" />
@@ -365,10 +365,10 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
         {/* Barcode Input */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-purple-300"></div>
+            <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="px-2 bg-gradient-to-br from-purple-50 to-pink-50 text-gray-500 font-semibold">OR ENTER BARCODE</span>
+            <span className="px-3 bg-white text-gray-400 font-medium">or enter barcode</span>
           </div>
         </div>
 
@@ -383,29 +383,29 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
           <Button
             onClick={() => handleBarcodeSearch()}
             disabled={!barcode.trim() || analyzing}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white rounded-xl"
           >
             <Package className="w-4 h-4" />
           </Button>
         </div>
 
         {analyzing && (
-          <div className="p-3 bg-white/50 border-2 border-purple-300 rounded flex items-center gap-3">
-            <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
-            <p className="text-sm text-purple-900 font-semibold">Analyzing...</p>
+          <div className="p-4 bg-gray-50 rounded-xl flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-[#0ea5e9] animate-spin" />
+            <p className="text-sm text-gray-600 font-medium">Analyzing...</p>
           </div>
         )}
 
         {error && (
-          <div className="p-3 bg-red-50 border-2 border-red-200 rounded flex items-start gap-2">
+          <div className="p-4 bg-red-50 rounded-xl flex items-start gap-2">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800 font-semibold">{error}</p>
+            <p className="text-sm text-red-600 font-medium">{error}</p>
           </div>
         )}
 
         {results && (
-          <div className="p-4 bg-white border-2 border-purple-300 rounded space-y-2">
-            <h4 className="font-black italic text-purple-900">{results.name?.toUpperCase() || 'FOOD ITEM'}</h4>
+          <div className="p-4 bg-gray-50 rounded-xl space-y-3">
+            <h4 className="font-bold text-[#1a1a1a] text-base">{results.name || 'Food Item'}</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
                 <span className="text-gray-600">Calories:</span>
@@ -424,8 +424,8 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
                 <span className="font-bold ml-1">{results.fats}g</span>
               </div>
             </div>
-            <div className="pt-2 border-t border-purple-200">
-              <p className="text-xs text-green-600 font-bold flex items-center gap-1">
+            <div className="pt-3 border-t border-gray-200">
+              <p className="text-xs text-green-600 font-semibold flex items-center gap-1">
                 <Plus className="w-4 h-4" />
                 Added to your log!
               </p>

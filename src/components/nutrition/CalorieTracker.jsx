@@ -62,14 +62,14 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
   };
 
   return (
-    <Card className="bg-white border-2 border-gray-200">
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-black italic text-[#1a1a1a]">CALORIE TRACKER</h3>
+    <Card className="bg-white border-0 shadow-sm rounded-3xl">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-lg font-bold text-[#1a1a1a]">Calorie Tracker</h3>
           <Button 
             onClick={() => setShowForm(!showForm)}
             size="sm"
-            className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold"
+            className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold rounded-xl"
           >
             <Plus className="w-4 h-4 mr-1" />
             {showForm ? "Cancel" : "Log Meal"}
@@ -77,7 +77,7 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
         </div>
 
         {showForm && (
-          <form onSubmit={handleSubmit} className="bg-gray-50 p-4 rounded-lg mb-4 space-y-3">
+          <form onSubmit={handleSubmit} className="bg-gray-50 p-5 rounded-2xl mb-5 space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <Input
                 placeholder="Meal name *"
@@ -152,14 +152,14 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
               />
             </div>
 
-            <Button type="submit" className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold">
+            <Button type="submit" className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold rounded-xl">
               Add Log
             </Button>
           </form>
         )}
 
         {/* Today's Summary */}
-        <div className="bg-gradient-to-r from-[#0ea5e9]/10 to-[#0284c7]/10 p-4 rounded-lg mb-4">
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-2xl mb-5">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-bold text-gray-700">Today's Calories</span>
             <span className="text-lg font-black italic">
@@ -173,29 +173,29 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
             ></div>
           </div>
           
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="bg-white/50 py-2 rounded">
-              <p className="text-xs text-gray-600 font-bold">Protein</p>
-              <p className="text-sm font-black text-[#1a1a1a]">{Math.round(todayProtein)}g</p>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="bg-white py-3 rounded-xl">
+              <p className="text-xs text-gray-500 font-medium mb-1">Protein</p>
+              <p className="text-sm font-bold text-[#1a1a1a]">{Math.round(todayProtein)}g</p>
             </div>
-            <div className="bg-white/50 py-2 rounded">
-              <p className="text-xs text-gray-600 font-bold">Carbs</p>
-              <p className="text-sm font-black text-[#1a1a1a]">{Math.round(todayCarbs)}g</p>
+            <div className="bg-white py-3 rounded-xl">
+              <p className="text-xs text-gray-500 font-medium mb-1">Carbs</p>
+              <p className="text-sm font-bold text-[#1a1a1a]">{Math.round(todayCarbs)}g</p>
             </div>
-            <div className="bg-white/50 py-2 rounded">
-              <p className="text-xs text-gray-600 font-bold">Fats</p>
-              <p className="text-sm font-black text-[#1a1a1a]">{Math.round(todayFats)}g</p>
+            <div className="bg-white py-3 rounded-xl">
+              <p className="text-xs text-gray-500 font-medium mb-1">Fats</p>
+              <p className="text-sm font-bold text-[#1a1a1a]">{Math.round(todayFats)}g</p>
             </div>
           </div>
         </div>
 
         {/* Meal Logs */}
         <div>
-          <h4 className="font-bold text-sm text-gray-700 mb-3">RECENT MEALS</h4>
+          <h4 className="font-semibold text-sm text-gray-700 mb-4">Recent Meals</h4>
           {logs.length > 0 ? (
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {logs.slice(0, 10).map(log => (
-                <div key={log.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <div key={log.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-bold text-sm text-[#1a1a1a]">{log.meal_name}</p>
