@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -45,7 +44,7 @@ export default function TrainerClientDetail() {
   }
 
   return (
-    <div className="p-6 space-y-5 relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
       <div className="absolute top-5 right-5 w-16 h-16 border-2 border-gray-200" style={{clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'}}></div>
 
       <Link to={createPageUrl("TrainerClients")}>
@@ -89,7 +88,7 @@ export default function TrainerClientDetail() {
       )}
 
       <Tabs defaultValue="workouts" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 bg-gray-100"> {/* Changed grid-cols-5 to grid-cols-6 */}
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-gray-100"> {/* Changed grid-cols-5 to grid-cols-6 */}
           <TabsTrigger value="workouts" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
             <Dumbbell className="w-4 h-4 mr-1" />
             Workouts
