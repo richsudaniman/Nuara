@@ -8,7 +8,7 @@ export default function DailyProgressBar({ completedTasks, totalTasks }) {
   
   return (
     <Card className="bg-white border-0 shadow-sm rounded-3xl overflow-hidden">
-      <CardContent className="p-5">
+      <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-[#1a1a1a] font-bold text-base mb-1">Today's Progress</h3>

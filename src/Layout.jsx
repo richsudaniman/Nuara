@@ -121,7 +121,7 @@ export default function Layout({ children, currentPageName }) {
               `}</style>
 
           {/* Header */}
-          <header className="bg-white/80 backdrop-blur-xl px-6 py-4 sticky top-0 z-50 border-b border-gray-100">
+          <header className="bg-white/80 backdrop-blur-xl px-6 py-5 sticky top-0 z-50">
             <div className="max-w-md mx-auto relative">
               <div className="flex items-center justify-between">
                 <Link to={getHomePath()}>
@@ -146,8 +146,8 @@ export default function Layout({ children, currentPageName }) {
           </main>
 
           {/* Bottom Navigation */}
-          <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-50 shadow-2xl">
-            <div className="max-w-md mx-auto flex justify-around items-center px-2 py-2">
+          <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-50">
+            <div className="max-w-md mx-auto flex justify-around items-center px-2 py-3">
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item.path);
                 const Icon = item.icon;

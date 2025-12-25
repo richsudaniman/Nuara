@@ -44,10 +44,10 @@ export default function QuickStatsGrid({ stats }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-4">
       {statCards.map((stat, index) => (
         <Card key={index} className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-200 rounded-3xl">
-          <CardContent className="p-5">
+          <CardContent className="p-6">
             <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center mb-3 shadow-sm`}>
               <stat.icon className={`w-6 h-6 ${stat.color}`} />
             </div>

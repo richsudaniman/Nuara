@@ -7,7 +7,7 @@ export default function TrainerCard({ trainer }) {
 
   return (
     <Card className="bg-white border-0 shadow-sm rounded-3xl">
-      <CardContent className="p-5">
+      <CardContent className="p-6">
         <div className="flex items-center gap-4">
           <div className="relative">
             {trainer.profile_photo_url ? (
