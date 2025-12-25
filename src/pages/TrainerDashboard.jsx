@@ -273,8 +273,8 @@ export default function TrainerDashboard() {
         )}
 
         {/* Recent Activity */}
-        <Card className="bg-white border-2 border-gray-200">
-        <CardContent className="p-5">
+        <Card className="bg-white border-2 border-gray-200 overflow-hidden">
+          <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-[#0ea5e9]" />
             <h3 className="font-black italic text-[#1a1a1a] text-lg">RECENT CLIENT ACTIVITY</h3>
@@ -289,8 +289,8 @@ export default function TrainerDashboard() {
                 const client = clients.find(c => c.id === activity.clientId);
                 const isWorkout = activity.type === 'workout';
                 return (
-                  <div key={idx} className={`flex items-center justify-between p-3 bg-gray-50 rounded border-l-4 ${isWorkout ? 'border-purple-500' : 'border-green-500'}`}>
-                    <div className="flex items-center gap-3 flex-1">
+                  <div key={idx} className={`flex items-center justify-between p-3 bg-gray-50 rounded border-l-4 ${isWorkout ? 'border-purple-500' : 'border-green-500'} min-w-0`}>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                       <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
                         {client?.profile_photo_url ? (
                           <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
@@ -300,16 +300,16 @@ export default function TrainerDashboard() {
                           </span>
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         {isWorkout ? (
                           <>
-                            <p className="font-bold text-sm text-[#1a1a1a]">Completed Workout</p>
-                            <p className="text-xs text-gray-500">{client?.full_name || 'Client'} • {activity.exerciseCount} exercises</p>
+                            <p className="font-bold text-sm text-[#1a1a1a] truncate">Completed Workout</p>
+                            <p className="text-xs text-gray-500 truncate">{client?.full_name || 'Client'} • {activity.exerciseCount} exercises</p>
                           </>
                         ) : (
                           <>
-                            <p className="font-bold text-sm text-[#1a1a1a]">{activity.mealName}</p>
-                            <p className="text-xs text-gray-500">{client?.full_name || 'Client'} • {activity.calories} cal</p>
+                            <p className="font-bold text-sm text-[#1a1a1a] truncate">{activity.mealName}</p>
+                            <p className="text-xs text-gray-500 truncate">{client?.full_name || 'Client'} • {activity.calories} cal</p>
                           </>
                         )}
                       </div>
