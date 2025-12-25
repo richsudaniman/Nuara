@@ -224,7 +224,7 @@ export default function TrainerDashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* My Clients - Quick View */}
         {clients.length > 0 && (
           <Card className="bg-white border-2 border-gray-200">
