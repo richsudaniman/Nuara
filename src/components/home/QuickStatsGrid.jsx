@@ -25,22 +25,6 @@ export default function QuickStatsGrid({ stats }) {
       color: "text-[#f97316]",
       bgColor: "bg-[#f97316]/10"
     },
-    { 
-      icon: Dumbbell, 
-      label: "Workouts", 
-      value: workoutsThisWeek, 
-      suffix: " this week",
-      color: "text-[#0ea5e9]",
-      bgColor: "bg-[#0ea5e9]/10"
-    },
-    { 
-      icon: Award, 
-      label: "Streak", 
-      value: currentStreak, 
-      suffix: " days",
-      color: "text-[#eab308]",
-      bgColor: "bg-[#eab308]/10"
-    },
   ];
 
   return (
@@ -52,9 +36,9 @@ export default function QuickStatsGrid({ stats }) {
               <stat.icon className={`w-6 h-6 ${stat.color}`} />
             </div>
             <p className="text-xs text-gray-400 font-medium mb-1">{stat.label}</p>
-            <p className="text-2xl font-bold text-[#1a1a1a]">
+            <p className="text-5xl font-bold text-[#1a1a1a]">
               {stat.value}
-              {stat.suffix && <span className="text-sm font-normal text-gray-500 ml-1">{stat.suffix}</span>}
+              {stat.suffix && <span className="text-base font-normal text-gray-500 ml-1">{stat.suffix}</span>}
             </p>
             {stat.goal && (
               <div className="mt-3">
