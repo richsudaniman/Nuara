@@ -7,16 +7,6 @@ export default function QuickStatsGrid({ stats }) {
 
   const statCards = [
     { 
-      icon: Beef, 
-      label: "Protein", 
-      value: Math.round(protein), 
-      goal: proteinGoal,
-      progress: Math.min((protein / proteinGoal) * 100, 100),
-      suffix: "g",
-      color: "text-[#10b981]",
-      bgColor: "bg-[#10b981]/10"
-    },
-    { 
       icon: Flame, 
       label: "Calories", 
       value: calories, 
@@ -24,6 +14,14 @@ export default function QuickStatsGrid({ stats }) {
       progress: Math.min((calories / calorieGoal) * 100, 100),
       color: "text-[#f97316]",
       bgColor: "bg-[#f97316]/10"
+    },
+    { 
+      icon: Award, 
+      label: "Streak", 
+      value: currentStreak, 
+      suffix: " days",
+      color: "text-[#eab308]",
+      bgColor: "bg-[#eab308]/10"
     },
   ];
 

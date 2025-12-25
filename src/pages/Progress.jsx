@@ -277,14 +277,12 @@ export default function Progress() {
   const weeklyWorkoutData = getWeeklyWorkoutData();
 
   return (
-    <div className="p-6 space-y-5 relative">
-      <div className="absolute top-10 right-10 w-20 h-20 border-2 border-[#0ea5e9]/20 rotate-12 pointer-events-none"></div>
-
+    <div className="p-5 space-y-5 relative">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
+        <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
           <TrendingUp className="w-5 h-5 text-white" />
         </div>
-        <h1 className="text-3xl font-black italic text-[#1a1a1a]">YOUR PROGRESS</h1>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">Your Progress</h1>
       </div>
 
       {/* Dashboard Overview */}
@@ -295,38 +293,21 @@ export default function Progress() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-orange-500 to-red-500 border-none">
-              <CardContent className="p-4">
-                <Flame className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Current Streak</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.currentStreak} days</p>
+            <Card className="bg-gradient-to-br from-orange-500 to-red-500 border-none shadow-sm rounded-3xl">
+              <CardContent className="p-5">
+                <Flame className="w-8 h-8 text-white/80 mb-3" />
+                <p className="text-xs text-white/80 font-medium mb-1">Streak</p>
+                <p className="text-6xl font-bold text-white">{dashboardMetrics.currentStreak}</p>
+                <p className="text-sm text-white/70 mt-1">days</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none">
-              <CardContent className="p-4">
-                <Dumbbell className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Workout Rate</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.workoutConsistency}%</p>
-                <p className="text-xs text-white/70 mt-1">{dashboardMetrics.totalWorkouts} workouts (30d)</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none">
-              <CardContent className="p-4">
-                <UtensilsCrossed className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Nutrition</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.nutritionAdherence}%</p>
-                <p className="text-xs text-white/70 mt-1">Logged this week</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none">
-              <CardContent className="p-4">
-                <Award className="w-8 h-8 text-white/80 mb-2" />
-                <p className="text-xs text-white/80 uppercase font-bold">Strength Total</p>
-                <p className="text-3xl font-black italic text-white">{dashboardMetrics.totalStrength} lbs</p>
-                <p className="text-xs text-white/70 mt-1">Combined max lifts</p>
+            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none shadow-sm rounded-3xl">
+              <CardContent className="p-5">
+                <Dumbbell className="w-8 h-8 text-white/80 mb-3" />
+                <p className="text-xs text-white/80 font-medium mb-1">Workout Rate</p>
+                <p className="text-6xl font-bold text-white">{dashboardMetrics.workoutConsistency}</p>
+                <p className="text-sm text-white/70 mt-1">%</p>
               </CardContent>
             </Card>
           </div>

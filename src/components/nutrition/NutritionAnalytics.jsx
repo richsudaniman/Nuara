@@ -110,23 +110,14 @@ export default function NutritionAnalytics({ logs, dailyTarget }) {
         </div>
 
         {/* Key Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-gray-50 p-4 rounded-2xl">
+        <div className="grid grid-cols-1 gap-3">
+          <div className="bg-gray-50 p-5 rounded-2xl">
             <div className="flex items-center gap-2 mb-2">
-              <Flame className="w-4 h-4 text-orange-500" />
+              <Flame className="w-5 h-5 text-orange-500" />
               <span className="text-xs text-gray-500 font-medium">Avg Calories</span>
             </div>
-            <p className="text-2xl font-bold text-[#1a1a1a]">{avgCalories}</p>
-            <p className="text-xs text-gray-400 mt-1">Target: {dailyTarget}</p>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="w-4 h-4 text-green-500" />
-              <span className="text-xs text-gray-500 font-medium">On Target</span>
-            </div>
-            <p className="text-2xl font-bold text-[#1a1a1a]">{daysOnTarget}</p>
-            <p className="text-xs text-gray-400 mt-1">of {dailyData.length} days</p>
+            <p className="text-5xl font-bold text-[#1a1a1a]">{avgCalories}</p>
+            <p className="text-sm text-gray-400 mt-2">Target: {dailyTarget}</p>
           </div>
         </div>
 
