@@ -73,9 +73,18 @@ export default function TrainerDashboard() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: recentLogs, isLoading: logsLoading } = useQuery({
+  const { data: recentWorkoutLogs, isLoading: workoutLogsLoading } = useQuery({
     queryKey: ['recentWorkoutLogs'],
-    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 10),
+    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 50),
+    initialData: [],
+    enabled: !!trainer?.id,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: recentCalorieLogs, isLoading: calorieLogsLoading } = useQuery({
+    queryKey: ['recentCalorieLogs'],
+    queryFn: () => base44.entities.CalorieLog.list('-created_date', 50),
     initialData: [],
     enabled: !!trainer?.id,
     staleTime: 5 * 60 * 1000,
@@ -92,13 +101,62 @@ export default function TrainerDashboard() {
   const getClientWeeklyWorkouts = (clientId) => {
     const thisWeekStart = new Date();
     thisWeekStart.setDate(thisWeekStart.getDate() - 7);
-    return recentLogs.filter(log => 
+    const workoutDates = new Set();
+    recentWorkoutLogs.filter(log => 
       log.logged_by_client_id === clientId && 
       new Date(log.completed_date) >= thisWeekStart
-    ).length;
+    ).forEach(log => workoutDates.add(log.completed_date));
+    return workoutDates.size;
   };
 
-  const isLoading = assignmentsLoading || plansLoading || nutritionLoading || goalsLoading || clientsLoading;
+  // Combine and sort workout completions and meal logs
+  const getRecentActivity = () => {
+    const clientIds = assignments.map(a => a.client_id);
+    
+    // Group workout logs by client and date to count as single workout completion
+    const workoutCompletions = {};
+    recentWorkoutLogs.forEach(log => {
+      if (clientIds.includes(log.logged_by_client_id)) {
+        const key = `${log.logged_by_client_id}_${log.completed_date}`;
+        if (!workoutCompletions[key]) {
+          workoutCompletions[key] = {
+            type: 'workout',
+            clientId: log.logged_by_client_id,
+            date: log.completed_date,
+            exerciseCount: 1
+          };
+        } else {
+          workoutCompletions[key].exerciseCount++;
+        }
+      }
+    });
+
+    // Get meal logs
+    const mealLogs = recentCalorieLogs
+      .filter(log => clientIds.includes(log.logged_by_client_id))
+      .map(log => ({
+        type: 'meal',
+        clientId: log.logged_by_client_id,
+        date: log.date,
+        mealName: log.meal_name,
+        calories: log.calories,
+        created: log.created_date
+      }));
+
+    // Combine and sort by date
+    const activities = [
+      ...Object.values(workoutCompletions),
+      ...mealLogs
+    ].sort((a, b) => {
+      const dateA = new Date(a.created || a.date);
+      const dateB = new Date(b.created || b.date);
+      return dateB - dateA;
+    });
+
+    return activities.slice(0, 10);
+  };
+
+  const isLoading = assignmentsLoading || plansLoading || nutritionLoading || goalsLoading || clientsLoading || workoutLogsLoading || calorieLogsLoading;
 
   return (
     <div className="p-6 space-y-5 relative">
@@ -220,16 +278,17 @@ export default function TrainerDashboard() {
             <Activity className="w-5 h-5 text-[#0ea5e9]" />
             <h3 className="font-black italic text-[#1a1a1a] text-lg">RECENT CLIENT ACTIVITY</h3>
           </div>
-          {logsLoading ? (
+          {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded bg-gray-100" />)}
             </div>
-          ) : recentLogs.length > 0 ? (
+          ) : getRecentActivity().length > 0 ? (
             <div className="space-y-2">
-              {recentLogs.slice(0, 8).map(log => {
-                const client = clients.find(c => c.id === log.logged_by_client_id);
+              {getRecentActivity().map((activity, idx) => {
+                const client = clients.find(c => c.id === activity.clientId);
+                const isWorkout = activity.type === 'workout';
                 return (
-                  <div key={log.id} className="flex items-center justify-between p-3 bg-gray-50 rounded border-l-4 border-[#0ea5e9]">
+                  <div key={idx} className={`flex items-center justify-between p-3 bg-gray-50 rounded border-l-4 ${isWorkout ? 'border-purple-500' : 'border-green-500'}`}>
                     <div className="flex items-center gap-3 flex-1">
                       <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
                         {client?.profile_photo_url ? (
@@ -241,12 +300,26 @@ export default function TrainerDashboard() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-sm text-[#1a1a1a]">{log.exercise_name}</p>
-                        <p className="text-xs text-gray-500">{client?.full_name || 'Client'} • {log.sets_completed} sets</p>
+                        {isWorkout ? (
+                          <>
+                            <p className="font-bold text-sm text-[#1a1a1a]">Completed Workout</p>
+                            <p className="text-xs text-gray-500">{client?.full_name || 'Client'} • {activity.exerciseCount} exercises</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-bold text-sm text-[#1a1a1a]">{activity.mealName}</p>
+                            <p className="text-xs text-gray-500">{client?.full_name || 'Client'} • {activity.calories} cal</p>
+                          </>
+                        )}
                       </div>
+                      {isWorkout ? (
+                        <Dumbbell className="w-5 h-5 text-purple-600" />
+                      ) : (
+                        <UtensilsCrossed className="w-5 h-5 text-green-600" />
+                      )}
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-400">{format(new Date(log.completed_date), 'MMM d')}</p>
+                    <div className="text-right ml-3">
+                      <p className="text-xs text-gray-400">{format(new Date(activity.date), 'MMM d')}</p>
                     </div>
                   </div>
                 );
