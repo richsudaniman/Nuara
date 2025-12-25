@@ -53,7 +53,7 @@ export default function Layout({ children, currentPageName }) {
     
     // Fallback to actual user role/type
     if (user?.role === 'admin') return 'admin';
-    if (user?.role === 'trainer') return 'trainer';
+    if (user?.role === 'trainer' || user?.user_type === 'trainer') return 'trainer';
     return 'client';
   };
 
