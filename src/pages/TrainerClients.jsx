@@ -26,7 +26,7 @@ export default function TrainerClients() {
   });
 
   const { data: clients, isLoading: clientsLoading } = useQuery({
-    queryKey: ['assignedClients', user?.id],
+    queryKey: ['assignedClients', user?.id, assignments],
     queryFn: async () => {
       const clientIds = assignments.map(a => a.client_id);
       if (clientIds.length === 0) return [];
@@ -34,7 +34,7 @@ export default function TrainerClients() {
       return allUsers.filter(u => clientIds.includes(u.id));
     },
     initialData: [],
-    enabled: !!user?.id && assignments.length > 0,
+    enabled: !!user?.id && !assignmentsLoading,
   });
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
