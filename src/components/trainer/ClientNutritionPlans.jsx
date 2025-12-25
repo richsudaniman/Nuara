@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Flame, Calendar } from "lucide-react"; // Added Calendar import
+import { Input } from "@/components/ui/input";
+import { Plus, Edit, Trash2, Flame, Calendar, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import NutritionPlanForm from "./NutritionPlanForm";
 
@@ -12,10 +12,21 @@ export default function ClientNutritionPlans({ clientId }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
+  const [editingCalorieGoal, setEditingCalorieGoal] = useState(false);
+  const [calorieGoal, setCalorieGoal] = useState("");
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
+  });
+
+  const { data: client, isLoading: clientLoading } = useQuery({
+    queryKey: ['client', clientId],
+    queryFn: async () => {
+      const users = await base44.entities.User.filter({ id: clientId });
+      return users[0] || null;
+    },
+    enabled: !!clientId,
   });
 
   const { data: nutritionPlans, isLoading } = useQuery({
@@ -29,6 +40,15 @@ export default function ClientNutritionPlans({ clientId }) {
     mutationFn: (planId) => base44.entities.NutritionPlan.delete(planId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientNutritionPlans'] });
+    },
+  });
+
+  const updateCalorieGoalMutation = useMutation({
+    mutationFn: (calorieTarget) => base44.entities.User.update(clientId, { daily_calorie_target: calorieTarget }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['client'] });
+      setEditingCalorieGoal(false);
+      setCalorieGoal("");
     },
   });
 
@@ -46,6 +66,20 @@ export default function ClientNutritionPlans({ clientId }) {
   const handleFormClose = () => {
     setShowForm(false);
     setEditingPlan(null);
+  };
+
+  const handleSaveCalorieGoal = async () => {
+    const target = parseInt(calorieGoal);
+    if (!target || target <= 0) {
+      alert("Please enter a valid calorie goal");
+      return;
+    }
+    await updateCalorieGoalMutation.mutateAsync(target);
+  };
+
+  const handleEditCalorieGoal = () => {
+    setCalorieGoal(client?.daily_calorie_target?.toString() || "");
+    setEditingCalorieGoal(true);
   };
 
   // The todayDate variable was in the outline but not used in the display logic.
@@ -67,6 +101,60 @@ export default function ClientNutritionPlans({ clientId }) {
           Add Meal
         </Button>
       </div>
+
+      {/* Daily Calorie Goal */}
+      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-green-600" />
+              <span className="font-bold text-sm text-gray-700">Daily Calorie Goal</span>
+            </div>
+            {editingCalorieGoal ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={calorieGoal}
+                  onChange={(e) => setCalorieGoal(e.target.value)}
+                  placeholder="2200"
+                  className="w-24 h-8 text-right"
+                  min="0"
+                />
+                <Button
+                  size="sm"
+                  onClick={handleSaveCalorieGoal}
+                  disabled={updateCalorieGoalMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700 text-white h-8"
+                >
+                  Save
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setEditingCalorieGoal(false)}
+                  className="h-8"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black italic text-green-600">
+                  {client?.daily_calorie_target || "Not Set"}
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleEditCalorieGoal}
+                  className="text-green-600 hover:text-green-700"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Today's Meal Prep Highlight */}
       <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300">
