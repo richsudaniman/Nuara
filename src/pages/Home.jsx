@@ -21,120 +21,72 @@ export default function Home() {
   const { data: user, isLoading: userLoading, error: userError } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
-      try {
-        return await base44.auth.me();
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        throw error;
-      }
+      return await base44.auth.me();
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes - very aggressive caching
-    cacheTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 1,
+    retry: 2,
   });
 
   const { data: trainer, isLoading: trainerLoading } = useQuery({
     queryKey: ['trainer', user?.assigned_trainer_id],
     queryFn: async () => {
       if (!user?.assigned_trainer_id) return null;
-      try {
-        const trainers = await base44.entities.User.filter({ id: user.assigned_trainer_id });
-        return trainers[0] || null;
-      } catch (error) {
-        console.error("Error fetching trainer:", error);
-        return null;
-      }
+      const trainers = await base44.entities.User.filter({ id: user.assigned_trainer_id });
+      return trainers[0] || null;
     },
     enabled: !!user?.assigned_trainer_id,
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    cacheTime: 60 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 0,
   });
 
   const { data: workoutPlans, isLoading: workoutsLoading } = useQuery({
     queryKey: ['workoutPlans', user?.id],
     queryFn: async () => {
-      try {
-        return await base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }, 'order');
-      } catch (error) {
-        console.error("Error fetching workout plans:", error);
-        return [];
-      }
+      return await base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }, 'order');
     },
     initialData: [],
     enabled: !!user?.id,
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    cacheTime: 30 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 0,
   });
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['workoutLogs', user?.id],
     queryFn: async () => {
-      try {
-        return await base44.entities.WorkoutLog.filter({ logged_by_client_id: user.id }, '-completed_date');
-      } catch (error) {
-        console.error("Error fetching workout logs:", error);
-        return [];
-      }
+      return await base44.entities.WorkoutLog.filter({ logged_by_client_id: user.id }, '-completed_date');
     },
     initialData: [],
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 15 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 0,
   });
 
   const { data: calorieLogs, isLoading: calorieLogsLoading } = useQuery({
     queryKey: ['calorieLogs', user?.id],
     queryFn: async () => {
-      try {
-        return await base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date');
-      } catch (error) {
-        console.error("Error fetching calorie logs:", error);
-        return [];
-      }
+      return await base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date');
     },
     initialData: [],
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 15 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 0,
   });
 
-  // Only fetch motivations if we don't have other data loading
   const { data: motivations } = useQuery({
     queryKey: ['motivations', user?.id],
     queryFn: async () => {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        return await base44.entities.DailyMotivation.filter({
-          sent_to_client_id: user.id,
-          date: today,
-          is_active: true
-        });
-      } catch (error) {
-        console.error("Error fetching motivations:", error);
-        return [];
-      }
+      const today = new Date().toISOString().split('T')[0];
+      return await base44.entities.DailyMotivation.filter({
+        sent_to_client_id: user.id,
+        date: today,
+        is_active: true
+      });
     },
     initialData: [],
-    enabled: !!user?.id && !workoutsLoading && !logsLoading,
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    cacheTime: 60 * 60 * 1000,
+    enabled: !!user?.id,
+    staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 0,
   });
 
   // Don't fetch goals on home page - not critical
