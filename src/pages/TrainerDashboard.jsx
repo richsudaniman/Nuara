@@ -313,84 +313,103 @@ export default function TrainerDashboard() {
       )}
 
       {/* Overall Compliance */}
-      {!isLoading && assignments.length > 0 && (
+      {!isLoading && (
         <Card className="bg-white border-2 border-gray-200">
           <CardContent className="p-5">
             <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">OVERALL COMPLIANCE</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold text-gray-600">Workout Adherence</span>
-                  <span className="text-lg font-black italic text-purple-600">{compliance.workout}%</span>
+            {assignments.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-bold text-gray-600">Workout Adherence</span>
+                    <span className="text-lg font-black italic text-purple-600">{compliance.workout}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-purple-600 transition-all" style={{ width: `${compliance.workout}%` }}></div>
+                  </div>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-purple-600 transition-all" style={{ width: `${compliance.workout}%` }}></div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-bold text-gray-600">Nutrition Adherence</span>
+                    <span className="text-lg font-black italic text-green-600">{compliance.nutrition}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-green-600 transition-all" style={{ width: `${compliance.nutrition}%` }}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-bold text-gray-600">Active Tracking</span>
+                    <span className="text-lg font-black italic text-[#0ea5e9]">{compliance.tracking}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#0ea5e9] transition-all" style={{ width: `${compliance.tracking}%` }}></div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold text-gray-600">Nutrition Adherence</span>
-                  <span className="text-lg font-black italic text-green-600">{compliance.nutrition}%</span>
-                </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-600 transition-all" style={{ width: `${compliance.nutrition}%` }}></div>
-                </div>
+            ) : (
+              <div className="text-center py-8">
+                <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 italic">Assign clients to track compliance metrics</p>
               </div>
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold text-gray-600">Active Tracking</span>
-                  <span className="text-lg font-black italic text-[#0ea5e9]">{compliance.tracking}%</span>
-                </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#0ea5e9] transition-all" style={{ width: `${compliance.tracking}%` }}></div>
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
 
       {/* Clients Requiring Attention */}
-      {!isLoading && clientsNeedingAttention.length > 0 && (
+      {!isLoading && (
         <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              {clientsNeedingAttention.length > 0 && (
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              )}
               <h3 className="font-black italic text-[#1a1a1a] text-lg">CLIENTS REQUIRING ATTENTION</h3>
-              <span className="ml-auto bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                {clientsNeedingAttention.length}
-              </span>
+              {clientsNeedingAttention.length > 0 && (
+                <span className="ml-auto bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                  {clientsNeedingAttention.length}
+                </span>
+              )}
             </div>
-            <div className="space-y-2">
-              {clientsNeedingAttention.map(({ client, reasons }) => (
-                <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
-                  <div className="p-3 bg-white rounded-lg border-l-4 border-red-500 hover:shadow-md transition-all cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                        {client.profile_photo_url ? (
-                          <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                          <span className="text-red-600 font-black italic text-sm">
-                            {client.full_name?.charAt(0) || 'C'}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-[#1a1a1a] text-sm">{client.full_name || 'Client'}</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {reasons.map((reason, idx) => (
-                            <span key={idx} className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">
-                              {reason}
+            {clientsNeedingAttention.length > 0 ? (
+              <div className="space-y-2">
+                {clientsNeedingAttention.map(({ client, reasons }) => (
+                  <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
+                    <div className="p-3 bg-white rounded-lg border-l-4 border-red-500 hover:shadow-md transition-all cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                          {client.profile_photo_url ? (
+                            <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <span className="text-red-600 font-black italic text-sm">
+                              {client.full_name?.charAt(0) || 'C'}
                             </span>
-                          ))}
+                          )}
                         </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-[#1a1a1a] text-sm">{client.full_name || 'Client'}</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {reasons.map((reason, idx) => (
+                              <span key={idx} className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">
+                                {reason}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-red-400 flex-shrink-0" />
                       </div>
-                      <ChevronRight className="w-5 h-5 text-red-400 flex-shrink-0" />
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Award className="w-12 h-12 text-green-400 mx-auto mb-3" />
+                <p className="text-gray-600 font-bold italic">All clients on track!</p>
+                <p className="text-sm text-gray-500 mt-1">No clients need attention right now</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
