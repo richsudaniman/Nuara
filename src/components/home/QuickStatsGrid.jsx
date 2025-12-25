@@ -46,25 +46,25 @@ export default function QuickStatsGrid({ stats }) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {statCards.map((stat, index) => (
-        <Card key={index} className="bg-white border border-gray-200 hover:border-[#0ea5e9] hover:shadow-lg transition-all duration-200">
-          <CardContent className="p-4">
-            <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center mb-3`}>
-              <stat.icon className={`w-5 h-5 ${stat.color}`} />
+        <Card key={index} className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-200 rounded-3xl">
+          <CardContent className="p-5">
+            <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center mb-3 shadow-sm`}>
+              <stat.icon className={`w-6 h-6 ${stat.color}`} />
             </div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">{stat.label}</p>
-            <p className="text-2xl font-black italic text-[#1a1a1a]">
+            <p className="text-xs text-gray-400 font-medium mb-1">{stat.label}</p>
+            <p className="text-2xl font-bold text-[#1a1a1a]">
               {stat.value}
-              {stat.suffix && <span className="text-xs font-normal text-gray-600 ml-1">{stat.suffix}</span>}
+              {stat.suffix && <span className="text-sm font-normal text-gray-500 ml-1">{stat.suffix}</span>}
             </p>
             {stat.goal && (
-              <div className="mt-2">
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-500">Goal: {stat.goal}</span>
-                  <span className={stat.color}>{Math.round(stat.progress)}%</span>
+              <div className="mt-3">
+                <div className="flex justify-between text-xs mb-2">
+                  <span className="text-gray-400">Goal: {stat.goal}</span>
+                  <span className={`${stat.color} font-semibold`}>{Math.round(stat.progress)}%</span>
                 </div>
-                <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div 
-                    className={`h-full ${stat.bgColor.replace('/10', '')} transition-all duration-300`}
+                    className={`h-full ${stat.bgColor.replace('/10', '')} transition-all duration-300 rounded-full`}
                     style={{ width: `${stat.progress}%` }}
                   ></div>
                 </div>

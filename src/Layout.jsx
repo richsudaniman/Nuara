@@ -109,38 +109,16 @@ export default function Layout({ children, currentPageName }) {
   return (
     <ErrorBoundary>
       <AuthGuard>
-        <div className="min-h-screen bg-white pb-24 relative overflow-hidden">
-          <style>{`
-            :root {
-              --primary-white: #ffffff;
-              --accent-blue: #0ea5e9;
-              --text-dark: #1a1a1a;
-              --card-light: #f8fafc;
-              --border-gray: #e2e8f0;
-            }
-            
-            .glow-blue {
-              box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);
-            }
-            
-            .glow-blue-intense {
-              box-shadow: 0 8px 30px rgba(14, 165, 233, 0.3);
-            }
-
-            @keyframes pulse-glow {
-              0%, 100% { box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15); }
-              50% { box-shadow: 0 8px 30px rgba(14, 165, 233, 0.3); }
-            }
-            
-            .animate-pulse-glow {
-              animation: pulse-glow 2s ease-in-out infinite;
-            }
-          `}</style>
-
-          {/* Geometric Background Elements */}
-          <div className="absolute top-10 left-5 w-32 h-32 border-2 border-[#0ea5e9]/20 rotate-12 pointer-events-none"></div>
-          <div className="absolute top-40 right-10 w-24 h-24 border border-[#e2e8f0] rotate-45 pointer-events-none"></div>
-          <div className="absolute bottom-40 left-1/4 w-16 h-16 border-2 border-[#0ea5e9]/30 pointer-events-none" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}></div>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 relative overflow-hidden">
+              <style>{`
+                :root {
+                  --primary-white: #ffffff;
+                  --accent-blue: #0ea5e9;
+                  --text-dark: #1a1a1a;
+                  --card-light: #f8fafc;
+                  --border-gray: #e2e8f0;
+                }
+              `}</style>
 
           {/* Header */}
           <header className="bg-white px-6 py-6 sticky top-0 z-50 border-b-2 border-[#0ea5e9] shadow-sm">
@@ -171,8 +149,8 @@ export default function Layout({ children, currentPageName }) {
           </main>
 
           {/* Bottom Navigation */}
-          <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-[#0ea5e9] z-50 shadow-lg">
-            <div className="max-w-md mx-auto flex justify-around items-center px-2 py-3">
+          <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 z-50 shadow-2xl">
+            <div className="max-w-md mx-auto flex justify-around items-center px-2 py-2">
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item.path);
                 const Icon = item.icon;
@@ -180,19 +158,20 @@ export default function Layout({ children, currentPageName }) {
                   <Link
                     key={item.name}
                     to={item.path}
-                    className={`flex flex-col items-center gap-1 transition-all duration-200 relative ${
-                      isActive ? "text-[#0ea5e9] scale-110" : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    className="flex flex-col items-center gap-0.5 transition-all duration-200 relative py-2 px-4"
                   >
+                    {isActive && (
+                      <div className="absolute inset-0 bg-[#0ea5e9]/10 rounded-2xl"></div>
+                    )}
                     <div className="relative">
-                      <Icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]" : ""}`} />
+                      <Icon className={`w-6 h-6 transition-colors ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`} />
                       {item.badge > 0 && (
-                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-[10px] font-black">{item.badge > 9 ? '9+' : item.badge}</span>
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-[8px] font-bold">{item.badge > 9 ? '9+' : item.badge}</span>
                         </div>
                       )}
                     </div>
-                    <span className="text-[10px] font-bold italic">{item.name}</span>
+                    <span className={`text-[10px] font-medium ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`}>{item.name}</span>
                   </Link>
                 );
               })}

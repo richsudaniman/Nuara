@@ -160,10 +160,7 @@ export default function Home() {
   }
 
   return (
-    <div className="p-6 space-y-4 relative">
-      {/* Geometric decorations */}
-      <div className="absolute top-20 right-5 w-16 h-16 border-2 border-[#0ea5e9]/20 rotate-12 pointer-events-none"></div>
-      <div className="absolute bottom-40 left-5 w-12 h-12 border border-gray-200" style={{clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'}}></div>
+    <div className="p-4 space-y-4 relative"
 
       {/* Trainer Card */}
       {trainerLoading ? (
