@@ -125,8 +125,6 @@ export default function Home() {
     }), { protein: 0, carbs: 0, fats: 0 });
 
   const stats = {
-    steps: 7234,
-    stepGoal: user?.daily_step_target || 10000,
     calories: todayCalories,
     calorieGoal: user?.daily_calorie_target || 2200,
     workoutsThisWeek: thisWeekLogs.length,

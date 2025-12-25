@@ -1,20 +1,11 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Footprints, Flame, Dumbbell, Award } from "lucide-react";
+import { Flame, Dumbbell, Award } from "lucide-react";
 
 export default function QuickStatsGrid({ stats }) {
-  const { steps = 0, stepGoal = 10000, calories = 0, calorieGoal = 2200, workoutsThisWeek = 0, currentStreak = 0 } = stats;
+  const { calories = 0, calorieGoal = 2200, workoutsThisWeek = 0, currentStreak = 0 } = stats;
 
   const statCards = [
-    { 
-      icon: Footprints, 
-      label: "Steps", 
-      value: steps.toLocaleString(), 
-      goal: stepGoal.toLocaleString(),
-      progress: Math.min((steps / stepGoal) * 100, 100),
-      color: "text-[#0ea5e9]",
-      bgColor: "bg-[#0ea5e9]/10"
-    },
     { 
       icon: Flame, 
       label: "Calories", 
