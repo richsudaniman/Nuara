@@ -23,15 +23,15 @@ export default function EmptyState({
   };
 
   return (
-    <Card className={`${bgColors[variant]} border-2 border-dashed border-gray-300`}>
+    <Card className="bg-gray-50 border-0 shadow-none rounded-3xl">
       <CardContent className="p-12 text-center">
-        {Icon && <Icon className={`w-16 h-16 ${iconColors[variant]} mx-auto mb-4`} />}
-        <h3 className="text-lg font-black italic text-[#1a1a1a] mb-2">{title}</h3>
-        <p className="text-sm text-gray-600 mb-6 max-w-sm mx-auto">{description}</p>
+        {Icon && <Icon className="w-16 h-16 text-gray-300 mx-auto mb-4" />}
+        <h3 className="text-lg font-bold text-[#1a1a1a] mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto leading-relaxed">{description}</p>
         {actionLabel && onAction && (
           <Button
             onClick={onAction}
-            className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic"
+            className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold rounded-xl"
           >
             {actionLabel}
           </Button>

@@ -51,11 +51,11 @@ export default function Learn() {
             placeholder="Search videos..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white border-gray-300"
+            className="pl-10 bg-white border-gray-200 rounded-xl"
           />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-full sm:w-40 bg-white border-gray-300">
+          <SelectTrigger className="w-full sm:w-40 bg-white border-gray-200 rounded-xl">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -84,12 +84,12 @@ export default function Learn() {
           {filteredVideos.map(video => (
             <Card 
               key={video.id} 
-              className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-colors cursor-pointer"
+              className="bg-white border-0 shadow-sm hover:shadow-md rounded-3xl transition-all cursor-pointer overflow-hidden"
               onClick={() => setSelectedVideo(video)}
             >
               <CardContent className="p-0">
                 <div className="flex gap-4">
-                  <div className="w-32 h-32 bg-gray-100 flex-shrink-0 relative overflow-hidden">
+                  <div className="w-32 h-32 bg-gray-100 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
                     {video.video_url ? (
                       <video 
                         src={video.video_url} 
@@ -106,9 +106,9 @@ export default function Learn() {
                     </div>
                   </div>
 
-                  <div className="flex-1 p-4">
-                    <h3 className="font-black italic text-[#1a1a1a] text-lg mb-1">{video.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{video.description}</p>
+                  <div className="flex-1 p-5">
+                    <h3 className="font-bold text-[#1a1a1a] text-base mb-2">{video.title}</h3>
+                    <p className="text-sm text-gray-500 mb-3 line-clamp-2">{video.description}</p>
                     
                     <div className="flex items-center gap-3 flex-wrap">
                       {video.duration_minutes > 0 && (
@@ -117,11 +117,11 @@ export default function Learn() {
                           <span className="font-semibold">{video.duration_minutes} min</span>
                         </div>
                       )}
-                      <span className="px-2 py-0.5 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full capitalize">
+                      <span className="px-3 py-1 text-xs font-semibold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full capitalize">
                         {video.category}
                       </span>
                       {video.difficulty_level && (
-                        <span className="px-2 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 rounded-full capitalize">
+                        <span className="px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full capitalize">
                           {video.difficulty_level}
                         </span>
                       )}
@@ -168,9 +168,9 @@ export default function Learn() {
             </video>
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-5 space-y-5">
             <div>
-              <h2 className="text-xl font-black italic text-[#1a1a1a] mb-2">{selectedVideo.title}</h2>
+              <h2 className="text-xl font-bold text-[#1a1a1a] mb-3">{selectedVideo.title}</h2>
               
               <div className="flex items-center gap-2 flex-wrap">
                 {selectedVideo.duration_minutes > 0 && (
@@ -191,19 +191,16 @@ export default function Learn() {
             </div>
 
             {selectedVideo.description && (
-              <div className="border-t-2 border-gray-200 pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1 h-6 bg-[#0ea5e9]"></div>
-                  <h3 className="font-black italic text-[#1a1a1a] uppercase text-sm">About This Video</h3>
-                </div>
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedVideo.description}</p>
+              <div className="border-t border-gray-200 pt-5">
+                <h3 className="font-bold text-[#1a1a1a] text-sm mb-3">About This Video</h3>
+                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedVideo.description}</p>
               </div>
             )}
 
             <div className="pt-4">
               <Button
                 onClick={() => setSelectedVideo(null)}
-                className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic text-base py-6 glow-blue"
+                className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold text-base py-6 rounded-xl"
               >
                 Back to Videos
               </Button>
