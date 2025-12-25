@@ -41,25 +41,25 @@ export default function Layout({ children, currentPageName }) {
     refetchInterval: 60 * 1000, // Refresh every minute
   });
 
-  // Determine view mode based on user role/type
+  // Determine view mode based on current page first, then user role/type
   const getViewMode = () => {
     if (!user) return 'client';
     
-    // Check actual user role/type
+    // Check current page name to determine context
+    if (currentPageName?.startsWith('Trainer')) {
+      return 'trainer';
+    }
+    if (currentPageName?.startsWith('Admin')) {
+      return 'admin';
+    }
+    
+    // Fall back to user role/type
     if (user.role === 'admin') return 'admin';
-    if (user.role === 'trainer' || user.user_type === 'trainer') return 'trainer';
+    if (user.user_type === 'trainer') return 'trainer';
     return 'client';
   };
 
   const viewMode = getViewMode();
-  
-  // Debug log to see what's happening
-  React.useEffect(() => {
-    console.log('Current user:', user);
-    console.log('View mode:', viewMode);
-    console.log('User role:', user?.role);
-    console.log('User type:', user?.user_type);
-  }, [user, viewMode]);
   const isTrainerView = viewMode === 'trainer';
   const isAdminView = viewMode === 'admin';
   const isClientView = viewMode === 'client';
