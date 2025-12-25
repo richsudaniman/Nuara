@@ -121,21 +121,18 @@ export default function Layout({ children, currentPageName }) {
               `}</style>
 
           {/* Header */}
-          <header className="bg-white px-6 py-6 sticky top-0 z-50 border-b-2 border-[#0ea5e9] shadow-sm">
+          <header className="bg-white/80 backdrop-blur-xl px-6 py-4 sticky top-0 z-50 border-b border-gray-100">
             <div className="max-w-md mx-auto relative">
               <div className="flex items-center justify-between">
                 <Link to={getHomePath()}>
                   <div className="flex items-center gap-3 cursor-pointer">
-                    <div className="w-12 h-12 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
-                      <Dumbbell className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-2xl flex items-center justify-center shadow-sm">
+                      <Dumbbell className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h1 className="text-3xl font-black italic text-[#1a1a1a] tracking-tight">
-                        EJT <span className="text-[#0ea5e9]">FITNESS</span>
+                      <h1 className="text-xl font-bold text-[#1a1a1a]">
+                        EJT Fitness
                       </h1>
-                      <p className="text-xs text-gray-600 italic">
-                        {isAdminView ? 'Admin Portal' : (isTrainerView ? 'Trainer Portal' : 'Your Daily Hub')}
-                      </p>
                     </div>
                     </div>
                     </Link>
