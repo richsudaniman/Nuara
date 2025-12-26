@@ -28,26 +28,14 @@ export default function Home() {
     retry: 2,
   });
 
-  const { data: trainerAssignment } = useQuery({
-    queryKey: ['trainerAssignment', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const allAssignments = await base44.entities.TrainerClientAssignment.list();
-      return allAssignments.find(a => a.client_id === user.id && a.is_active) || null;
-    },
-    enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-
   const { data: trainer, isLoading: trainerLoading } = useQuery({
-    queryKey: ['trainer', trainerAssignment?.trainer_id],
+    queryKey: ['trainer', user?.assigned_trainer_id],
     queryFn: async () => {
-      if (!trainerAssignment?.trainer_id) return null;
+      if (!user?.assigned_trainer_id) return null;
       const allUsers = await base44.entities.User.list();
-      return allUsers.find(u => u.id === trainerAssignment.trainer_id) || null;
+      return allUsers.find(u => u.id === user.assigned_trainer_id) || null;
     },
-    enabled: !!trainerAssignment?.trainer_id,
+    enabled: !!user?.assigned_trainer_id,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
