@@ -9,23 +9,16 @@ export default function AuthGuard({ children }) {
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
-      try {
-        const isAuth = await base44.auth.isAuthenticated();
-        if (!isAuth) {
-          // Redirect to login
-          base44.auth.redirectToLogin(window.location.pathname);
-          return null;
-        }
-        return await base44.auth.me();
-      } catch (error) {
-        console.error("Auth error:", error);
-        throw error;
+      const isAuth = await base44.auth.isAuthenticated();
+      if (!isAuth) {
+        base44.auth.redirectToLogin(window.location.pathname);
+        return null;
       }
+      return await base44.auth.me();
     },
-    staleTime: 30 * 60 * 1000,
-    cacheTime: 60 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    retry: false,
   });
 
   if (isLoading) {
