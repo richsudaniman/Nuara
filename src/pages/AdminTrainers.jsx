@@ -97,7 +97,7 @@ export default function AdminTrainers() {
   };
 
   const trainers = allUsers.filter(u => u.user_type === 'trainer');
-  const regularUsers = allUsers.filter(u => u.user_type === 'client' || !u.user_type);
+  const regularUsers = allUsers.filter(u => u.user_type !== 'trainer' && u.role !== 'admin');
   
   const filteredTrainers = trainers.filter(trainer =>
     trainer.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
