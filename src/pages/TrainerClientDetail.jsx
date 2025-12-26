@@ -37,9 +37,11 @@ export default function TrainerClientDetail() {
   if (!clientId) {
     return (
       <div className="p-6">
-        <div className="text-center py-12 text-gray-500 italic">
-          No client selected
-        </div>
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-6 text-center">
+            <p className="text-red-600 font-semibold">No client ID provided</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
