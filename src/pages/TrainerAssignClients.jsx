@@ -50,6 +50,11 @@ export default function TrainerAssignClients() {
         throw new Error('This client is already assigned to another trainer');
       }
       
+      // Update the User entity with the trainer ID
+      await base44.entities.User.update(clientId, {
+        assigned_trainer_id: trainer.id
+      });
+      
       return base44.entities.TrainerClientAssignment.create({
         trainer_id: trainer.id,
         client_id: clientId,
@@ -61,14 +66,23 @@ export default function TrainerAssignClients() {
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['allTrainerAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
   });
 
   const unassignClientMutation = useMutation({
-    mutationFn: (assignmentId) => base44.entities.TrainerClientAssignment.delete(assignmentId),
+    mutationFn: async ({ assignmentId, clientId }) => {
+      // Remove the trainer ID from the User entity
+      await base44.entities.User.update(clientId, {
+        assigned_trainer_id: null
+      });
+      
+      return base44.entities.TrainerClientAssignment.delete(assignmentId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
   });
 
@@ -95,7 +109,7 @@ export default function TrainerAssignClients() {
   const handleUnassign = async (clientId) => {
     const assignment = assignments.find(a => a.client_id === clientId && a.is_active);
     if (assignment) {
-      await unassignClientMutation.mutateAsync(assignment.id);
+      await unassignClientMutation.mutateAsync({ assignmentId: assignment.id, clientId });
     }
   };
 
