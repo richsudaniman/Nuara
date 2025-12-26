@@ -29,7 +29,7 @@ export default function AdminClientAssignments() {
   });
 
   const trainers = allUsers.filter(u => u.user_type === 'trainer');
-  const clients = allUsers.filter(u => u.user_type !== 'trainer' && u.role !== 'admin');
+  const clients = allUsers.filter(u => u.user_type !== 'trainer' && u.role !== 'admin' && u.role !== 'trainer');
 
   const assignClientMutation = useMutation({
     mutationFn: async ({ clientId, trainerId }) => {
