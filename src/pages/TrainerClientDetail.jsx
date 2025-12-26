@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, ArrowLeft, Dumbbell, UtensilsCrossed, Target, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import ClientWorkoutPlans from "../components/trainer/ClientWorkoutPlans";
 import ClientNutritionPlans from "../components/trainer/ClientNutritionPlans";
