@@ -85,9 +85,12 @@ export default function TrainerClientDetail() {
           </CardContent>
         </Card>
       ) : (
-        <div className="text-center py-12 text-gray-500 italic">
-          Client not found
-        </div>
+        <Card className="bg-yellow-50 border-yellow-200">
+          <CardContent className="p-6 text-center">
+            <p className="text-yellow-700 font-semibold">Client not found in database</p>
+            <p className="text-sm text-yellow-600 mt-2">Client ID: {clientId}</p>
+          </CardContent>
+        </Card>
       )}
 
       <Tabs defaultValue="workouts" className="w-full">
