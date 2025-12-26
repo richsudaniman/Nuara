@@ -420,8 +420,8 @@ export default function AdminTrainers() {
           <CardContent className="p-5">
             <h3 className="font-black italic text-[#1a1a1a] text-lg mb-3">PROMOTE USERS TO TRAINERS</h3>
             <p className="text-sm text-gray-600 mb-4">Select existing users to promote to trainer status</p>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {regularUsers.slice(0, 10).map(user => (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {regularUsers.map(user => (
                 <div key={user.id} className="flex items-center justify-between p-3 bg-white border border-gray-200">
                   <div>
                     <p className="font-bold text-sm text-[#1a1a1a]">{user.full_name || 'User'}</p>
