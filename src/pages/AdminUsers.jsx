@@ -55,7 +55,7 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-5 relative pb-40">
+    <div className="p-4 md:p-6 space-y-5 relative pb-56">
       <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
