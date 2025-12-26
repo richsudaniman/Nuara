@@ -23,8 +23,8 @@ export default function TrainerClientDetail() {
   const { data: client, isLoading: clientLoading } = useQuery({
     queryKey: ['client', clientId],
     queryFn: async () => {
-      const users = await base44.entities.User.filter({ id: clientId });
-      return users[0] || null;
+      const allUsers = await base44.entities.User.list();
+      return allUsers.find(u => u.id === clientId) || null;
     },
     enabled: !!clientId,
   });
