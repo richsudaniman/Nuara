@@ -192,7 +192,7 @@ export default function TrainerClients() {
           {filteredClients.map(client => {
             const stats = getClientStats(client.id);
             return (
-              <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
+              <Link key={client.id} to={createPageUrl('TrainerClientDetail')} state={{ clientId: client.id }}>
                 <Card className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] hover:shadow-xl transition-all duration-200 overflow-hidden">
                   <CardContent className="p-0">
                     <div className="flex items-stretch">
