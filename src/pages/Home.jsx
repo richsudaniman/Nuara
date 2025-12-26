@@ -32,11 +32,8 @@ export default function Home() {
     queryKey: ['trainerAssignment', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      const assignments = await base44.entities.TrainerClientAssignment.filter({ 
-        client_id: user.id, 
-        is_active: true 
-      });
-      return assignments[0] || null;
+      const allAssignments = await base44.entities.TrainerClientAssignment.list();
+      return allAssignments.find(a => a.client_id === user.id && a.is_active) || null;
     },
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
