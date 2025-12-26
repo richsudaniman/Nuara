@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -114,7 +113,7 @@ export default function AdminTrainers() {
   const isLoading = usersLoading || assignmentsLoading;
 
   return (
-    <div className="p-6 space-y-5 relative">
+    <div className="p-6 pb-32 space-y-5 relative">
       <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
 
       <div className="flex items-center justify-between">
