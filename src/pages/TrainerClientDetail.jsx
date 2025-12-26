@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, ArrowLeft, Dumbbell, UtensilsCrossed, Target, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import ClientWorkoutPlans from "../components/trainer/ClientWorkoutPlans";
 import ClientNutritionPlans from "../components/trainer/ClientNutritionPlans";
@@ -16,8 +16,8 @@ import ClientNotes from "../components/trainer/ClientNotes";
 import ClientMessages from "../components/trainer/ClientMessages"; // New import
 
 export default function TrainerClientDetail() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const clientId = urlParams.get('clientId');
+  const [searchParams] = useSearchParams();
+  const clientId = searchParams.get('clientId');
   console.log('=== TRAINER CLIENT DETAIL PAGE ===');
   console.log('CLIENT ID FROM URL:', clientId);
 
