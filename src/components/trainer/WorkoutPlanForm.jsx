@@ -19,16 +19,22 @@ export default function WorkoutPlanForm({ clientId, trainerId, existingPlan, onC
 
   const savePlanMutation = useMutation({
     mutationFn: async (data) => {
+      console.log('=== CREATING WORKOUT PLAN ===');
+      console.log('CLIENT ID:', clientId);
+      console.log('TRAINER ID:', trainerId);
       const planData = {
         ...data,
         assigned_to_client_id: clientId,
         created_by_trainer_id: trainerId,
       };
+      console.log('PLAN DATA TO SAVE:', planData);
 
       if (existingPlan?.id) {
         return base44.entities.WorkoutPlan.update(existingPlan.id, planData);
       } else {
-        return base44.entities.WorkoutPlan.create(planData);
+        const result = await base44.entities.WorkoutPlan.create(planData);
+        console.log('WORKOUT PLAN CREATED:', result);
+        return result;
       }
     },
     onSuccess: () => {

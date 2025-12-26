@@ -18,6 +18,8 @@ import ClientMessages from "../components/trainer/ClientMessages"; // New import
 export default function TrainerClientDetail() {
   const urlParams = new URLSearchParams(window.location.search);
   const clientId = urlParams.get('clientId');
+  console.log('=== TRAINER CLIENT DETAIL PAGE ===');
+  console.log('CLIENT ID FROM URL:', clientId);
 
   const { data: client, isLoading: clientLoading } = useQuery({
     queryKey: ['client', clientId],
