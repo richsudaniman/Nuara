@@ -32,8 +32,8 @@ export default function Home() {
     queryKey: ['trainer', user?.assigned_trainer_id],
     queryFn: async () => {
       if (!user?.assigned_trainer_id) return null;
-      const trainers = await base44.entities.User.filter({ id: user.assigned_trainer_id });
-      return trainers[0] || null;
+      const allUsers = await base44.entities.User.list();
+      return allUsers.find(u => u.id === user.assigned_trainer_id) || null;
     },
     enabled: !!user?.assigned_trainer_id,
     staleTime: 5 * 60 * 1000,
@@ -165,7 +165,7 @@ export default function Home() {
       {trainerLoading ? (
         <Skeleton className="h-24 rounded-lg bg-gray-100" />
       ) : (
-        <TrainerCard trainer={trainer} />
+        <TrainerCard trainer={trainer} clientName={user?.full_name} />
       )}
 
       {/* Daily Progress Bar */}
