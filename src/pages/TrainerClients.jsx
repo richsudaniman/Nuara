@@ -20,7 +20,10 @@ export default function TrainerClients() {
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['trainerAssignments', user?.id],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: user.id, is_active: true }),
+    queryFn: async () => {
+      const all = await base44.entities.TrainerClientAssignment.list();
+      return all.filter(a => a.trainer_id === user.id && a.is_active);
+    },
     initialData: [],
     enabled: !!user?.id,
   });
