@@ -158,8 +158,8 @@ EJT Fitness Team`
                 
                 // Send notification to trainer
                 try {
-                    const trainers = await base44.asServiceRole.entities.User.filter({ id: assigned_trainer_id });
-                    const trainer = trainers[0];
+                    const allUsers = await base44.asServiceRole.entities.User.list();
+                    const trainer = allUsers.find(u => u.id === assigned_trainer_id);
                     
                     if (trainer?.email) {
                         await base44.integrations.Core.SendEmail({
