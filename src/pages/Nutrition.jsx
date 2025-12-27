@@ -25,7 +25,7 @@ export default function Nutrition() {
     retry: 1,
   });
 
-  const { data: meals, isLoading: mealsLoading } = useQuery({
+  const { data: meals = [], isLoading: mealsLoading } = useQuery({
     queryKey: ['meals', user?.id],
     queryFn: async () => {
       console.log('FILTERING NUTRITION PLANS FOR CLIENT ID:', user.id);
@@ -33,16 +33,14 @@ export default function Nutrition() {
       console.log('FOUND NUTRITION PLANS:', plans.length, plans);
       return plans;
     },
-    initialData: [],
     enabled: !!user?.id,
     staleTime: 15 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: calorieLogs, isLoading: logsLoading } = useQuery({
+  const { data: calorieLogs = [], isLoading: logsLoading } = useQuery({
     queryKey: ['calorieLogs', user?.id],
     queryFn: () => base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date'),
-    initialData: [],
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
