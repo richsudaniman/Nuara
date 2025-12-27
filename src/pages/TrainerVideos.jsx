@@ -265,16 +265,20 @@ export default function TrainerVideos() {
         </Card>
       )}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <Input
-          placeholder="Search videos..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] h-12 rounded-xl text-base"
-        />
-      </div>
+      {/* Search & Filters */}
+      <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+        <CardContent className="p-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search by title, description, or tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-gray-50 border-transparent focus:bg-white focus:border-[#0ea5e9] h-11 rounded-lg text-base transition-all"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Videos Grid */}
       {isLoading ? (
