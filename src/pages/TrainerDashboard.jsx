@@ -18,77 +18,70 @@ export default function TrainerDashboard() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: assignments, isLoading: assignmentsLoading } = useQuery({
+  const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
     queryKey: ['trainerAssignments', trainer?.id],
     queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: trainer.id, is_active: true }),
-    initialData: [],
     enabled: !!trainer?.id,
-    staleTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: clients, isLoading: clientsLoading } = useQuery({
-    queryKey: ['trainerClients', trainer?.id],
+  const { data: clients = [], isLoading: clientsLoading } = useQuery({
+    queryKey: ['trainerClients', trainer?.id, assignments],
     queryFn: async () => {
       const clientIds = assignments.map(a => a.client_id);
       if (clientIds.length === 0) return [];
       const allUsers = await base44.entities.User.list();
       return allUsers.filter(u => clientIds.includes(u.id));
     },
-    initialData: [],
     enabled: !!trainer?.id && assignments.length > 0,
-    staleTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: allWorkoutPlans, isLoading: plansLoading } = useQuery({
+  const { data: allWorkoutPlans = [], isLoading: plansLoading } = useQuery({
     queryKey: ['allWorkoutPlans', trainer?.id],
     queryFn: async () => {
       return await base44.entities.WorkoutPlan.filter({ created_by_trainer_id: trainer.id });
     },
-    initialData: [],
     enabled: !!trainer?.id,
-    staleTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: allNutritionPlans, isLoading: nutritionLoading } = useQuery({
+  const { data: allNutritionPlans = [], isLoading: nutritionLoading } = useQuery({
     queryKey: ['allNutritionPlans', trainer?.id],
     queryFn: async () => {
       return await base44.entities.NutritionPlan.filter({ created_by_trainer_id: trainer.id });
     },
-    initialData: [],
     enabled: !!trainer?.id,
-    staleTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: allGoals, isLoading: goalsLoading } = useQuery({
+  const { data: allGoals = [], isLoading: goalsLoading } = useQuery({
     queryKey: ['allGoals', trainer?.id],
     queryFn: async () => {
       return await base44.entities.FitnessGoal.filter({ created_by_trainer_id: trainer.id, is_active: true });
     },
-    initialData: [],
-    enabled: !!trainer?.id,
-    staleTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: recentWorkoutLogs, isLoading: workoutLogsLoading } = useQuery({
-    queryKey: ['recentWorkoutLogs'],
-    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 50),
-    initialData: [],
     enabled: !!trainer?.id,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const { data: recentCalorieLogs, isLoading: calorieLogsLoading } = useQuery({
-    queryKey: ['recentCalorieLogs'],
-    queryFn: () => base44.entities.CalorieLog.list('-created_date', 50),
-    initialData: [],
-    enabled: !!trainer?.id,
-    staleTime: 5 * 60 * 1000,
+  const { data: recentWorkoutLogs = [], isLoading: workoutLogsLoading } = useQuery({
+    queryKey: ['recentWorkoutLogs', assignments],
+    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 100),
+    enabled: !!trainer?.id && assignments.length > 0,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: recentCalorieLogs = [], isLoading: calorieLogsLoading } = useQuery({
+    queryKey: ['recentCalorieLogs', assignments],
+    queryFn: () => base44.entities.CalorieLog.list('-created_date', 100),
+    enabled: !!trainer?.id && assignments.length > 0,
+    staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
