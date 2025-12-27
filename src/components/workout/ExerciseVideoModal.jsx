@@ -12,7 +12,7 @@ export default function ExerciseVideoModal({ exercise, isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl bg-white border-none shadow-2xl p-0 overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-lg bg-white border-none shadow-2xl p-0 overflow-hidden rounded-2xl">
         <div className="flex flex-col">
           {/* Video Player Header */}
           <div className="bg-black aspect-video relative flex items-center justify-center group">
