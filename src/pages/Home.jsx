@@ -11,6 +11,7 @@ import MotivationalMessage from "../components/home/MotivationalMessage";
 import TodayWorkoutPreview from "../components/home/TodayWorkoutPreview";
 import NutritionSummary from "../components/home/NutritionSummary";
 import AuthMeTest from "../components/home/AuthMeTest";
+import PlansDiagnostic from "../components/home/PlansDiagnostic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 
@@ -232,6 +233,9 @@ export default function Home() {
           macros={todayMacros}
         />
       )}
+
+      {/* Plans Diagnostic */}
+      <PlansDiagnostic />
 
       {/* Auth Debug Test */}
       <AuthMeTest />
