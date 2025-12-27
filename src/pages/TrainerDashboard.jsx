@@ -85,9 +85,7 @@ export default function TrainerDashboard() {
     refetchOnWindowFocus: false,
   });
 
-  const stats = [
-    { icon: Users, label: "Active Clients", value: assignments.length, color: "text-[#0ea5e9]", bgColor: "bg-[#0ea5e9]/10", link: createPageUrl("TrainerClients") },
-  ];
+  // Stats data is now used directly in the JSX
 
   const getClientWeeklyWorkouts = (clientId) => {
     const thisWeekStart = new Date();
