@@ -329,410 +329,332 @@ export default function TrainerDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <div className="absolute top-20 right-5 w-16 h-16 border-2 border-gray-200 rotate-45 pointer-events-none lg:hidden"></div>
-
-      <div className="max-w-md lg:max-w-none">
-        <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">TRAINER DASHBOARD</h1>
-        <p className="text-gray-600 italic">Manage your clients and their progress</p>
+      
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
       </div>
 
-      {/* Stats Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-28 rounded-lg bg-gray-100" />)}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {stats.map((stat, index) => (
-            <Link key={index} to={stat.link}>
-              <Card className="bg-white border border-gray-200 hover:border-[#0ea5e9] transition-colors cursor-pointer">
-                <CardContent className="p-4">
-                  <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center mb-3`}>
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                  </div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">{stat.label}</p>
-                  <p className="text-3xl font-black italic text-[#1a1a1a]">{stat.value}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Quick Actions */}
-      <Card className="bg-white border-2 border-gray-200">
-        <CardContent className="p-5">
-          <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">QUICK ACTIONS</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Link to={createPageUrl("TrainerAssignClients")}>
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <UserPlus className="w-6 h-6 text-green-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Assign New Clients</p>
-                    <p className="text-xs text-gray-600">Take on new clients to train</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("TrainerClients")}>
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-[#0ea5e9] hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <Users className="w-6 h-6 text-[#0ea5e9]" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Manage Clients</p>
-                    <p className="text-xs text-gray-600">View and update client programs</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-
+      {/* Active Clients Card */}
+      <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Users className="w-5 h-5 text-[#0ea5e9]" />
+            </div>
+            <h3 className="font-semibold text-gray-900">Active Clients</h3>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">ACTIVE CLIENTS</span>
+            <span className="text-5xl font-bold text-[#0ea5e9]">{assignments.length}</span>
           </div>
         </CardContent>
       </Card>
 
-      {/* Overall Compliance Leaderboard */}
-      {!isLoading && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Leaderboard */}
-          <Card className="bg-white border-2 border-gray-200">
-            <CardContent className="p-5">
-              <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">COMPLIANCE LEADERBOARD</h3>
-              {assignments.length > 0 ? (
-                <>
-                  {/* Overall Trainer Score */}
-                  <div className="mb-6 p-4 bg-gradient-to-r from-[#0ea5e9]/10 to-blue-50 rounded-lg border-2 border-[#0ea5e9]">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-bold text-gray-600 uppercase">Your Overall Score</p>
-                        <p className="text-xs text-gray-500 mt-1">Average of all {clientLeaderboard.length} clients</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-black ${
-                          overallTrainerScore >= 80 ? 'bg-green-500 text-white' :
-                          overallTrainerScore >= 50 ? 'bg-yellow-500 text-white' :
-                          'bg-red-500 text-white'
-                        }`}>
-                          {overallTrainerScore}
-                        </div>
-                        <TrendingUp className={`w-8 h-8 ${
-                          overallTrainerScore >= 80 ? 'text-green-500' :
-                          overallTrainerScore >= 50 ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Client Leaderboard */}
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {clientLeaderboard.map((item, index) => (
-                      <Link key={item.client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${item.client.id}`}>
-                        <div className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
-                          item.score >= 80 ? 'bg-green-50 border-green-200 hover:border-green-400' :
-                          item.score >= 50 ? 'bg-yellow-50 border-yellow-200 hover:border-yellow-400' :
-                          'bg-red-50 border-red-200 hover:border-red-400'
-                        }`}>
-                          {/* Rank */}
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex-shrink-0">
-                            <span className="text-sm font-black text-gray-700">#{index + 1}</span>
-                          </div>
-
-                          {/* Client Avatar */}
-                          <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
-                            {item.client.profile_photo_url ? (
-                              <img src={item.client.profile_photo_url} alt={item.client.full_name} className="w-full h-full rounded-full object-cover" />
-                            ) : (
-                              <span className="text-[#0ea5e9] font-black italic text-lg">
-                                {item.client.full_name?.charAt(0) || 'C'}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Client Info */}
-                          <div className="flex-1 min-w-0">
-                            <p className="font-bold text-[#1a1a1a] text-sm truncate">{item.client.full_name || 'Client'}</p>
-                            <p className="text-xs text-gray-500 truncate">{item.client.email}</p>
-                          </div>
-
-                          {/* Compliance Score */}
-                          <div className={`px-4 py-2 rounded-full font-black text-lg ${
-                            item.score >= 80 ? 'bg-green-500 text-white' :
-                            item.score >= 50 ? 'bg-yellow-500 text-white' :
-                            'bg-red-500 text-white'
-                          }`}>
-                            {item.score}%
-                          </div>
-
-                          <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 italic">Assign clients to track compliance metrics</p>
+      {/* Quick Actions */}
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link to={createPageUrl("TrainerAssignClients")}>
+            <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <UserPlus className="w-6 h-6 text-white" />
                 </div>
-              )}
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Assign New Clients</h4>
+                  <p className="text-teal-100 text-sm">Take on new clients to train</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          <Link to={createPageUrl("TrainerClients")}>
+            <div className="bg-gradient-to-r from-blue-500 to-[#0ea5e9] rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Manage Clients</h4>
+                  <p className="text-blue-100 text-sm">View and update client programs</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Compliance Leaderboard (Left - 5 cols) */}
+        <div className="lg:col-span-5 space-y-6">
+          <h3 className="text-lg font-bold text-gray-900">Compliance Leaderboard</h3>
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-0">
+              {/* Overall Score */}
+              <div className="p-6 bg-blue-50/50 border-b border-blue-100 flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-gray-900">YOUR OVERALL SCORE</p>
+                  <p className="text-xs text-gray-500 mt-1">Average of all {clientLeaderboard.length} clients</p>
+                </div>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-sm ${
+                  overallTrainerScore >= 80 ? 'bg-[#0ea5e9]' :
+                  overallTrainerScore >= 50 ? 'bg-yellow-500' :
+                  'bg-red-500'
+                }`}>
+                  {overallTrainerScore}
+                </div>
+              </div>
+
+              {/* Client List */}
+              <div className="max-h-[400px] overflow-y-auto">
+                {assignments.length > 0 ? (
+                  clientLeaderboard.map((item, index) => (
+                    <Link key={item.client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${item.client.id}`}>
+                      <div className="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 cursor-pointer">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                          #{index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-gray-900 text-sm">{item.client.full_name || 'Client'}</p>
+                          <p className="text-xs text-gray-500">{item.client.email}</p>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          item.score >= 80 ? 'bg-[#0ea5e9] text-white' :
+                          item.score >= 50 ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {item.score}%
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-8 text-center text-gray-500 text-sm">
+                    No active clients
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Analytics Chart */}
-          <Card className="bg-white border-2 border-gray-200">
-            <CardContent className="p-5">
-              <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">COMPLIANCE ANALYTICS</h3>
+        {/* Compliance Analytics (Right - 7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
+          <h3 className="text-lg font-bold text-gray-900">Compliance Analytics</h3>
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden h-full">
+            <CardContent className="p-6">
               {assignments.length > 0 ? (
                 <>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={[
-                      { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
-                      { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
-                      { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="metric" stroke="#6b7280" style={{ fontSize: '14px', fontWeight: 'bold' }} />
-                      <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} domain={[0, 100]} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#fff', 
-                          border: '2px solid #0ea5e9',
-                          borderRadius: '8px',
-                          fontWeight: 'bold'
-                        }}
-                        formatter={(value) => `${value}%`}
-                      />
-                      <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                        {[
-                          { metric: 'Workouts', value: compliance.workout, color: '#9333ea' },
-                          { metric: 'Nutrition', value: compliance.nutrition, color: '#16a34a' },
-                          { metric: 'Tracking', value: compliance.tracking, color: '#0ea5e9' }
-                        ].map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="h-[250px] w-full mb-6">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={[
+                        { metric: 'Workouts', value: compliance.workout, color: '#e2e8f0', activeColor: '#9333ea' },
+                        { metric: 'Nutrition', value: compliance.nutrition, color: '#e2e8f0', activeColor: '#14b8a6' },
+                        { metric: 'Tracking', value: compliance.tracking, color: '#e2e8f0', activeColor: '#0ea5e9' }
+                      ]} barSize={60}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <YAxis hide domain={[0, 100]} />
+                        <XAxis dataKey="metric" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                        <Tooltip 
+                          cursor={{fill: 'transparent'}}
+                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        />
+                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                          {
+                            [
+                              { value: compliance.workout, color: '#d8b4fe' }, // Light purple
+                              { value: compliance.nutrition, color: '#99f6e4' }, // Light teal
+                              { value: compliance.tracking, color: '#bae6fd' }  // Light blue
+                            ].map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))
+                          }
+                        </Bar>
+                         {/* Overlay bar for "filled" look if needed, simplified to just colored bars matching the image's "full height background" style? 
+                             The image has gray background bars and colored foreground bars. Recharts handles this with stacked bars or custom shapes.
+                             For simplicity, I'll stick to simple colored bars but match the image colors better.
+                             Image: Workouts (Gray?), Nutrition (Teal), Tracking (Blue). 
+                             Let's use the colors from the image.
+                          */}
+                          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                            {[
+                                { color: '#cbd5e1' }, // Workouts - Gray in image? Actually looks like empty gray bar and no fill? Or maybe low score?
+                                { color: '#2dd4bf' }, // Nutrition - Teal
+                                { color: '#0ea5e9' }  // Tracking - Blue
+                            ].map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
 
-                  {/* Breakdown Stats */}
-                  <div className="mt-6 grid grid-cols-3 gap-3">
-                    <div className="p-3 bg-purple-50 rounded-lg border-2 border-purple-200">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Dumbbell className="w-4 h-4 text-purple-600" />
-                        <p className="text-xs font-bold text-purple-900 uppercase">Workouts</p>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="p-4 bg-gray-50 rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Dumbbell className="w-4 h-4 text-gray-500" />
+                        <span className="text-xs font-bold text-gray-500 uppercase">Workouts</span>
                       </div>
-                      <p className="text-2xl font-black text-purple-600">{compliance.workout}%</p>
-                      <p className="text-xs text-purple-700 mt-1">3+ per week</p>
+                      <p className="text-2xl font-bold text-gray-900">{compliance.workout}%</p>
+                      <p className="text-xs text-gray-500">3+ per week</p>
                     </div>
-
-                    <div className="p-3 bg-green-50 rounded-lg border-2 border-green-200">
-                      <div className="flex items-center gap-2 mb-1">
-                        <UtensilsCrossed className="w-4 h-4 text-green-600" />
-                        <p className="text-xs font-bold text-green-900 uppercase">Nutrition</p>
+                    <div className="p-4 bg-teal-50 rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <UtensilsCrossed className="w-4 h-4 text-teal-600" />
+                        <span className="text-xs font-bold text-teal-600 uppercase">Nutrition</span>
                       </div>
-                      <p className="text-2xl font-black text-green-600">{compliance.nutrition}%</p>
-                      <p className="text-xs text-green-700 mt-1">Within target</p>
+                      <p className="text-2xl font-bold text-teal-600">{compliance.nutrition}%</p>
+                      <p className="text-xs text-teal-600/80">Within target</p>
                     </div>
-
-                    <div className="p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
-                      <div className="flex items-center gap-2 mb-1">
+                    <div className="p-4 bg-blue-50 rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
                         <Activity className="w-4 h-4 text-blue-600" />
-                        <p className="text-xs font-bold text-blue-900 uppercase">Tracking</p>
+                        <span className="text-xs font-bold text-blue-600 uppercase">Tracking</span>
                       </div>
-                      <p className="text-2xl font-black text-blue-600">{compliance.tracking}%</p>
-                      <p className="text-xs text-blue-700 mt-1">Daily logs</p>
+                      <p className="text-2xl font-bold text-blue-600">{compliance.tracking}%</p>
+                      <p className="text-xs text-blue-600/80">Daily logs</p>
                     </div>
                   </div>
                 </>
               ) : (
-                <div className="text-center py-12">
-                  <BarChart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 italic">Assign clients to view analytics</p>
+                <div className="h-full flex flex-col items-center justify-center text-gray-400 min-h-[300px]">
+                  <BarChartIcon className="w-12 h-12 mb-2 opacity-20" />
+                  <p>No data available</p>
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
-      )}
+      </div>
 
       {/* Clients Requiring Attention */}
-      {!isLoading && (
-        <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              {clientsNeedingAttention.length > 0 && (
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              )}
-              <h3 className="font-black italic text-[#1a1a1a] text-lg">CLIENTS REQUIRING ATTENTION</h3>
-              {clientsNeedingAttention.length > 0 && (
-                <span className="ml-auto bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                  {clientsNeedingAttention.length}
-                </span>
-              )}
-            </div>
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Clients Requiring Attention</h3>
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+          <CardContent className="p-0">
             {clientsNeedingAttention.length > 0 ? (
-              <div className="space-y-2">
+              <div className="divide-y divide-gray-100">
                 {clientsNeedingAttention.map(({ client, reasons }) => (
                   <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
-                    <div className="p-3 bg-white rounded-lg border-l-4 border-red-500 hover:shadow-md transition-all cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                          {client.profile_photo_url ? (
-                            <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                          ) : (
-                            <span className="text-red-600 font-black italic text-sm">
-                              {client.full_name?.charAt(0) || 'C'}
-                            </span>
-                          )}
+                    <div className="p-6 hover:bg-red-50/30 transition-colors cursor-pointer flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">
+                          {client.full_name?.charAt(0) || 'C'}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-[#1a1a1a] text-sm">{client.full_name || 'Client'}</p>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {reasons.map((reason, idx) => (
-                              <span key={idx} className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">
-                                {reason}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-red-400 flex-shrink-0" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
                       </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-gray-900">{client.full_name}</h4>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {reasons.map((reason, idx) => (
+                            <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              {reason}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                        View Profile
+                      </Button>
                     </div>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Award className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                <p className="text-gray-600 font-bold italic">All clients on track!</p>
-                <p className="text-sm text-gray-500 mt-1">No clients need attention right now</p>
+              <div className="py-12 flex flex-col items-center justify-center bg-blue-50/30">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-8 h-8 text-[#0ea5e9]">🔔</div>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">All clients on track!</h3>
+                <p className="text-gray-500">No clients need attention right now.</p>
               </div>
             )}
           </CardContent>
         </Card>
-      )}
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* My Clients - Quick View */}
-        {clients.length > 0 && (
-          <Card className="bg-white border-2 border-gray-200">
-            <CardContent className="p-5">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-black italic text-[#1a1a1a] text-lg">MY CLIENTS</h3>
-              <Link to={createPageUrl("TrainerClients")}>
-                <Button variant="ghost" className="text-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-[#0ea5e9]/10 font-bold italic text-xs">
-                  View All
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-            <div className="space-y-2">
-              {clients.slice(0, 5).map(client => {
-                const weeklyWorkouts = getClientWeeklyWorkouts(client.id);
-                return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* My Clients */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900">My Clients</h3>
+            <Link to={createPageUrl("TrainerClients")} className="text-sm font-semibold text-[#0ea5e9] flex items-center">
+              View All <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-0">
+              <div className="divide-y divide-gray-100">
+                {clients.slice(0, 5).map(client => (
                   <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
-                    <div className="p-3 bg-gray-50 rounded border border-gray-200 hover:border-[#0ea5e9] hover:shadow-sm transition-all cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
-                          {client.profile_photo_url ? (
-                            <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                          ) : (
-                            <span className="text-[#0ea5e9] font-black italic text-lg">
-                              {client.full_name?.charAt(0) || 'C'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-bold italic text-[#1a1a1a] text-sm">{client.full_name || 'Client'}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Flame className="w-3 h-3 text-orange-500" />
-                            <span className="text-xs text-gray-600 font-semibold">{weeklyWorkouts} workouts this week</span>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                    <div className="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                        {client.profile_photo_url ? (
+                          <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-5 h-5 text-gray-500" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-gray-900 text-sm">{client.full_name || 'Client'}</p>
+                        <p className="text-xs text-gray-500">{client.email}</p>
+                      </div>
+                      <div className="bg-[#0ea5e9] text-white text-xs font-bold px-3 py-1 rounded-full">
+                        {getClientComplianceScore(client.id)}%
                       </div>
                     </div>
                   </Link>
-                );
-              })}
+                ))}
+                {clients.length === 0 && (
+                  <div className="p-6 text-center text-gray-500 text-sm">No clients assigned yet</div>
+                )}
               </div>
             </CardContent>
           </Card>
-        )}
+        </div>
 
         {/* Recent Activity */}
-        <Card className="bg-white border-2 border-gray-200 overflow-hidden">
-          <CardContent className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-[#0ea5e9]" />
-            <h3 className="font-black italic text-[#1a1a1a] text-lg">RECENT CLIENT ACTIVITY</h3>
-          </div>
-          {isLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded bg-gray-100" />)}
-            </div>
-          ) : getRecentActivity().length > 0 ? (
-            <div className="space-y-2">
-              {getRecentActivity().map((activity, idx) => {
-                const client = clients.find(c => c.id === activity.clientId);
-                const isWorkout = activity.type === 'workout';
-                return (
-                  <div key={idx} className={`flex items-center justify-between p-3 bg-gray-50 rounded border-l-4 ${isWorkout ? 'border-purple-500' : 'border-green-500'} min-w-0`}>
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
-                        {client?.profile_photo_url ? (
-                          <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                          <span className="text-[#0ea5e9] font-black italic text-sm">
-                            {client?.full_name?.charAt(0) || 'C'}
-                          </span>
-                        )}
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Client Activity</h3>
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-0">
+              <div className="divide-y divide-gray-100">
+                {getRecentActivity().length > 0 ? (
+                  getRecentActivity().slice(0, 5).map((activity, idx) => {
+                    const client = clients.find(c => c.id === activity.clientId);
+                    return (
+                      <div key={idx} className="p-4 flex gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {client?.profile_photo_url ? (
+                            <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="w-5 h-5 text-gray-500" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start">
+                            <p className="font-bold text-gray-900 text-sm">{client?.full_name || 'Client'}</p>
+                            <span className="text-xs text-gray-400">{format(new Date(activity.date), 'MMM d')}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-0.5">
+                            {activity.type === 'workout' 
+                              ? `Completed workout (${activity.exerciseCount} exercises)`
+                              : `Logged ${activity.mealName} (${activity.calories} cal)`
+                            }
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        {isWorkout ? (
-                          <>
-                            <p className="font-bold text-sm text-[#1a1a1a] truncate">Completed Workout</p>
-                            <p className="text-xs text-gray-500 truncate">{client?.full_name || 'Client'} • {activity.exerciseCount} exercises</p>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-bold text-sm text-[#1a1a1a] truncate">{activity.mealName}</p>
-                            <p className="text-xs text-gray-500 truncate">{client?.full_name || 'Client'} • {activity.calories} cal</p>
-                          </>
-                        )}
-                      </div>
-                      {isWorkout ? (
-                        <Dumbbell className="w-5 h-5 text-purple-600" />
-                      ) : (
-                        <UtensilsCrossed className="w-5 h-5 text-green-600" />
-                      )}
-                    </div>
-                    <div className="text-right ml-3">
-                      <p className="text-xs text-gray-400">{format(new Date(activity.date), 'MMM d')}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Activity className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-500 italic">No recent activity from your clients</p>
-              {assignments.length === 0 && (
-                <Link to={createPageUrl("TrainerAssignClients")} className="mt-3 inline-block">
-                  <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic shadow-md">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Assign Your First Client
-                  </Button>
-                </Link>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    );
+                  })
+                ) : (
+                  <div className="p-6 text-center text-gray-500 text-sm">No recent activity</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
