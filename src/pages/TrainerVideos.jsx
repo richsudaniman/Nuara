@@ -256,74 +256,84 @@ export default function TrainerVideos() {
 
       {/* Videos Grid */}
       {isLoading ? (
-        <div className="grid gap-3">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-lg bg-gray-100" />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-64 rounded-xl bg-gray-100" />)}
         </div>
       ) : filteredVideos.length > 0 ? (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredVideos.map(video => (
             <Card 
               key={video.id} 
-              className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-colors cursor-pointer"
-              onClick={() => setSelectedVideo(video)} // Open player on card click
+              className="bg-white border-none shadow-sm hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden cursor-pointer group flex flex-col h-full"
+              onClick={() => setSelectedVideo(video)}
             >
-              <CardContent className="p-0">
-                <div className="flex gap-4">
-                  <div className="w-32 h-32 bg-gray-100 flex-shrink-0 relative overflow-hidden">
-                    {video.video_url ? (
-                      <video 
-                        src={video.video_url} 
-                        className="w-full h-full object-cover"
-                        preload="metadata"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Play className="w-12 h-12 text-[#0ea5e9]" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                      <Play className="w-12 h-12 text-white fill-current" />
-                    </div>
+              <div className="aspect-video bg-gray-100 relative overflow-hidden group-hover:opacity-90 transition-opacity">
+                {video.video_url ? (
+                  <video 
+                    src={video.video_url} 
+                    className="w-full h-full object-cover"
+                    preload="metadata"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                    <Video className="w-12 h-12 text-gray-300" />
                   </div>
-
-                  <div className="flex-1 p-4">
-                    <h3 className="font-black italic text-[#1a1a1a] text-lg mb-1">{video.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{video.description}</p>
-                    
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {video.duration_minutes > 0 && (
-                        <span className="text-xs text-gray-500 font-semibold">{video.duration_minutes} min</span>
-                      )}
-                      <span className="px-2 py-0.5 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full">
-                        {video.category}
-                      </span>
-                      {video.difficulty_level && (
-                        <span className="px-2 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">
-                          {video.difficulty_level}
-                        </span>
-                      )}
-                    </div>
-
-                    <Button 
-                      size="sm" 
-                      className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic mt-3"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent the card's onClick from firing
-                        setSelectedVideo(video);
-                      }}
-                    >
-                      <Play className="w-4 h-4 mr-1" />
-                      Watch
-                    </Button>
+                )}
+                <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                    <Play className="w-5 h-5 text-[#0ea5e9] ml-1" />
                   </div>
+                </div>
+                {video.duration_minutes > 0 && (
+                  <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 rounded text-xs font-medium text-white">
+                    {video.duration_minutes}:00
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="p-4 flex-1 flex flex-col">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-gray-900 line-clamp-1 flex-1 pr-2">{video.title}</h3>
+                  <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#0ea5e9] rounded-md flex-shrink-0">
+                    {video.category}
+                  </span>
+                </div>
+                
+                <p className="text-sm text-gray-500 mb-4 line-clamp-2 flex-1">{video.description}</p>
+                
+                <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{new Date(video.created_date).toLocaleDateString()}</span>
+                  </div>
+                  {video.difficulty_level && (
+                    <span className="capitalize">{video.difficulty_level}</span>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500 italic">
-          {searchQuery ? "No videos found matching your search" : "No videos uploaded yet. Click 'Upload' to add one."}
+        <div className="py-12 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Video className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="font-bold text-gray-900 text-lg mb-1">
+            {searchQuery ? "No Videos Found" : "No Videos Yet"}
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+            {searchQuery ? "Try adjusting your search terms" : "Upload your first video to start building your library."}
+          </p>
+          {!searchQuery && (
+            <Button 
+              onClick={() => setShowForm(true)}
+              className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Upload First Video
+            </Button>
+          )}
         </div>
       )}
 
