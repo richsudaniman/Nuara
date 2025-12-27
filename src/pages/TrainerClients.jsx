@@ -153,21 +153,16 @@ export default function TrainerClients() {
   const isLoading = assignmentsLoading || clientsLoading || logsLoading || calorieLogsLoading || goalsLoading || plansLoading;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
-      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
-
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
-            <Users className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-black italic text-[#1a1a1a]">MY CLIENTS</h1>
-            <p className="text-sm text-gray-600 italic">{assignments.length} Active</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Clients</h1>
+          <p className="text-sm text-gray-500 mt-1">{assignments.length} Active Clients</p>
         </div>
         <Link to={createPageUrl("TrainerAssignClients")}>
-          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic shadow-md">
+          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm rounded-lg">
             <UserPlus className="w-4 h-4 mr-2" />
             Assign Client
           </Button>
@@ -176,91 +171,72 @@ export default function TrainerClients() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
-          placeholder="Search by name or email..."
+          placeholder="Search clients..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white border-2 border-gray-200 focus:border-[#0ea5e9]"
+          className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] h-12 rounded-xl text-base"
         />
       </div>
 
       {/* Clients List */}
       {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 rounded-lg bg-gray-100" />)}
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 rounded-xl bg-gray-100" />)}
         </div>
       ) : filteredClients.length > 0 ? (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4">
           {filteredClients.map(client => {
             const stats = getClientStats(client.id);
             return (
               <Link key={client.id} to={createPageUrl('TrainerClientDetail')} state={{ clientId: client.id }}>
-                <Card className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] hover:shadow-xl transition-all duration-200 overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="flex items-stretch">
-                      {/* Left accent bar */}
-                      <div className={`w-2 ${stats.complianceScore >= 80 ? 'bg-green-500' : stats.complianceScore >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+                <Card className="bg-white border-none shadow-sm hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden cursor-pointer group">
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-5">
+                      {/* Avatar */}
+                      <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:ring-4 group-hover:ring-blue-50 transition-all">
+                        {client.profile_photo_url ? (
+                          <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[#0ea5e9] font-bold text-xl">
+                            {client.full_name?.charAt(0) || 'C'}
+                          </span>
+                        )}
+                      </div>
 
-                      <div className="flex-1 p-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] flex items-center justify-center flex-shrink-0 shadow-lg relative">
-                            {client.profile_photo_url ? (
-                              <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                            ) : (
-                              <span className="text-white font-black italic text-2xl">
-                                {client.full_name?.charAt(0) || 'C'}
-                              </span>
-                            )}
-                            {/* Compliance badge */}
-                            <div className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-white ${
-                              stats.complianceScore >= 80 ? 'bg-green-500 text-white' :
-                              stats.complianceScore >= 50 ? 'bg-yellow-500 text-white' :
-                              'bg-red-500 text-white'
-                            }`}>
-                              {stats.complianceScore}
-                            </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-bold text-gray-900 text-lg truncate pr-4">{client.full_name || 'Client'}</h3>
+                          <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                            stats.complianceScore >= 80 ? 'bg-green-100 text-green-700' :
+                            stats.complianceScore >= 50 ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-red-100 text-red-700'
+                          }`}>
+                            {stats.complianceScore}% Score
                           </div>
+                        </div>
+                        
+                        <p className="text-sm text-gray-500 mb-3 truncate">{client.email}</p>
 
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-black italic text-[#1a1a1a] text-lg">{client.full_name || 'Client'}</h3>
-                              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                                stats.complianceScore >= 80 ? 'bg-green-100 text-green-700' :
-                                stats.complianceScore >= 50 ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-red-100 text-red-700'
-                              }`}>
-                                {stats.complianceScore}% Compliant
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-500">{client.email}</p>
-
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-2 gap-2 mt-3">
-                              <div className="flex items-center gap-1.5 bg-orange-50 px-2 py-1 rounded">
-                                <Flame className="w-3.5 h-3.5 text-orange-600" />
-                                <span className="text-xs font-bold text-orange-900">{stats.weeklyWorkouts} workouts</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 bg-purple-50 px-2 py-1 rounded">
-                                <Target className="w-3.5 h-3.5 text-purple-600" />
-                                <span className="text-xs font-bold text-purple-900">{stats.activeGoals} goals</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded">
-                                <UtensilsCrossed className="w-3.5 h-3.5 text-blue-600" />
-                                <span className="text-xs font-bold text-blue-900">{stats.workoutPlans} plans</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded">
-                                <Calendar className="w-3.5 h-3.5 text-green-600" />
-                                <span className="text-xs font-bold text-green-900">{stats.daysAssigned}d client</span>
-                              </div>
-                            </div>
+                        {/* Quick Stats Row */}
+                        <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+                          <div className="flex items-center gap-1.5">
+                            <Flame className="w-4 h-4 text-orange-500" />
+                            <span className="font-medium">{stats.weeklyWorkouts} workouts/wk</span>
                           </div>
-
-                          <div className="flex flex-col items-center justify-center px-3">
-                            <ChevronRight className="w-6 h-6 text-gray-400" />
+                          <div className="flex items-center gap-1.5">
+                            <Target className="w-4 h-4 text-purple-500" />
+                            <span className="font-medium">{stats.activeGoals} goals</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">{stats.daysAssigned}d active</span>
                           </div>
                         </div>
                       </div>
+
+                      <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#0ea5e9] transition-colors" />
                     </div>
                   </CardContent>
                 </Card>
@@ -269,25 +245,25 @@ export default function TrainerClients() {
           })}
         </div>
       ) : (
-        <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300">
-          <CardContent className="p-12 text-center">
-            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="font-black italic text-gray-700 text-xl mb-2">
-              {searchQuery ? "No Clients Found" : "No Clients Yet"}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {searchQuery ? "Try adjusting your search terms" : "Start building your roster by assigning clients"}
-            </p>
-            {!searchQuery && (
-              <Link to={createPageUrl("TrainerAssignClients")}>
-                <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic shadow-md">
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Assign Your First Client
-                </Button>
-              </Link>
-            )}
-          </CardContent>
-        </Card>
+        <div className="py-12 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Users className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="font-bold text-gray-900 text-lg mb-1">
+            {searchQuery ? "No Clients Found" : "No Clients Yet"}
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+            {searchQuery ? "Try adjusting your search terms" : "Start building your roster by assigning clients to your program."}
+          </p>
+          {!searchQuery && (
+            <Link to={createPageUrl("TrainerAssignClients")}>
+              <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Assign Your First Client
+              </Button>
+            </Link>
+          )}
+        </div>
       )}
     </div>
   );
