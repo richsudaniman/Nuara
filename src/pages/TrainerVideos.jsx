@@ -348,17 +348,17 @@ export default function TrainerVideos() {
 
       {/* Video Player Modal */}
       {selectedVideo && (
-        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-lg">
-          <div className="bg-[#121212] rounded-3xl overflow-hidden w-full max-w-5xl max-h-[70vh] flex flex-col md:flex-row relative animate-in fade-in zoom-in-95 duration-300 shadow-2xl border border-white/10 ring-1 ring-white/5">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+          <div className="bg-white rounded-3xl overflow-hidden w-full max-w-5xl max-h-[70vh] flex flex-col md:flex-row relative animate-in fade-in zoom-in-95 duration-300 shadow-2xl ring-1 ring-black/5">
             <button 
               onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-50 p-2 bg-black/40 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-all backdrop-blur-md border border-white/5 group"
+              className="absolute top-4 right-4 z-50 p-2 bg-white/80 hover:bg-white rounded-full text-gray-500 hover:text-gray-900 transition-all backdrop-blur-md border border-gray-200/50 shadow-sm group"
             >
               <X className="w-5 h-5 transition-transform group-hover:rotate-90" />
             </button>
 
             {/* Video Section */}
-            <div className="bg-black w-full md:w-[60%] h-[300px] md:h-auto flex items-center justify-center shrink-0 relative border-b md:border-b-0 md:border-r border-white/5">
+            <div className="bg-black w-full md:w-[60%] h-[300px] md:h-auto flex items-center justify-center shrink-0 relative">
               <video 
                 src={selectedVideo.video_url} 
                 controls 
@@ -371,38 +371,38 @@ export default function TrainerVideos() {
             </div>
 
             {/* Content Section */}
-            <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#181818]">
-              <div className="p-6 overflow-y-auto custom-scrollbar h-full">
+            <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
+              <div className="p-8 overflow-y-auto custom-scrollbar h-full flex flex-col">
                 {/* Header */}
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0ea5e9] text-white shadow-[0_0_15px_-3px_rgba(14,165,233,0.4)]">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0ea5e9]/10 text-[#0ea5e9]">
                       {selectedVideo.category}
                     </span>
                     {selectedVideo.duration_minutes > 0 && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 border border-gray-100">
                         <Clock className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-300 font-medium">{selectedVideo.duration_minutes}m</span>
+                        <span className="text-xs text-gray-500 font-medium">{selectedVideo.duration_minutes}m</span>
                       </div>
                     )}
                   </div>
-                  <h2 className="text-2xl font-bold text-white leading-tight tracking-tight">{selectedVideo.title}</h2>
+                  <h2 className="text-3xl font-black italic text-gray-900 leading-none tracking-tight">{selectedVideo.title}</h2>
                 </div>
 
                 {/* Description */}
                 {selectedVideo.description && (
-                  <div className="mb-6">
-                    <p className="text-sm text-gray-400 leading-relaxed font-light">
+                  <div className="mb-8">
+                    <p className="text-sm text-gray-600 leading-relaxed">
                       {selectedVideo.description}
                     </p>
                   </div>
                 )}
 
                 {/* Notes Editor */}
-                <div className="group relative bg-black/20 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-colors mt-auto">
+                <div className="group relative bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all mt-auto">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] shadow-[0_0_10px_rgba(14,165,233,0.5)]"></div>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9]"></div>
                       Trainer Notes
                     </span>
                     <span className="text-[10px] text-[#0ea5e9] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
@@ -413,7 +413,7 @@ export default function TrainerVideos() {
                   <Textarea
                     placeholder="Add form cues, modifications, or specific instructions..."
                     defaultValue={selectedVideo.notes || ""}
-                    className="bg-transparent border-none text-sm text-gray-300 placeholder:text-gray-600 focus:ring-0 px-0 min-h-[100px] resize-none focus-visible:ring-0"
+                    className="bg-transparent border-none text-sm text-gray-700 placeholder:text-gray-400 focus:ring-0 px-0 min-h-[100px] resize-none focus-visible:ring-0"
                     onChange={(e) => {
                       const val = e.target.value;
                       clearTimeout(window._noteTimeout);
