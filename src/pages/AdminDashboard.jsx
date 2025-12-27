@@ -2,11 +2,12 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Award, Video, Dumbbell, TrendingUp, Activity, UserPlus, Megaphone, GraduationCap } from "lucide-react"; // Added Megaphone and GraduationCap icons
+import { Users, Award, Video, Dumbbell, TrendingUp, Activity, UserPlus, Megaphone, GraduationCap, ChevronRight, BarChart3, Settings, Shield } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 export default function AdminDashboard() {
   const { data: allUsers, isLoading: usersLoading } = useQuery({
@@ -14,50 +15,40 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.User.list(),
     initialData: [],
     staleTime: 15 * 60 * 1000, // 15 minutes
-    cacheTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   const { data: videos, isLoading: videosLoading } = useQuery({
     queryKey: ['allVideos'],
     queryFn: () => base44.entities.ExerciseVideo.list('-created_date'),
     initialData: [],
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    cacheTime: 30 * 60 * 1000,
+    staleTime: 15 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   const { data: workoutPlans, isLoading: plansLoading } = useQuery({
     queryKey: ['allWorkoutPlans'],
     queryFn: () => base44.entities.WorkoutPlan.list('-created_date'),
     initialData: [],
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    cacheTime: 30 * 60 * 1000,
+    staleTime: 15 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['allWorkoutLogs'],
     queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 100),
     initialData: [],
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['allAssignments'],
     queryFn: () => base44.entities.TrainerClientAssignment.filter({ is_active: true }),
     initialData: [],
-    enabled: !usersLoading, // Only fetch after users are loaded
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    cacheTime: 30 * 60 * 1000,
+    enabled: !usersLoading,
+    staleTime: 15 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   const trainers = allUsers.filter(u => u.role === 'trainer');
@@ -72,210 +63,289 @@ export default function AdminDashboard() {
   const activeClients = new Set(weeklyLogs.map(log => log.logged_by_client_id)).size;
   const engagementRate = clients.length > 0 ? Math.round((activeClients / clients.length) * 100) : 0;
 
-  const stats = [
-    {
-      icon: Users,
-      label: "Total Users",
-      value: allUsers.length,
-      color: "text-[#0ea5e9]",
-      bgColor: "bg-[#0ea5e9]/10",
-      link: createPageUrl("AdminUsers")
-    },
-    {
-      icon: Award,
-      label: "Trainers",
-      value: trainers.length,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
-      link: createPageUrl("AdminTrainers")
-    },
-    {
-      icon: Users,
-      label: "Clients",
-      value: clients.length,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
-      link: createPageUrl("AdminUsers")
-    },
-    {
-      icon: Video,
-      label: "Exercise Videos",
-      value: videos.length,
-      color: "text-orange-600",
-      bgColor: "bg-orange-100",
-      link: createPageUrl("AdminVideos")
-    },
-    {
-      icon: Dumbbell,
-      label: "Workout Plans",
-      value: workoutPlans.length,
-      color: "text-red-600",
-      bgColor: "bg-red-100",
-      link: createPageUrl("AdminAnalytics")
-    },
-    {
-      icon: Activity,
-      label: "Weekly Activity",
-      value: weeklyLogs.length,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-100",
-      link: createPageUrl("AdminAnalytics")
-    },
-  ];
-
   const isLoading = usersLoading || videosLoading || plansLoading || logsLoading || assignmentsLoading;
 
   return (
-    <div className="p-6 space-y-5 relative">
-      <div className="absolute top-20 right-5 w-16 h-16 border-2 border-[#0ea5e9]/20 rotate-12 pointer-events-none"></div>
-
-      <div>
-        <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">ADMIN DASHBOARD</h1>
-        <p className="text-gray-600 italic">Manage your fitness platform</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">Platform overview and management</p>
+        </div>
+        <div className="flex items-center gap-2">
+            <span className="px-3 py-1 bg-blue-50 text-[#0ea5e9] text-xs font-bold rounded-full uppercase">
+                {admins.length} Admin{admins.length !== 1 && 's'}
+            </span>
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-3">
-          {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-28 rounded-lg bg-gray-100" />)}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-3">
-          {stats.map((stat, index) => (
-            <Link key={index} to={stat.link}>
-              <Card className="bg-white border border-gray-200 hover:border-[#0ea5e9] transition-colors cursor-pointer">
-                <CardContent className="p-4">
-                  <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center mb-3`}>
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                  </div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">{stat.label}</p>
-                  <p className="text-3xl font-black italic text-[#1a1a1a]">{stat.value}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Users Card */}
+        <Link to={createPageUrl("AdminUsers")}>
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full">
+            <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                    <Users className="w-5 h-5 text-[#0ea5e9]" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Total Users</h3>
+                </div>
+                <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-[#0ea5e9]">{allUsers.length}</span>
+                <span className="text-xs text-gray-400 font-medium">registered</span>
+                </div>
+            </CardContent>
+            </Card>
+        </Link>
 
-      {/* Engagement Card */}
-      <Card className="bg-gradient-to-r from-green-500 to-emerald-600 border-none">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between text-white">
-            <div>
-              <p className="text-sm font-bold opacity-90 uppercase">Overall Engagement Rate</p>
-              <p className="text-4xl font-black italic mt-1">{engagementRate}%</p>
-              <p className="text-xs opacity-80 mt-1">{activeClients} of {clients.length} clients active this week</p>
+        {/* Trainers Card */}
+        <Link to={createPageUrl("AdminTrainers")}>
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full">
+            <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-purple-50 rounded-lg">
+                    <Award className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Trainers</h3>
+                </div>
+                <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-purple-600">{trainers.length}</span>
+                <span className="text-xs text-gray-400 font-medium">active pros</span>
+                </div>
+            </CardContent>
+            </Card>
+        </Link>
+
+        {/* Engagement Card */}
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden h-full">
+            <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-green-50 rounded-lg">
+                <Activity className="w-5 h-5 text-green-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Engagement</h3>
             </div>
-            <TrendingUp className="w-12 h-12 opacity-80" />
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-green-600">{engagementRate}%</span>
+                <span className="text-xs text-gray-400 font-medium">active clients</span>
+            </div>
+            </CardContent>
+        </Card>
+
+        {/* Content Card */}
+        <Link to={createPageUrl("AdminVideos")}>
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full">
+                <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-orange-50 rounded-lg">
+                    <Video className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Content</h3>
+                </div>
+                <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-orange-600">{videos.length}</span>
+                    <span className="text-xs text-gray-400 font-medium">videos</span>
+                </div>
+                </CardContent>
+            </Card>
+        </Link>
+      </div>
 
       {/* Quick Actions */}
-      <Card className="bg-white border-2 border-gray-200">
-        <CardContent className="p-5">
-          <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">QUICK ACTIONS</h3>
-          <div className="grid gap-3">
-            <Link to={createPageUrl("AdminInviteUser")}>
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <UserPlus className="w-6 h-6 text-green-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Invite New User</p>
-                    <p className="text-xs text-gray-600">Via Base44 Dashboard - Then assign roles here</p>
-                  </div>
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link to={createPageUrl("AdminInviteUser")}>
+            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <UserPlus className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Invite User</h4>
+                  <p className="text-green-100 text-xs">Add new users or trainers</p>
                 </div>
               </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminAnnouncements")}>
-              <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <Megaphone className="w-6 h-6 text-purple-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Send Announcement</p>
-                    <p className="text-xs text-gray-600">Broadcast messages to all users or specific groups</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminEducationalContent")}>
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <GraduationCap className="w-6 h-6 text-blue-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Manage Educational Content</p>
-                    <p className="text-xs text-gray-600">Upload tutorials and training guides for all users</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminUsers")}>
-              <div className="p-4 bg-gray-50 border-l-4 border-[#0ea5e9] hover:bg-gray-100 transition-colors cursor-pointer">
-                <p className="font-bold italic text-[#1a1a1a]">Manage Users</p>
-                <p className="text-xs text-gray-600">View, edit, and manage all users</p>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminTrainers")}>
-              <div className="p-4 bg-gray-50 border-l-4 border-purple-500 hover:bg-gray-100 transition-colors cursor-pointer">
-                <p className="font-bold italic text-[#1a1a1a]">Manage Trainers</p>
-                <p className="text-xs text-gray-600">View trainers and their clients</p>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminClientAssignments")}>
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <UserPlus className="w-6 h-6 text-blue-600" />
-                  <div>
-                    <p className="font-bold italic text-[#1a1a1a]">Manage Trainer-Client Assignments</p>
-                    <p className="text-xs text-gray-600">View and assign clients to trainers</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminVideos")}>
-              <div className="p-4 bg-gray-50 border-l-4 border-orange-500 hover:bg-gray-100 transition-colors cursor-pointer">
-                <p className="font-bold italic text-[#1a1a1a]">Manage Videos</p>
-                <p className="text-xs text-gray-600">View and moderate exercise videos</p>
-              </div>
-            </Link>
-
-            <Link to={createPageUrl("AdminAnalytics")}>
-              <div className="p-4 bg-gray-50 border-l-4 border-indigo-500 hover:bg-gray-100 transition-colors cursor-pointer">
-                <p className="font-bold italic text-[#1a1a1a]">View Analytics</p>
-                <p className="text-xs text-gray-600">Platform statistics and reports</p>
-              </div>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Activity */}
-      <Card className="bg-white border-2 border-gray-200">
-        <CardContent className="p-5">
-          <h3 className="font-black italic text-[#1a1a1a] text-lg mb-4">RECENT ACTIVITY</h3>
-          {weeklyLogs.length > 0 ? (
-            <div className="space-y-2">
-              {weeklyLogs.slice(0, 10).map(log => (
-                <div key={log.id} className="flex items-center justify-between p-3 bg-gray-50">
-                  <div>
-                    <p className="font-bold text-sm text-[#1a1a1a]">{log.exercise_name}</p>
-                    <p className="text-xs text-gray-500">Client ID: {log.logged_by_client_id}</p>
-                  </div>
-                  <p className="text-xs text-gray-400">{log.completed_date}</p>
-                </div>
-              ))}
             </div>
-          ) : (
-            <p className="text-center text-gray-500 italic py-4">No recent activity</p>
-          )}
-        </CardContent>
-      </Card>
+          </Link>
+
+          <Link to={createPageUrl("AdminAnnouncements")}>
+            <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <Megaphone className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Announce</h4>
+                  <p className="text-purple-100 text-xs">Send platform alerts</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          <Link to={createPageUrl("AdminClientAssignments")}>
+            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Assignments</h4>
+                  <p className="text-blue-100 text-xs">Manage client-trainer pairs</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+          
+           <Link to={createPageUrl("AdminEducationalContent")}>
+            <div className="bg-gradient-to-br from-orange-400 to-red-500 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Education</h4>
+                  <p className="text-orange-100 text-xs">Manage learning materials</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content Area - 2 cols */}
+        <div className="lg:col-span-2 space-y-6">
+            {/* Recent Activity */}
+            <div>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-gray-900">Recent Platform Activity</h3>
+                    <Link to={createPageUrl("AdminAnalytics")} className="text-sm font-semibold text-[#0ea5e9] flex items-center hover:underline">
+                        View Analytics <ChevronRight className="w-4 h-4" />
+                    </Link>
+                </div>
+                <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+                    <CardContent className="p-0">
+                        {weeklyLogs.length > 0 ? (
+                            <div className="divide-y divide-gray-100">
+                                {weeklyLogs.slice(0, 8).map((log, idx) => {
+                                    const client = clients.find(c => c.id === log.logged_by_client_id);
+                                    return (
+                                        <div key={idx} className="p-4 flex gap-4 hover:bg-gray-50 transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                                <Dumbbell className="w-5 h-5 text-gray-500" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <p className="font-bold text-gray-900 text-sm">
+                                                        {client?.full_name || 'Unknown Client'}
+                                                        <span className="font-normal text-gray-500"> completed </span>
+                                                        {log.exercise_name}
+                                                    </p>
+                                                    <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                                                        {format(new Date(log.completed_date), 'MMM d')}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 mt-0.5">
+                                                    {log.sets_completed} sets • {log.reps_completed} reps {log.weight_used ? `• ${log.weight_used}lbs` : ''}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="p-8 text-center text-gray-500">
+                                <Activity className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                                <p>No recent activity reported</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+
+        {/* Sidebar - 1 col */}
+        <div className="space-y-6">
+            {/* Platform Health/Status */}
+            <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">System Status</h3>
+                <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+                    <CardContent className="p-5 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                <span className="text-sm font-medium text-gray-700">System Status</span>
+                            </div>
+                            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">OPERATIONAL</span>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-gray-100 space-y-3">
+                             <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Database</span>
+                                <span className="font-medium text-gray-900">Connected</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">File Storage</span>
+                                <span className="font-medium text-gray-900">85% Free</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Last Backup</span>
+                                <span className="font-medium text-gray-900">2h ago</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Quick Links List */}
+            <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Management</h3>
+                <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+                    <CardContent className="p-0">
+                        <div className="divide-y divide-gray-100">
+                             <Link to={createPageUrl("AdminUsers")}>
+                                <div className="p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 bg-gray-100 rounded text-gray-500 group-hover:text-[#0ea5e9] group-hover:bg-blue-50 transition-colors">
+                                            <Users className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700">All Users</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#0ea5e9]" />
+                                </div>
+                            </Link>
+                             <Link to={createPageUrl("AdminTrainers")}>
+                                <div className="p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 bg-gray-100 rounded text-gray-500 group-hover:text-purple-600 group-hover:bg-purple-50 transition-colors">
+                                            <Shield className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700">Trainer Access</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-purple-600" />
+                                </div>
+                            </Link>
+                             <Link to={createPageUrl("AdminAnalytics")}>
+                                <div className="p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 bg-gray-100 rounded text-gray-500 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-colors">
+                                            <BarChart3 className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700">Detailed Reports</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-600" />
+                                </div>
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+      </div>
     </div>
   );
 }
