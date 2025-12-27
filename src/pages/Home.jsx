@@ -10,8 +10,6 @@ import QuickStatsGrid from "../components/home/QuickStatsGrid";
 import MotivationalMessage from "../components/home/MotivationalMessage";
 import TodayWorkoutPreview from "../components/home/TodayWorkoutPreview";
 import NutritionSummary from "../components/home/NutritionSummary";
-import AuthMeTest from "../components/home/AuthMeTest";
-import PlansDiagnostic from "../components/home/PlansDiagnostic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 
@@ -25,18 +23,25 @@ export default function Home() {
     queryFn: async () => {
       return await base44.auth.me();
     },
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 0, // CHANGED: Always consider data stale to allow refetch
+    refetchOnMount: true, // ADDED: Refetch when component mounts
+    refetchOnWindowFocus: true, // CHANGED: Refetch when window regains focus
     retry: 2,
   });
 
-  // Auto-sync mechanism to ensure assigned_trainer_id is populated
+  // ADDED: Force invalidate all queries on mount to clear stale cache
+  useEffect(() => {
+    console.log('Home page mounted - invalidating all queries to force fresh data');
+    queryClient.invalidateQueries();
+  }, [queryClient]);
+
+  // ADDED: Auto-sync mechanism to ensure assigned_trainer_id is populated
   useEffect(() => {
     const syncTrainerAssignment = async () => {
       if (!user || user.assigned_trainer_id || userLoading) return;
       
       try {
+        // Check if there's an active assignment without the denormalized field
         const assignments = await base44.entities.TrainerClientAssignment.list();
         const activeAssignment = assignments.find(a => 
           a.client_id === user.id && a.is_active
@@ -44,9 +49,13 @@ export default function Home() {
         
         if (activeAssignment && !user.assigned_trainer_id) {
           console.log('Syncing trainer assignment for user:', user.id);
+          
+          // Update the user record with the trainer ID
           await base44.entities.User.update(user.id, {
             assigned_trainer_id: activeAssignment.trainer_id
           });
+          
+          // Force refetch of user data
           queryClient.invalidateQueries({ queryKey: ['currentUser'] });
         }
       } catch (error) {
@@ -233,12 +242,6 @@ export default function Home() {
           macros={todayMacros}
         />
       )}
-
-      {/* Plans Diagnostic */}
-      <PlansDiagnostic />
-
-      {/* Auth Debug Test */}
-      <AuthMeTest />
     </div>
   );
 }
