@@ -462,30 +462,13 @@ export default function TrainerDashboard() {
                           contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                         />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                          {
-                            [
-                              { value: compliance.workout, color: '#d8b4fe' }, // Light purple
-                              { value: compliance.nutrition, color: '#99f6e4' }, // Light teal
-                              { value: compliance.tracking, color: '#bae6fd' }  // Light blue
-                            ].map((entry, index) => (
+                          {[
+                              { color: '#9333ea' }, // Workouts - Purple
+                              { color: '#14b8a6' }, // Nutrition - Teal
+                              { color: '#0ea5e9' }  // Tracking - Blue
+                          ].map((entry, index) => (
                               <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))
-                          }
-                        </Bar>
-                         {/* Overlay bar for "filled" look if needed, simplified to just colored bars matching the image's "full height background" style? 
-                             The image has gray background bars and colored foreground bars. Recharts handles this with stacked bars or custom shapes.
-                             For simplicity, I'll stick to simple colored bars but match the image colors better.
-                             Image: Workouts (Gray?), Nutrition (Teal), Tracking (Blue). 
-                             Let's use the colors from the image.
-                          */}
-                          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                            {[
-                                { color: '#cbd5e1' }, // Workouts - Gray in image? Actually looks like empty gray bar and no fill? Or maybe low score?
-                                { color: '#2dd4bf' }, // Nutrition - Teal
-                                { color: '#0ea5e9' }  // Tracking - Blue
-                            ].map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
+                          ))}
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
