@@ -87,9 +87,9 @@ export default function TrainerDashboard() {
 
   const stats = [
     { icon: Users, label: "Active Clients", value: assignments.length, color: "text-[#0ea5e9]", bgColor: "bg-[#0ea5e9]/10", link: createPageUrl("TrainerClients") },
-    { icon: Dumbbell, label: "Workout Plans", value: allWorkoutPlans.length, color: "text-purple-600", bgColor: "bg-purple-100", link: createPageUrl("TrainerClients") },
-    { icon: UtensilsCrossed, label: "Meal Plans", value: allNutritionPlans.length, color: "text-green-600", bgColor: "bg-green-100", link: createPageUrl("TrainerClients") },
-    { icon: Award, label: "Active Goals", value: allGoals.length, color: "text-orange-600", bgColor: "bg-orange-100", link: createPageUrl("TrainerClients") },
+    { icon: Dumbbell, label: "Workout Plans", value: allWorkoutPlans.length, color: "text-[#0ea5e9]", bgColor: "bg-[#0ea5e9]/10", link: createPageUrl("TrainerClients") },
+    { icon: UtensilsCrossed, label: "Meal Plans", value: allNutritionPlans.length, color: "text-[#0ea5e9]", bgColor: "bg-[#0ea5e9]/10", link: createPageUrl("TrainerClients") },
+    { icon: Award, label: "Active Goals", value: allGoals.length, color: "text-[#0ea5e9]", bgColor: "bg-[#0ea5e9]/10", link: createPageUrl("TrainerClients") },
   ];
 
   const getClientWeeklyWorkouts = (clientId) => {
