@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -23,10 +23,37 @@ export default function Home() {
     queryFn: async () => {
       return await base44.auth.me();
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
     retry: 2,
   });
+
+  // Auto-sync mechanism to ensure assigned_trainer_id is populated
+  useEffect(() => {
+    const syncTrainerAssignment = async () => {
+      if (!user || user.assigned_trainer_id || userLoading) return;
+      
+      try {
+        const assignments = await base44.entities.TrainerClientAssignment.list();
+        const activeAssignment = assignments.find(a => 
+          a.client_id === user.id && a.is_active
+        );
+        
+        if (activeAssignment && !user.assigned_trainer_id) {
+          console.log('Syncing trainer assignment for user:', user.id);
+          await base44.entities.User.update(user.id, {
+            assigned_trainer_id: activeAssignment.trainer_id
+          });
+          queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        }
+      } catch (error) {
+        console.error('Error syncing trainer assignment:', error);
+      }
+    };
+    
+    syncTrainerAssignment();
+  }, [user, userLoading, queryClient]);
 
   const { data: trainer, isLoading: trainerLoading } = useQuery({
     queryKey: ['trainer', user?.assigned_trainer_id],
