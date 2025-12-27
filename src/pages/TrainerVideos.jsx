@@ -56,6 +56,15 @@ export default function TrainerVideos() {
     },
   });
 
+  const updateVideoMutation = useMutation({
+    mutationFn: async ({ id, data }) => {
+      return base44.entities.ExerciseVideo.update(id, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trainerVideos'] });
+    },
+  });
+
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -340,15 +349,15 @@ export default function TrainerVideos() {
       {/* Video Player Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col relative">
+          <div className="bg-white rounded-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
             <button 
               onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors backdrop-blur-sm"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <div className="bg-black aspect-video flex items-center justify-center">
+            <div className="bg-black aspect-video flex items-center justify-center shrink-0">
               <video 
                 src={selectedVideo.video_url} 
                 controls 
@@ -359,26 +368,45 @@ export default function TrainerVideos() {
               </video>
             </div>
 
-            <div className="p-6 overflow-y-auto">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedVideo.title}</h2>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0ea5e9] font-medium uppercase text-xs tracking-wide">
-                      {selectedVideo.category}
-                    </span>
-                    {selectedVideo.duration_minutes > 0 && (
-                      <span className="text-gray-500">• {selectedVideo.duration_minutes} min</span>
-                    )}
-                  </div>
+            <div className="p-5 overflow-y-auto flex-1">
+              <div className="mb-4">
+                <h2 className="text-lg font-bold text-gray-900 mb-1">{selectedVideo.title}</h2>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#0ea5e9]">
+                    {selectedVideo.category}
+                  </span>
+                  {selectedVideo.duration_minutes > 0 && (
+                    <span className="text-xs text-gray-500">• {selectedVideo.duration_minutes} min</span>
+                  )}
                 </div>
               </div>
 
               {selectedVideo.description && (
-                <div className="prose prose-sm max-w-none text-gray-600">
-                  <p>{selectedVideo.description}</p>
-                </div>
+                <p className="text-sm text-gray-600 mb-5 leading-relaxed">{selectedVideo.description}</p>
               )}
+
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block flex justify-between">
+                  <span>Notes & Cues</span>
+                  <span className="text-[10px] font-normal text-gray-400">Auto-saved</span>
+                </label>
+                <Textarea
+                  placeholder="Add form cues, modifications, or trainer notes here..."
+                  defaultValue={selectedVideo.notes || ""}
+                  className="bg-white border-gray-200 text-sm min-h-[80px] focus:border-[#0ea5e9]"
+                  onChange={(e) => {
+                    // Debounce update
+                    const val = e.target.value;
+                    clearTimeout(window._noteTimeout);
+                    window._noteTimeout = setTimeout(() => {
+                      updateVideoMutation.mutate({
+                        id: selectedVideo.id,
+                        data: { notes: val }
+                      });
+                    }, 1000);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
