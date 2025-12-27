@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Award, Video, Dumbbell, TrendingUp, Activity, UserPlus, Megaphone, GraduationCap, ChevronRight, BarChart3, Settings, Shield } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -62,6 +63,23 @@ export default function AdminDashboard() {
   // Calculate engagement rate
   const activeClients = new Set(weeklyLogs.map(log => log.logged_by_client_id)).size;
   const engagementRate = clients.length > 0 ? Math.round((activeClients / clients.length) * 100) : 0;
+
+  // Prepare chart data for weekly activity
+  const weeklyActivityData = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const displayDate = d.toLocaleDateString('en-US', { weekday: 'short' });
+    
+    // Count workouts for this day
+    const dayWorkouts = workoutLogs.filter(log => log.completed_date === dateStr).length;
+    
+    weeklyActivityData.push({
+      date: displayDate,
+      workouts: dayWorkouts
+    });
+  }
 
   const isLoading = usersLoading || videosLoading || plansLoading || logsLoading || assignmentsLoading;
 
@@ -219,6 +237,44 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content Area - 2 cols */}
         <div className="lg:col-span-2 space-y-6">
+            
+            {/* Weekly Activity Chart */}
+            <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Weekly Workout Activity</h3>
+                <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="h-[250px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={weeklyActivityData} barSize={40}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                    <XAxis 
+                                        dataKey="date" 
+                                        axisLine={false} 
+                                        tickLine={false} 
+                                        tick={{fill: '#64748b', fontSize: 12}} 
+                                        dy={10} 
+                                    />
+                                    <YAxis 
+                                        hide 
+                                        axisLine={false} 
+                                        tickLine={false} 
+                                    />
+                                    <Tooltip 
+                                        cursor={{fill: 'transparent'}}
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Bar dataKey="workouts" radius={[4, 4, 0, 0]}>
+                                        {weeklyActivityData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill="#0ea5e9" />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
             {/* Recent Activity */}
             <div>
                 <div className="flex items-center justify-between mb-4">
