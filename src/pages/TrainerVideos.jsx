@@ -349,15 +349,16 @@ export default function TrainerVideos() {
       {/* Video Player Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl overflow-hidden w-full max-w-4xl max-h-[85vh] flex flex-col md:flex-row relative animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
             <button 
               onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors backdrop-blur-sm"
+              className="absolute top-3 right-3 z-50 p-2 bg-black/20 hover:bg-black/40 rounded-full text-gray-500 hover:text-white transition-colors backdrop-blur-sm md:text-gray-400 md:hover:bg-gray-100 md:hover:text-gray-900"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
 
-            <div className="bg-black h-64 sm:h-80 w-full flex items-center justify-center shrink-0 relative">
+            {/* Video Section */}
+            <div className="bg-black w-full md:w-[45%] h-[250px] md:h-auto flex items-center justify-center shrink-0 relative">
               <video 
                 src={selectedVideo.video_url} 
                 controls 
@@ -368,44 +369,50 @@ export default function TrainerVideos() {
               </video>
             </div>
 
-            <div className="p-5 overflow-y-auto flex-1">
-              <div className="mb-4">
-                <h2 className="text-lg font-bold text-gray-900 mb-1">{selectedVideo.title}</h2>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#0ea5e9]">
-                    {selectedVideo.category}
-                  </span>
-                  {selectedVideo.duration_minutes > 0 && (
-                    <span className="text-xs text-gray-500">• {selectedVideo.duration_minutes} min</span>
-                  )}
+            {/* Content Section */}
+            <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                <div className="mb-6 pr-8">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0ea5e9]/10 text-[#0ea5e9]">
+                      {selectedVideo.category}
+                    </span>
+                    {selectedVideo.duration_minutes > 0 && (
+                      <span className="text-xs text-gray-400 font-medium flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {selectedVideo.duration_minutes} min
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-black italic text-gray-900 leading-tight">{selectedVideo.title}</h2>
                 </div>
-              </div>
 
-              {selectedVideo.description && (
-                <p className="text-sm text-gray-600 mb-5 leading-relaxed">{selectedVideo.description}</p>
-              )}
+                {selectedVideo.description && (
+                  <div className="mb-6 text-sm text-gray-600 leading-relaxed border-b border-gray-100 pb-6">
+                    {selectedVideo.description}
+                  </div>
+                )}
 
-              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block flex justify-between">
-                  <span>Notes & Cues</span>
-                  <span className="text-[10px] font-normal text-gray-400">Auto-saved</span>
-                </label>
-                <Textarea
-                  placeholder="Add form cues, modifications, or trainer notes here..."
-                  defaultValue={selectedVideo.notes || ""}
-                  className="bg-white border-gray-200 text-sm min-h-[80px] focus:border-[#0ea5e9]"
-                  onChange={(e) => {
-                    // Debounce update
-                    const val = e.target.value;
-                    clearTimeout(window._noteTimeout);
-                    window._noteTimeout = setTimeout(() => {
-                      updateVideoMutation.mutate({
-                        id: selectedVideo.id,
-                        data: { notes: val }
-                      });
-                    }, 1000);
-                  }}
-                />
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200/60 shadow-inner">
+                  <label className="flex justify-between items-center mb-3">
+                    <span className="text-xs font-black text-gray-400 uppercase tracking-wider">Trainer Notes & Cues</span>
+                    <span className="text-[10px] font-medium text-[#0ea5e9] bg-blue-50 px-2 py-0.5 rounded-full">Auto-saving</span>
+                  </label>
+                  <Textarea
+                    placeholder="Add form cues, modifications, or specific instructions..."
+                    defaultValue={selectedVideo.notes || ""}
+                    className="bg-white border-gray-200 text-sm min-h-[120px] focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] resize-none"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      clearTimeout(window._noteTimeout);
+                      window._noteTimeout = setTimeout(() => {
+                        updateVideoMutation.mutate({
+                          id: selectedVideo.id,
+                          data: { notes: val }
+                        });
+                      }, 1000);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
