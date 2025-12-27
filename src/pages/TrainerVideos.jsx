@@ -357,12 +357,12 @@ export default function TrainerVideos() {
               <X className="w-4 h-4" />
             </button>
 
-            <div className="bg-black aspect-video flex items-center justify-center shrink-0">
+            <div className="bg-black h-64 sm:h-80 w-full flex items-center justify-center shrink-0 relative">
               <video 
                 src={selectedVideo.video_url} 
                 controls 
                 autoPlay
-                className="w-full h-full"
+                className="w-full h-full object-contain"
               >
                 Your browser does not support the video tag.
               </video>
