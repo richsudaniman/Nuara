@@ -2,7 +2,7 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Dumbbell, UtensilsCrossed, TrendingUp, Calendar, Award, MessageCircle, UserPlus, ChevronRight, Flame, Activity, BarChart as BarChartIcon } from "lucide-react";
+import { Users, User, Dumbbell, UtensilsCrossed, TrendingUp, Calendar, Award, MessageCircle, UserPlus, ChevronRight, Flame, Activity, BarChart as BarChartIcon } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
