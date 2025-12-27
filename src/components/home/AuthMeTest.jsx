@@ -79,12 +79,12 @@ export default function AuthMeTest() {
             </CardContent>
           </Card>
 
-          <Card className={`border-2 ${
+          <Card className={`border-2 mb-8 ${
             authMeResult.assigned_trainer_id 
               ? 'border-green-500 bg-green-50' 
               : 'border-red-500 bg-red-50'
           }`}>
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <h3 className="font-bold text-sm mb-2">🎯 Critical Field Check:</h3>
               
               <div className="space-y-2">
