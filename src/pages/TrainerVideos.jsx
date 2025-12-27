@@ -125,21 +125,34 @@ export default function TrainerVideos() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
-      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      
+      {/* Header & Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-2">
           <h1 className="text-2xl font-bold text-gray-900">Video Library</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your exercise videos and tutorials</p>
+          <p className="text-gray-500">Manage your exercise videos and tutorials</p>
         </div>
-        <Button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm rounded-lg"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Upload Video
-        </Button>
+        
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-50 rounded-lg text-[#0ea5e9]">
+                <Video className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Videos</p>
+                <p className="text-xl font-black text-gray-900">{videos.length}</p>
+              </div>
+            </div>
+            <Button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm rounded-lg h-10"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Upload
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Upload Form */}
