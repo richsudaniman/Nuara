@@ -337,100 +337,48 @@ export default function TrainerVideos() {
         </div>
       )}
 
-      {/* Mobile-Optimized Video Player Modal */}
+      {/* Video Player Modal */}
       {selectedVideo && (
-        <div 
-          className="fixed inset-0 bg-white z-50 overflow-y-auto"
-          style={{ paddingBottom: '80px' }}
-        >
-          {/* Close Button - Fixed Top Right */}
-          <button 
-            onClick={() => setSelectedVideo(null)}
-            className="fixed top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
-          >
-            <X className="w-6 h-6 text-white" />
-          </button>
-
-          {/* Video Player Section - Full Width at Top */}
-          <div className="bg-black">
-            <video 
-              src={selectedVideo.video_url} 
-              controls 
-              autoPlay
-              loop
-              playsInline
-              className="w-full"
-              style={{ maxHeight: '45vh' }}
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col relative">
+            <button 
+              onClick={() => setSelectedVideo(null)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
             >
-              Your browser does not support the video tag.
-            </video>
-          </div>
+              <X className="w-5 h-5" />
+            </button>
 
-          {/* Video Info & Notes Section - Scrollable Below */}
-          <div className="p-4 space-y-4">
-            {/* Title & Meta Info */}
-            <div>
-              <h2 className="text-xl font-black italic text-[#1a1a1a] mb-2">{selectedVideo.title}</h2>
-              
-              <div className="flex items-center gap-2 flex-wrap">
-                {selectedVideo.duration_minutes > 0 && (
-                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full">
-                    <Clock className="w-3 h-3 text-[#0ea5e9]" />
-                    <span className="text-xs font-bold text-gray-700">{selectedVideo.duration_minutes} min</span>
-                  </div>
-                )}
-                <span className="px-2 py-1 text-xs font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-full">
-                  {selectedVideo.category}
-                </span>
-                {selectedVideo.difficulty_level && (
-                  <span className="px-2 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">
-                    {selectedVideo.difficulty_level}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Video Notes Section */}
-            {selectedVideo.description && (
-              <div className="border-t-2 border-gray-200 pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1 h-6 bg-[#0ea5e9]"></div>
-                  <h3 className="font-black italic text-[#1a1a1a] uppercase text-sm">Video Notes</h3>
-                </div>
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedVideo.description}</p>
-              </div>
-            )}
-
-            {/* Key Points Section */}
-            <div className="border-t-2 border-gray-200 pt-4">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1 h-6 bg-[#0ea5e9]"></div>
-                <h3 className="font-black italic text-[#1a1a1a] uppercase text-sm">Key Points</h3>
-              </div>
-              <ul className="space-y-2.5 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0ea5e9] font-black mt-0.5 text-lg">•</span>
-                  <span>Focus on proper form demonstrated in the video</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0ea5e9] font-black mt-0.5 text-lg">•</span>
-                  <span>Share this video with your clients for reference</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0ea5e9] font-black mt-0.5 text-lg">•</span>
-                  <span>Use during training sessions for guidance</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Back Button */}
-            <div className="pt-4">
-              <Button
-                onClick={() => setSelectedVideo(null)}
-                className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic text-base py-6 glow-blue"
+            <div className="bg-black aspect-video flex items-center justify-center">
+              <video 
+                src={selectedVideo.video_url} 
+                controls 
+                autoPlay
+                className="w-full h-full"
               >
-                Back to Videos
-              </Button>
+                Your browser does not support the video tag.
+              </video>
+            </div>
+
+            <div className="p-6 overflow-y-auto">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedVideo.title}</h2>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0ea5e9] font-medium uppercase text-xs tracking-wide">
+                      {selectedVideo.category}
+                    </span>
+                    {selectedVideo.duration_minutes > 0 && (
+                      <span className="text-gray-500">• {selectedVideo.duration_minutes} min</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {selectedVideo.description && (
+                <div className="prose prose-sm max-w-none text-gray-600">
+                  <p>{selectedVideo.description}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
