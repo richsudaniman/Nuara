@@ -10,6 +10,7 @@ import QuickStatsGrid from "../components/home/QuickStatsGrid";
 import MotivationalMessage from "../components/home/MotivationalMessage";
 import TodayWorkoutPreview from "../components/home/TodayWorkoutPreview";
 import NutritionSummary from "../components/home/NutritionSummary";
+import AuthMeTest from "../components/home/AuthMeTest";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 
@@ -231,6 +232,9 @@ export default function Home() {
           macros={todayMacros}
         />
       )}
+
+      {/* Auth Debug Test */}
+      <AuthMeTest />
     </div>
   );
 }
