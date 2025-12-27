@@ -118,30 +118,29 @@ export default function TrainerVideos() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
       <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
 
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
-            <Video className="w-5 h-5 text-white" />
-          </div>
-          <h1 className="text-3xl font-black italic text-[#1a1a1a]">VIDEO LIBRARY</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Video Library</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage your exercise videos and tutorials</p>
         </div>
         <Button
           onClick={() => setShowForm(!showForm)}
-          className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic glow-blue"
+          className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm rounded-lg"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Upload
+          Upload Video
         </Button>
       </div>
 
       {/* Upload Form */}
       {showForm && (
-        <Card className="bg-white border-2 border-[#0ea5e9] glow-blue">
-          <CardContent className="p-5">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-black italic text-[#1a1a1a] text-lg">UPLOAD NEW VIDEO</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowForm(false)}>
-                <X className="w-5 h-5" />
+        <Card className="bg-white border-none shadow-lg rounded-xl overflow-hidden relative z-10">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-gray-900 text-lg">Upload New Video</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowForm(false)} className="rounded-full h-8 w-8 p-0">
+                <X className="w-4 h-4" />
               </Button>
             </div>
 
