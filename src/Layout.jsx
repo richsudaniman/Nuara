@@ -87,7 +87,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home },
     { name: "Clients", path: createPageUrl("TrainerClients"), icon: Users },
     { name: "Videos", path: createPageUrl("TrainerVideos"), icon: Video },
-    { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, badge: unreadCount },
   ];
 
   // Admin navigation
