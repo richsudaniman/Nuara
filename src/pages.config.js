@@ -7,6 +7,7 @@ import AdminInviteUser from './pages/AdminInviteUser';
 import AdminTrainers from './pages/AdminTrainers';
 import AdminUsers from './pages/AdminUsers';
 import AdminVideos from './pages/AdminVideos';
+import DiagnosticTool from './pages/DiagnosticTool';
 import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Messages from './pages/Messages';
@@ -20,7 +21,6 @@ import TrainerDashboard from './pages/TrainerDashboard';
 import TrainerMessages from './pages/TrainerMessages';
 import TrainerVideos from './pages/TrainerVideos';
 import Workout from './pages/Workout';
-import DiagnosticTool from './pages/DiagnosticTool';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +34,7 @@ export const PAGES = {
     "AdminTrainers": AdminTrainers,
     "AdminUsers": AdminUsers,
     "AdminVideos": AdminVideos,
+    "DiagnosticTool": DiagnosticTool,
     "Home": Home,
     "Learn": Learn,
     "Messages": Messages,
@@ -47,7 +48,6 @@ export const PAGES = {
     "TrainerMessages": TrainerMessages,
     "TrainerVideos": TrainerVideos,
     "Workout": Workout,
-    "DiagnosticTool": DiagnosticTool,
 }
 
 export const pagesConfig = {
