@@ -122,6 +122,7 @@ export default function Progress() {
       max_deadlift: "lbs"
     };
 
+    // Add the metric
     await addMetricMutation.mutateAsync({
       client_id: user.id,
       metric_type: selectedMetricType,
@@ -129,6 +130,28 @@ export default function Progress() {
       unit: units[selectedMetricType],
       date: newMetricDate
     });
+
+    // Check if there's a linked goal and update it
+    const linkedGoal = goals.find(g => g.linked_metric_type === selectedMetricType && g.is_active);
+    if (linkedGoal) {
+      try {
+        // Try to calculate progress if target is numeric
+        let updates = { current_value: `${value} ${units[selectedMetricType]}` };
+        
+        const targetNum = parseFloat(linkedGoal.target_value);
+        if (!isNaN(targetNum)) {
+          // Simple heuristic: assuming the goal is to reach the target
+          // This is a rough approximation as we don't know the start value
+          // We'll leave percentage manual or implement smarter logic later if needed
+          // For now just update current value which is most important
+        }
+
+        await base44.entities.FitnessGoal.update(linkedGoal.id, updates);
+        queryClient.invalidateQueries({ queryKey: ['goals'] });
+      } catch (err) {
+        console.error("Failed to update linked goal", err);
+      }
+    }
   };
 
   const handlePhotoUpload = async (e) => {
