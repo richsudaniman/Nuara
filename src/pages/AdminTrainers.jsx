@@ -311,169 +311,191 @@ export default function AdminTrainers() {
             />
           </div>
 
-      {/* Trainers List */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-lg bg-gray-100" />)}
-        </div>
-      ) : filteredTrainers.length > 0 ? (
-        <div className="space-y-3">
-          {filteredTrainers.map(trainer => {
-            const clients = getTrainerClients(trainer.id);
-            const isExpanded = expandedTrainer === trainer.id;
-            
-            return (
-              <Card key={trainer.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-all">
-                <CardContent className="p-4">
-                  <div 
-                    className="flex items-center gap-4 cursor-pointer"
-                    onClick={() => setExpandedTrainer(isExpanded ? null : trainer.id)}
-                  >
-                    <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                      {trainer.profile_photo_url ? (
-                        <img src={trainer.profile_photo_url} alt={trainer.full_name} className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        <Award className="w-8 h-8 text-purple-600" />
-                      )}
-                    </div>
-
-                    <div className="flex-1">
-                      <h3 className="font-black italic text-[#1a1a1a] text-lg">{trainer.full_name || 'Trainer'}</h3>
-                      <p className="text-sm text-gray-500">{trainer.email}</p>
-                      <div className="flex items-center gap-4 mt-2">
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4 text-[#0ea5e9]" />
-                          <span className="text-sm font-bold text-gray-600">{clients.length} clients</span>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl bg-gray-100" />)}
+            </div>
+          ) : filteredTrainers.length > 0 ? (
+            <div className="space-y-4">
+              {filteredTrainers.map(trainer => {
+                const clients = getTrainerClients(trainer.id);
+                const isExpanded = expandedTrainer === trainer.id;
+                
+                return (
+                  <Card key={trainer.id} className="bg-white border-none shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden group">
+                    <CardContent className="p-0">
+                      <div 
+                        className="p-5 flex items-start gap-4 cursor-pointer"
+                        onClick={() => setExpandedTrainer(isExpanded ? null : trainer.id)}
+                      >
+                        <div className="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center flex-shrink-0 border border-purple-100 group-hover:border-purple-200 transition-colors">
+                          {trainer.profile_photo_url ? (
+                            <img src={trainer.profile_photo_url} alt={trainer.full_name} className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <Award className="w-7 h-7 text-purple-600" />
+                          )}
                         </div>
-                        {trainer.specialties && (
-                          <span className="text-xs text-gray-500 italic">{trainer.specialties}</span>
-                        )}
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start">
+                            <div>
+                                <h3 className="font-bold text-gray-900 text-lg truncate">{trainer.full_name || 'Trainer'}</h3>
+                                <p className="text-sm text-gray-500 truncate">{trainer.email}</p>
+                            </div>
+                             {isExpanded ? (
+                              <ChevronUp className="w-5 h-5 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5 text-gray-400" />
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center gap-4 mt-3">
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 rounded-full">
+                              <Users className="w-3.5 h-3.5 text-[#0ea5e9]" />
+                              <span className="text-xs font-bold text-gray-700">{clients.length} clients</span>
+                            </div>
+                            {trainer.specialties && (
+                              <span className="text-xs text-gray-500 italic truncate max-w-[200px]">{trainer.specialties}</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    {isExpanded ? (
-                      <ChevronUp className="w-6 h-6 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-6 h-6 text-gray-400" />
-                    )}
-                  </div>
-
-                  {isExpanded && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-                      {/* Trainer Details */}
-                      {trainer.bio && (
-                        <div>
-                          <h4 className="font-bold italic text-gray-600 text-sm mb-2 uppercase">About</h4>
-                          <p className="text-sm text-gray-700">{trainer.bio}</p>
-                        </div>
-                      )}
-
-                      {trainer.phone && (
-                        <div>
-                          <h4 className="font-bold italic text-gray-600 text-sm mb-1 uppercase">Contact</h4>
-                          <p className="text-sm text-gray-700">{trainer.phone}</p>
-                        </div>
-                      )}
-
-                      {/* Assigned Clients */}
-                      {clients.length > 0 && (
-                        <div>
-                          <h4 className="font-bold italic text-gray-600 text-sm mb-3 uppercase">Assigned Clients</h4>
-                          <div className="space-y-2">
-                            {clients.map(client => (
-                              <div key={client.id} className="flex items-center gap-3 p-2 bg-gray-50">
-                                <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center">
-                                  {client.profile_photo_url ? (
-                                    <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                                  ) : (
-                                    <span className="text-[#0ea5e9] font-bold text-sm">{client.full_name?.charAt(0) || 'C'}</span>
-                                  )}
+                      {isExpanded && (
+                        <div className="bg-gray-50/50 border-t border-gray-100 p-5 space-y-5">
+                          {/* Trainer Details */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {trainer.bio && (
+                                <div>
+                                <h4 className="font-bold text-gray-900 text-xs uppercase mb-2">About</h4>
+                                <p className="text-sm text-gray-600 leading-relaxed">{trainer.bio}</p>
                                 </div>
-                                <div className="flex-1">
-                                  <p className="font-bold text-sm text-[#1a1a1a]">{client.full_name || 'Client'}</p>
-                                  <p className="text-xs text-gray-500">{client.email}</p>
+                            )}
+                             {trainer.phone && (
+                                <div>
+                                <h4 className="font-bold text-gray-900 text-xs uppercase mb-1">Contact</h4>
+                                <p className="text-sm text-gray-600">{trainer.phone}</p>
                                 </div>
-                              </div>
-                            ))}
+                            )}
+                          </div>
+
+                          {/* Assigned Clients */}
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-xs uppercase mb-3">Assigned Clients ({clients.length})</h4>
+                            {clients.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {clients.map(client => (
+                                    <div key={client.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-100">
+                                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                                        {client.profile_photo_url ? (
+                                            <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-gray-500 font-bold text-xs">{client.full_name?.charAt(0) || 'C'}</span>
+                                        )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-bold text-sm text-gray-900 truncate">{client.full_name || 'Client'}</p>
+                                            <p className="text-[10px] text-gray-500 truncate">{client.email}</p>
+                                        </div>
+                                    </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-400 italic">No clients assigned yet</p>
+                            )}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-3 pt-2 border-t border-gray-100">
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(trainer);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 gap-2 bg-white hover:bg-gray-50"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                              Edit Details
+                            </Button>
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeactivate(trainer.id);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 bg-white"
+                              disabled={toggleTrainerStatusMutation.isPending}
+                            >
+                              <UserX className="w-3.5 h-3.5" />
+                              Deactivate
+                            </Button>
                           </div>
                         </div>
                       )}
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-2 pt-2">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(trainer);
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-2"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Edit Details
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeactivate(trainer.id);
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-2 text-red-600 border-red-300 hover:bg-red-50"
-                          disabled={toggleTrainerStatusMutation.isPending}
-                        >
-                          <UserX className="w-4 h-4" />
-                          Deactivate
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {isExpanded && clients.length === 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 text-center text-gray-500 italic text-sm">
-                      No clients assigned yet
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="text-center py-12 text-gray-500 italic">
-          {searchQuery ? "No trainers found matching your search" : "No trainers found"}
-        </div>
-      )}
-
-      {/* Promote Users to Trainers Section */}
-      {regularUsers.length > 0 && (
-        <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200">
-          <CardContent className="p-5">
-            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-3">PROMOTE USERS TO TRAINERS</h3>
-            <p className="text-sm text-gray-600 mb-4">Select existing users to promote to trainer status</p>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {regularUsers.map(user => (
-                <div key={user.id} className="flex items-center justify-between p-3 bg-white border border-gray-200">
-                  <div>
-                    <p className="font-bold text-sm text-[#1a1a1a]">{user.full_name || 'User'}</p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
-                  </div>
-                  <Button
-                    onClick={() => handleActivate(user.id)}
-                    size="sm"
-                    disabled={toggleTrainerStatusMutation.isPending}
-                    className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
-                  >
-                    <UserCheck className="w-4 h-4" />
-                    Make Trainer
-                  </Button>
-                </div>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+             <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-gray-400">
+                    <Search className="w-6 h-6" />
+                </div>
+                <p className="text-gray-500 font-medium">No trainers found</p>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Promote Users */}
+        <div className="space-y-6">
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden sticky top-8">
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
+                    <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                        <UserCheck className="w-5 h-5" />
+                        Promote to Trainer
+                    </h3>
+                    <p className="text-purple-100 text-xs mt-1">Grant trainer access to existing users</p>
+                </div>
+                <CardContent className="p-0 max-h-[calc(100vh-200px)] overflow-y-auto">
+                    {regularUsers.length > 0 ? (
+                        <div className="divide-y divide-gray-100">
+                        {regularUsers.map(user => (
+                            <div key={user.id} className="p-4 hover:bg-gray-50 transition-colors group">
+                                <div className="flex items-start justify-between gap-3 mb-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs">
+                                            {user.full_name?.charAt(0) || 'U'}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm text-gray-900">{user.full_name || 'User'}</p>
+                                            <p className="text-xs text-gray-500 truncate max-w-[120px]">{user.email}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={() => handleActivate(user.id)}
+                                    size="sm"
+                                    disabled={toggleTrainerStatusMutation.isPending}
+                                    className="w-full bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800 font-bold text-xs h-8"
+                                >
+                                    Make Trainer
+                                </Button>
+                            </div>
+                        ))}
+                        </div>
+                    ) : (
+                        <div className="p-8 text-center text-gray-500 text-sm">
+                            No eligible users found
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+      </div>
     </div>
   );
 }
