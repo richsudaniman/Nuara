@@ -113,20 +113,18 @@ export default function AdminTrainers() {
   const isLoading = usersLoading || assignmentsLoading;
 
   return (
-    <div className="p-6 pb-32 space-y-5 relative">
-      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
-
+    <div className="w-full max-w-[1600px] mx-auto px-6 py-8 space-y-8">
+      
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
-            <Award className="w-5 h-5 text-white" />
-          </div>
-          <h1 className="text-3xl font-black italic text-[#1a1a1a]">TRAINER MANAGEMENT</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Trainer Management</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage fitness professionals and their assignments</p>
         </div>
         <div className="flex gap-2">
           <Link to={createPageUrl("AdminInviteUser")}>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white font-bold italic gap-2">
-              <UserPlus className="w-4 h-4" />
+            <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white shadow-sm rounded-lg font-bold">
+              <UserPlus className="w-4 h-4 mr-2" />
               Invite Trainer
             </Button>
           </Link>
@@ -139,7 +137,7 @@ export default function AdminTrainers() {
               }
             }}
             variant="outline"
-            className="font-bold italic"
+            className="font-bold border-gray-200"
           >
             <Edit className="w-4 h-4 mr-2" />
             {showCreateForm ? 'Cancel' : 'Edit Existing'}
@@ -147,15 +145,68 @@ export default function AdminTrainers() {
         </div>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Total Trainers */}
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Award className="w-16 h-16 text-teal-600" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Trainers</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-teal-600">{trainers.length}</span>
+                        <span className="text-xs text-teal-600/70 font-bold bg-teal-50 px-2 py-0.5 rounded-full">ACTIVE PROS</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        {/* Total Clients */}
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Users className="w-16 h-16 text-indigo-600" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Clients</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-indigo-600">{assignments.length}</span>
+                        <span className="text-xs text-indigo-600/70 font-bold bg-indigo-50 px-2 py-0.5 rounded-full">ASSIGNED</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        {/* Avg per Trainer */}
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <UserCheck className="w-16 h-16 text-purple-600" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Avg Clients / Trainer</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-purple-600">
+                          {trainers.length > 0 ? Math.round(assignments.length / trainers.length) : 0}
+                        </span>
+                        <span className="text-xs text-purple-600/70 font-bold bg-purple-50 px-2 py-0.5 rounded-full">RATIO</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+      </div>
+
       {/* Edit Trainer Form */}
       {showCreateForm && (
-        <Card className="bg-white border-2 border-[#0ea5e9] glow-blue">
-          <CardContent className="p-5">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-black italic text-[#1a1a1a] text-lg">EDIT TRAINER DETAILS</h3>
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden mb-6">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-gray-900 text-lg">Edit Trainer Details</h3>
               <Button 
                 variant="ghost" 
-                size="sm" 
+                size="icon" 
                 onClick={() => {
                   setShowCreateForm(false);
                   setEditingTrainer(null);
@@ -166,76 +217,79 @@ export default function AdminTrainers() {
               </Button>
             </div>
 
-            <div className="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500">
+            <div className="mb-6 p-4 bg-blue-50 border-l-4 border-[#0ea5e9] rounded-r-lg">
               <p className="text-sm text-blue-800">
                 <strong>Tip:</strong> To create a new trainer, use the "Invite Trainer" button above. Use this form to edit existing trainer details.
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Full Name *</label>
-                <Input
-                  placeholder="John Doe"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  className="bg-white border-gray-300"
-                  disabled={!editingTrainer}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Full Name *</label>
+                  <Input
+                    placeholder="John Doe"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    className="bg-white border-gray-200"
+                    disabled={!editingTrainer}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Email *</label>
+                  <Input
+                    type="email"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="bg-white border-gray-200"
+                    disabled={true}
+                  />
+                  {!editingTrainer && (
+                    <p className="text-xs text-gray-400 mt-1">Select a trainer to edit their details.</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Phone</label>
+                  <Input
+                    placeholder="+1 (555) 123-4567"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="bg-white border-gray-200"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Email *</label>
-                <Input
-                  type="email"
-                  placeholder="john@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-white border-gray-300"
-                  disabled={true}
-                />
-                {!editingTrainer && (
-                  <p className="text-xs text-gray-500 mt-1">Select a trainer to edit their details.</p>
-                )}
-                {editingTrainer && (
-                  <p className="text-xs text-gray-500 mt-1">Email cannot be edited directly.</p>
-                )}
-              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Bio / About</label>
+                  <Textarea
+                    placeholder="Tell clients about this trainer's experience and expertise..."
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    className="bg-white border-gray-200 h-32 resize-none"
+                  />
+                </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Phone</label>
-                <Input
-                  placeholder="+1 (555) 123-4567"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="bg-white border-gray-300"
-                />
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Specialties</label>
+                  <Input
+                    placeholder="e.g., Strength Training, Weight Loss, Nutrition"
+                    value={formData.specialties}
+                    onChange={(e) => setFormData({ ...formData, specialties: e.target.value })}
+                    className="bg-white border-gray-200"
+                  />
+                </div>
               </div>
+            </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Bio / About</label>
-                <Textarea
-                  placeholder="Tell clients about this trainer's experience and expertise..."
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="bg-white border-gray-300 h-24"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Specialties</label>
-                <Input
-                  placeholder="e.g., Strength Training, Weight Loss, Nutrition"
-                  value={formData.specialties}
-                  onChange={(e) => setFormData({ ...formData, specialties: e.target.value })}
-                  className="bg-white border-gray-300"
-                />
-              </div>
-
+            <div className="mt-6 flex justify-end">
               <Button
                 onClick={handleSubmit}
                 disabled={updateTrainerMutation.isPending || !editingTrainer}
-                className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic glow-blue"
+                className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold px-8"
               >
                 {updateTrainerMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -244,40 +298,18 @@ export default function AdminTrainers() {
         </Card>
       )}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <Input
-          placeholder="Search trainers..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white border-gray-300"
-        />
-      </div>
-
-      {/* Stats Summary */}
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="bg-white border border-gray-200">
-          <CardContent className="p-3">
-            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Total Trainers</p>
-            <p className="text-2xl font-black italic text-[#1a1a1a]">{trainers.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-white border border-gray-200">
-          <CardContent className="p-3">
-            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Total Clients</p>
-            <p className="text-2xl font-black italic text-[#1a1a1a]">{assignments.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-white border border-gray-200">
-          <CardContent className="p-3">
-            <p className="text-xs text-gray-500 uppercase font-bold mb-1">Avg per Trainer</p>
-            <p className="text-2xl font-black italic text-[#1a1a1a]">
-              {trainers.length > 0 ? Math.round(assignments.length / trainers.length) : 0}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              placeholder="Search trainers by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] rounded-xl h-11"
+            />
+          </div>
 
       {/* Trainers List */}
       {isLoading ? (
