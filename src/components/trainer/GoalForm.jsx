@@ -71,15 +71,34 @@ export default function GoalForm({ clientId, trainerId, existingGoal, onClose })
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Goal Title</label>
-            <Input
-              placeholder="e.g., Lose 20 lbs, Bench 225 lbs"
-              value={formData.goal_title}
-              onChange={(e) => setFormData({ ...formData, goal_title: e.target.value })}
-              className="bg-white border-gray-300"
-              required
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2 md:col-span-1">
+              <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Goal Title</label>
+              <Input
+                placeholder="e.g., Lose 20 lbs"
+                value={formData.goal_title}
+                onChange={(e) => setFormData({ ...formData, goal_title: e.target.value })}
+                className="bg-white border-gray-300"
+                required
+              />
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <label className="text-xs font-bold text-gray-600 uppercase mb-1 block">Linked Metric (Optional)</label>
+              <Select 
+                value={formData.linked_metric_type} 
+                onValueChange={(value) => setFormData({ ...formData, linked_metric_type: value })}
+              >
+                <SelectTrigger className="bg-white border-gray-300">
+                  <SelectValue placeholder="Select metric to track..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {metricTypes.map(type => (
+                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
