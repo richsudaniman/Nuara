@@ -224,7 +224,7 @@ export default function Layout({ children, currentPageName }) {
           `}</style>
 
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
+          <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-gray-200 h-screen sticky top-0">
             <div className="p-6 border-b border-gray-100">
               <Link to={getHomePath()} className="flex items-center gap-4">
                 <img 
@@ -312,7 +312,7 @@ export default function Layout({ children, currentPageName }) {
           {isMobileMenuOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
-              <div className="fixed inset-y-0 left-0 w-[280px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
+              <div className="fixed inset-y-0 left-0 w-[320px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
                 <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                   <Link to={getHomePath()} className="flex items-center gap-3" onClick={() => setIsMobileMenuOpen(false)}>
                     <img 
