@@ -1,15 +1,22 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Dumbbell, CheckCircle2, Circle, Video } from "lucide-react";
 import { useState } from "react";
 import ExerciseVideoModal from "./ExerciseVideoModal";
 
 export default function ExerciseChecklist({ exercises = [], workoutType, onExerciseComplete, completedLogs = [] }) {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState(null);
+  const [weights, setWeights] = useState({});
 
   const isExerciseCompleted = (exerciseName) => {
     return completedLogs.some(log => log.exercise_name === exerciseName);
+  };
+
+  const getCompletedWeight = (exerciseName) => {
+    const log = completedLogs.find(log => log.exercise_name === exerciseName);
+    return log?.weight_used;
   };
 
   if (!exercises || exercises.length === 0) {
@@ -63,6 +70,26 @@ export default function ExerciseChecklist({ exercises = [], workoutType, onExerc
                       <p className="text-sm text-gray-600 mb-2">
                         <span className="font-semibold text-[#0ea5e9]">{exercise.sets} sets</span> × {exercise.reps} reps
                       </p>
+
+                      {!completed ? (
+                        <div className="mb-3">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Weight (lbs) - Optional</label>
+                          <Input 
+                            type="number" 
+                            placeholder="0"
+                            className="h-8 w-24 bg-white border-gray-300 text-sm"
+                            value={weights[exercise.name] || ''}
+                            onChange={(e) => setWeights({...weights, [exercise.name]: e.target.value})}
+                          />
+                        </div>
+                      ) : (
+                        getCompletedWeight(exercise.name) > 0 && (
+                          <p className="text-xs font-bold text-green-600 mb-2 flex items-center gap-1">
+                            <Dumbbell className="w-3 h-3" />
+                            {getCompletedWeight(exercise.name)} lbs logged
+                          </p>
+                        )
+                      )}
                       
                       {exercise.notes && (
                         <p className="text-xs text-gray-500 italic mb-3">{exercise.notes}</p>
@@ -71,7 +98,7 @@ export default function ExerciseChecklist({ exercises = [], workoutType, onExerc
                       <div className="flex gap-2">
                         {!completed && (
                           <Button
-                            onClick={() => onExerciseComplete(exercise.name)}
+                            onClick={() => onExerciseComplete(exercise.name, weights[exercise.name])}
                             size="sm"
                             className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic"
                           >

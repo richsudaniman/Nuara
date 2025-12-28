@@ -79,14 +79,18 @@ export default function Workout() {
       .filter(Boolean)
   );
 
-  const handleExerciseComplete = async (exerciseName) => {
+  const handleExerciseComplete = async (exerciseName, weightUsed) => {
     if (!user?.id || !selectedWorkout) return;
+    const exercise = selectedWorkout.exercises.find(e => e.name === exerciseName);
+    
     await logExerciseMutation.mutateAsync({
       logged_by_client_id: user.id,
       workout_plan_id: selectedWorkout.id,
       exercise_name: exerciseName,
       completed_date: todayDate,
-      sets_completed: selectedWorkout.exercises.find(e => e.name === exerciseName)?.sets || 0
+      sets_completed: exercise?.sets || 0,
+      reps_completed: exercise?.reps || 0,
+      weight_used: parseFloat(weightUsed) || 0
     });
   };
 
