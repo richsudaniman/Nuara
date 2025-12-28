@@ -126,12 +126,10 @@ export default function TrainerAssignClients() {
   const isLoading = usersLoading || assignmentsLoading || allAssignmentsLoading;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
-      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
-
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-black italic text-[#1a1a1a] mb-2">ASSIGN CLIENTS</h1>
-        <p className="text-gray-600 italic">Manage which clients you're training</p>
+        <h1 className="text-2xl font-bold text-gray-900">Assign Clients</h1>
+        <p className="text-sm text-gray-500 mt-1">Manage your client roster and new assignments</p>
       </div>
 
       {/* Search */}
