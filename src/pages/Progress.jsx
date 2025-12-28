@@ -11,7 +11,7 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { Skeleton } from "@/components/ui/skeleton";
 import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
 import EmptyState from "../components/EmptyState";
-import AIInsights from "../components/progress/AIInsights";
+
 
 export default function Progress() {
   const queryClient = useQueryClient();
@@ -387,16 +387,7 @@ export default function Progress() {
             </Card>
           )}
 
-          {/* AI Insights */}
-          {!isLoading && workoutLogs.length > 0 && (
-            <AIInsights
-              workoutLogs={workoutLogs}
-              calorieLogs={calorieLogs}
-              metrics={metrics}
-              goals={goals}
-              user={user}
-            />
-          )}
+
         </>
       )}
 
