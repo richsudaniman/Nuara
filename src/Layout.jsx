@@ -159,7 +159,7 @@ export default function Layout({ children, currentPageName }) {
                         <h1 className="text-2xl font-black italic text-[#1a1a1a] tracking-tight">
                           EJT FITNESS
                         </h1>
-                        <p className="text-[10px] font-bold text-[#0ea5e9] uppercase tracking-wider">Elevate • Journey • Transform</p>
+                        <p className="text-[10px] font-bold text-[#0ea5e9] uppercase tracking-wider whitespace-nowrap">Elevate • Journey • Transform</p>
                       </div>
                     </div>
                   </Link>
@@ -234,7 +234,7 @@ export default function Layout({ children, currentPageName }) {
                 />
                 <div>
                   <h1 className="text-2xl font-black italic text-[#1a1a1a] tracking-tight leading-none mb-1">EJT FITNESS</h1>
-                  <p className="text-[9px] font-bold text-[#0ea5e9] uppercase tracking-wider mb-1">Elevate • Journey • Transform</p>
+                  <p className="text-[9px] font-bold text-[#0ea5e9] uppercase tracking-wider mb-1 whitespace-nowrap">Elevate • Journey • Transform</p>
                   <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
                 </div>
               </Link>
@@ -301,7 +301,7 @@ export default function Layout({ children, currentPageName }) {
                 />
                 <div>
                   <span className="font-black italic text-gray-900 text-lg block leading-none">EJT FITNESS</span>
-                  <span className="text-[8px] font-bold text-[#0ea5e9] uppercase tracking-wider block">Elevate • Journey • Transform</span>
+                  <span className="text-[8px] font-bold text-[#0ea5e9] uppercase tracking-wider block whitespace-nowrap">Elevate • Journey • Transform</span>
                 </div>
               </Link>
             </div>
@@ -322,7 +322,7 @@ export default function Layout({ children, currentPageName }) {
                     />
                     <div>
                       <h2 className="text-xl font-black italic text-gray-900 leading-none mb-1">EJT FITNESS</h2>
-                      <p className="text-[9px] font-bold text-[#0ea5e9] uppercase tracking-wider mb-1">Elevate • Journey • Transform</p>
+                      <p className="text-[9px] font-bold text-[#0ea5e9] uppercase tracking-wider mb-1 whitespace-nowrap">Elevate • Journey • Transform</p>
                       <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
                     </div>
                   </Link>
