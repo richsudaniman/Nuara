@@ -4,14 +4,7 @@ import { User } from "lucide-react";
 
 export default function TrainerCard({ trainer, clientName }) {
   if (!trainer) {
-    return (
-      <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-0 shadow-sm rounded-3xl">
-        <CardContent className="p-6 text-center">
-          <p className="text-sm text-amber-700 font-semibold">👋 Welcome to EJT Fitness!</p>
-          <p className="text-xs text-amber-600 mt-1">You'll be assigned a personal trainer soon</p>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   return (
