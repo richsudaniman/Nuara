@@ -73,6 +73,13 @@ export default function Progress() {
     refetchOnWindowFocus: false,
   });
 
+  const { data: nutritionStatuses, isLoading: statusesLoading } = useQuery({
+    queryKey: ['nutritionStatuses', user?.id],
+    queryFn: () => base44.entities.DailyNutritionStatus.filter({ client_id: user.id }, '-date'),
+    initialData: [],
+    enabled: !!user?.id,
+  });
+
   const addMetricMutation = useMutation({
     mutationFn: (data) => base44.entities.ProgressMetric.create(data),
     onSuccess: () => {
@@ -254,10 +261,17 @@ export default function Progress() {
       checkDate.setDate(checkDate.getDate() + i);
       const dateStr = format(checkDate, 'yyyy-MM-dd');
 
-      const dayLogs = calorieLogs.filter(log => log.date === dateStr);
-      const dayCalories = dayLogs.reduce((sum, log) => sum + (log.calories || 0), 0);
-      if (dayCalories >= (calorieTarget - buffer) && dayCalories <= (calorieTarget + buffer)) {
-        daysOnTarget++;
+      // Check manual status first
+      const manualStatus = nutritionStatuses.find(s => s.date === dateStr);
+      if (manualStatus) {
+        if (manualStatus.status === 'hit') daysOnTarget++;
+      } else {
+        // Fallback to calculated calories
+        const dayLogs = calorieLogs.filter(log => log.date === dateStr);
+        const dayCalories = dayLogs.reduce((sum, log) => sum + (log.calories || 0), 0);
+        if (dayCalories >= (calorieTarget - buffer) && dayCalories <= (calorieTarget + buffer)) {
+          daysOnTarget++;
+        }
       }
     }
 

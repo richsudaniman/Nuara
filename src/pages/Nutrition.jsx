@@ -5,6 +5,7 @@ import MealPlanCard from "../components/nutrition/MealPlanCard";
 import CalorieTracker from "../components/nutrition/CalorieTracker";
 import FoodPhotoAnalyzer from "../components/nutrition/FoodPhotoAnalyzer";
 import NutritionAnalytics from "../components/nutrition/NutritionAnalytics";
+import DailyCheckIn from "../components/nutrition/DailyCheckIn";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 import { UtensilsCrossed } from "lucide-react";
@@ -44,6 +45,39 @@ export default function Nutrition() {
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+  });
+
+  const todayDate = new Date().toISOString().split('T')[0];
+
+  const { data: dailyStatus, isLoading: statusLoading } = useQuery({
+    queryKey: ['dailyNutritionStatus', user?.id, todayDate],
+    queryFn: async () => {
+      const statuses = await base44.entities.DailyNutritionStatus.filter({ 
+        client_id: user.id,
+        date: todayDate
+      });
+      return statuses[0] || null;
+    },
+    enabled: !!user?.id,
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async (status) => {
+      if (dailyStatus) {
+        return base44.entities.DailyNutritionStatus.update(dailyStatus.id, { status });
+      } else {
+        return base44.entities.DailyNutritionStatus.create({
+          client_id: user.id,
+          date: todayDate,
+          status,
+          is_manual: true
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dailyNutritionStatus'] });
+      // Also invalidate analytics/progress if needed
+    },
   });
 
   const addLogMutation = useMutation({
@@ -87,6 +121,12 @@ export default function Nutrition() {
             <MealPlanCard meals={meals} />
           )}
           
+          <DailyCheckIn 
+            currentStatus={dailyStatus?.status}
+            onStatusUpdate={(status) => updateStatusMutation.mutate(status)}
+            isLoading={updateStatusMutation.isPending || statusLoading}
+          />
+
           <FoodPhotoAnalyzer 
             onFoodAnalyzed={(data) => addLogMutation.mutate(data)}
           />
