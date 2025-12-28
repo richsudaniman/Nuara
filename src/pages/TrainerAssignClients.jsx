@@ -154,24 +154,24 @@ export default function TrainerAssignClients() {
             const assignment = isAssigned(client.id);
             const assignedToOther = isAssignedToOther(client.id);
             return (
-              <Card key={client.id} className={`bg-white border-2 transition-all ${assignedToOther ? 'border-gray-300 opacity-60' : 'border-gray-200 hover:border-[#0ea5e9]'}`}>
-                <CardContent className="p-4">
+              <Card key={client.id} className={`bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all ${assignedToOther ? 'opacity-60' : ''}`}>
+                <CardContent className="p-5">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100">
                       {client.profile_photo_url ? (
                         <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <User className="w-8 h-8 text-[#0ea5e9]" />
+                        <User className="w-5 h-5 text-[#0ea5e9]" />
                       )}
                     </div>
 
-                    <div className="flex-1">
-                      <h3 className="font-black italic text-[#1a1a1a]">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-gray-900 text-base truncate">
                         {client.full_name || 'User'}
                       </h3>
-                      <p className="text-sm text-gray-500">{client.email}</p>
+                      <p className="text-sm text-gray-500 truncate">{client.email}</p>
                       {assignedToOther && (
-                        <p className="text-xs text-red-500 font-bold mt-1">Already assigned to another trainer</p>
+                        <p className="text-xs text-red-500 font-medium mt-0.5">Assigned to other trainer</p>
                       )}
                     </div>
 
@@ -180,7 +180,8 @@ export default function TrainerAssignClients() {
                         onClick={() => handleUnassign(client.id)}
                         disabled={unassignClientMutation.isPending}
                         variant="outline"
-                        className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
+                        size="sm"
+                        className="gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 h-9"
                       >
                         <UserMinus className="w-4 h-4" />
                         Unassign
@@ -188,8 +189,9 @@ export default function TrainerAssignClients() {
                     ) : assignedToOther ? (
                       <Button
                         disabled
-                        variant="outline"
-                        className="gap-2 border-gray-300 text-gray-400 cursor-not-allowed"
+                        variant="ghost"
+                        size="sm"
+                        className="gap-2 text-gray-400 cursor-not-allowed h-9"
                       >
                         Assigned
                       </Button>
@@ -197,7 +199,8 @@ export default function TrainerAssignClients() {
                       <Button
                         onClick={() => handleAssign(client.id)}
                         disabled={assignClientMutation.isPending}
-                        className="gap-2 bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic"
+                        size="sm"
+                        className="gap-2 bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm h-9"
                       >
                         <UserPlus className="w-4 h-4" />
                         Assign
