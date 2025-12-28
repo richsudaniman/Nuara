@@ -92,32 +92,32 @@ export default function AdminAnalytics() {
       ) : (
         <>
           {/* Weekly Activity Chart */}
-          <Card className="bg-white border-2 border-gray-200">
-            <CardContent className="p-5">
-              <h3 className="font-black italic text-[#1a1a1a] mb-4">WEEKLY WORKOUT ACTIVITY</h3>
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-6">
+              <h3 className="font-bold text-gray-900 mb-4">Weekly Workout Activity</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={weeklyActivity}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '12px' }} />
-                  <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                  <YAxis hide />
                   <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#fff', 
-                      border: '2px solid #0ea5e9',
-                      borderRadius: '4px',
-                      fontWeight: 'bold'
-                    }}
+                    cursor={{fill: 'transparent'}}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   />
-                  <Bar dataKey="workouts" fill="#0ea5e9" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="workouts" radius={[4, 4, 0, 0]}>
+                    {weeklyActivity.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#0ea5e9' : '#2dd4bf'} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Role Distribution */}
-          <Card className="bg-white border-2 border-gray-200">
-            <CardContent className="p-5">
-              <h3 className="font-black italic text-[#1a1a1a] mb-4">USER DISTRIBUTION</h3>
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-6">
+              <h3 className="font-bold text-gray-900 mb-4">User Distribution</h3>
               <div className="flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
@@ -131,7 +131,7 @@ export default function AdminAnalytics() {
                       dataKey="value"
                     >
                       {roleData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell key={`cell-${index}`} fill={index === 0 ? '#0ea5e9' : index === 1 ? '#2dd4bf' : '#6366f1'} />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -140,12 +140,12 @@ export default function AdminAnalytics() {
               </div>
               <div className="grid grid-cols-3 gap-2 mt-4">
                 {roleData.map((item, index) => (
-                  <div key={index} className="text-center p-2 bg-gray-50 rounded">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                      <p className="text-xs font-bold text-gray-700">{item.name}</p>
+                  <div key={index} className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-center gap-1.5 mb-1">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: index === 0 ? '#0ea5e9' : index === 1 ? '#2dd4bf' : '#6366f1' }}></div>
+                      <p className="text-xs font-semibold text-gray-600">{item.name}</p>
                     </div>
-                    <p className="text-lg font-black text-[#1a1a1a]">{item.value}</p>
+                    <p className="text-xl font-bold text-gray-900">{item.value}</p>
                   </div>
                 ))}
               </div>
@@ -153,24 +153,30 @@ export default function AdminAnalytics() {
           </Card>
 
           {/* Key Metrics */}
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none">
-              <CardContent className="p-4 text-white">
-                <Activity className="w-8 h-8 mb-2 opacity-80" />
-                <p className="text-xs font-bold opacity-90 uppercase">Engagement Rate</p>
-                <p className="text-3xl font-black italic mt-1">{engagementRate}%</p>
-                <p className="text-xs opacity-80 mt-1">{activeClients} of {clients.length} active</p>
+          <div className="grid grid-cols-2 gap-4">
+            <Card className="bg-gradient-to-r from-teal-500 to-teal-600 border-none rounded-xl overflow-hidden shadow-sm">
+              <CardContent className="p-5 text-white relative">
+                <div className="absolute top-0 right-0 p-3 opacity-20">
+                    <Activity className="w-12 h-12" />
+                </div>
+                <p className="text-xs font-bold opacity-80 uppercase tracking-wide">Engagement Rate</p>
+                <div className="flex items-baseline gap-2 mt-2">
+                    <p className="text-3xl font-black">{engagementRate}%</p>
+                </div>
+                <p className="text-xs opacity-90 mt-1 font-medium bg-white/20 inline-block px-2 py-0.5 rounded-full">{activeClients} of {clients.length} active</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 border-none">
-              <CardContent className="p-4 text-white">
-                <Users className="w-8 h-8 mb-2 opacity-80" />
-                <p className="text-xs font-bold opacity-90 uppercase">Avg Clients/Trainer</p>
-                <p className="text-3xl font-black italic mt-1">
-                  {trainers.length > 0 ? Math.round(assignments.length / trainers.length) : 0}
-                </p>
-                <p className="text-xs opacity-80 mt-1">{assignments.length} total assignments</p>
+            <Card className="bg-gradient-to-r from-indigo-500 to-indigo-600 border-none rounded-xl overflow-hidden shadow-sm">
+              <CardContent className="p-5 text-white relative">
+                <div className="absolute top-0 right-0 p-3 opacity-20">
+                    <Users className="w-12 h-12" />
+                </div>
+                <p className="text-xs font-bold opacity-80 uppercase tracking-wide">Avg Clients/Trainer</p>
+                <div className="flex items-baseline gap-2 mt-2">
+                    <p className="text-3xl font-black">{trainers.length > 0 ? Math.round(assignments.length / trainers.length) : 0}</p>
+                </div>
+                <p className="text-xs opacity-90 mt-1 font-medium bg-white/20 inline-block px-2 py-0.5 rounded-full">{assignments.length} total assignments</p>
               </CardContent>
             </Card>
           </div>

@@ -103,17 +103,17 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Users Card */}
         <Link to={createPageUrl("AdminUsers")}>
-            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full">
-            <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                    <Users className="w-5 h-5 text-[#0ea5e9]" />
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Users className="w-16 h-16 text-[#0ea5e9]" />
                 </div>
-                <h3 className="font-semibold text-gray-900">Total Users</h3>
-                </div>
-                <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-[#0ea5e9]">{allUsers.length}</span>
-                <span className="text-xs text-gray-400 font-medium">registered</span>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Users</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-[#0ea5e9]">{allUsers.length}</span>
+                        <span className="text-xs text-gray-400 font-bold bg-blue-50 px-2 py-0.5 rounded-full">ALL TIME</span>
+                    </div>
                 </div>
             </CardContent>
             </Card>
@@ -121,51 +121,51 @@ export default function AdminDashboard() {
 
         {/* Trainers Card */}
         <Link to={createPageUrl("AdminTrainers")}>
-            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full">
-            <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-purple-50 rounded-lg">
-                    <Award className="w-5 h-5 text-purple-600" />
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Award className="w-16 h-16 text-teal-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900">Trainers</h3>
-                </div>
-                <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-purple-600">{trainers.length}</span>
-                <span className="text-xs text-gray-400 font-medium">active pros</span>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Active Trainers</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-teal-600">{trainers.length}</span>
+                        <span className="text-xs text-teal-600/70 font-bold bg-teal-50 px-2 py-0.5 rounded-full">PROS</span>
+                    </div>
                 </div>
             </CardContent>
             </Card>
         </Link>
 
         {/* Engagement Card */}
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden h-full">
-            <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-green-50 rounded-lg">
-                <Activity className="w-5 h-5 text-green-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900">Engagement</h3>
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden h-full group">
+            <CardContent className="p-6 relative">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Activity className="w-16 h-16 text-indigo-600" />
             </div>
-            <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-green-600">{engagementRate}%</span>
-                <span className="text-xs text-gray-400 font-medium">active clients</span>
+            <div className="flex flex-col">
+                <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Engagement</span>
+                <div className="flex items-baseline gap-2 mt-2">
+                    <span className="text-4xl font-black text-indigo-600">{engagementRate}%</span>
+                    <span className="text-xs text-indigo-600/70 font-bold bg-indigo-50 px-2 py-0.5 rounded-full">ACTIVE</span>
+                </div>
             </div>
             </CardContent>
         </Card>
 
         {/* Content Card */}
         <Link to={createPageUrl("AdminVideos")}>
-            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full">
-                <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-orange-50 rounded-lg">
-                    <Video className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900">Content</h3>
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer h-full group">
+                <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Video className="w-16 h-16 text-sky-600" />
                 </div>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-orange-600">{videos.length}</span>
-                    <span className="text-xs text-gray-400 font-medium">videos</span>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Video Library</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-sky-600">{videos.length}</span>
+                        <span className="text-xs text-sky-600/70 font-bold bg-sky-50 px-2 py-0.5 rounded-full">VIDEOS</span>
+                    </div>
                 </div>
                 </CardContent>
             </Card>
@@ -177,56 +177,68 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link to={createPageUrl("AdminInviteUser")}>
-            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
-              <div className="flex items-start gap-4">
+            <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110">
+                 <UserPlus className="w-24 h-24 text-white" />
+              </div>
+              <div className="flex items-start gap-4 relative z-10">
                 <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                   <UserPlus className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-1">Invite User</h4>
-                  <p className="text-green-100 text-xs">Add new users or trainers</p>
+                  <p className="text-teal-50 text-xs font-medium">Add new users or trainers</p>
                 </div>
               </div>
             </div>
           </Link>
 
           <Link to={createPageUrl("AdminAnnouncements")}>
-            <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
-              <div className="flex items-start gap-4">
+            <div className="bg-gradient-to-r from-[#0ea5e9] to-blue-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110">
+                 <Megaphone className="w-24 h-24 text-white" />
+              </div>
+              <div className="flex items-start gap-4 relative z-10">
                 <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                   <Megaphone className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-1">Announce</h4>
-                  <p className="text-purple-100 text-xs">Send platform alerts</p>
+                  <p className="text-blue-50 text-xs font-medium">Send platform alerts</p>
                 </div>
               </div>
             </div>
           </Link>
 
           <Link to={createPageUrl("AdminClientAssignments")}>
-            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
-              <div className="flex items-start gap-4">
+            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110">
+                 <Users className="w-24 h-24 text-white" />
+              </div>
+              <div className="flex items-start gap-4 relative z-10">
                 <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-1">Assignments</h4>
-                  <p className="text-blue-100 text-xs">Manage client-trainer pairs</p>
+                  <p className="text-indigo-50 text-xs font-medium">Manage client-trainer pairs</p>
                 </div>
               </div>
             </div>
           </Link>
           
            <Link to={createPageUrl("AdminEducationalContent")}>
-            <div className="bg-gradient-to-br from-orange-400 to-red-500 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full">
-              <div className="flex items-start gap-4">
+            <div className="bg-gradient-to-r from-sky-500 to-sky-600 rounded-xl p-6 text-white shadow-md hover:shadow-lg transition-all cursor-pointer h-full relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110">
+                 <GraduationCap className="w-24 h-24 text-white" />
+              </div>
+              <div className="flex items-start gap-4 relative z-10">
                 <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                   <GraduationCap className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-1">Education</h4>
-                  <p className="text-orange-100 text-xs">Manage learning materials</p>
+                  <p className="text-sky-50 text-xs font-medium">Manage learning materials</p>
                 </div>
               </div>
             </div>
@@ -265,7 +277,7 @@ export default function AdminDashboard() {
                                     />
                                     <Bar dataKey="workouts" radius={[4, 4, 0, 0]}>
                                         {weeklyActivityData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill="#0ea5e9" />
+                                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#0ea5e9' : '#2dd4bf'} />
                                         ))}
                                     </Bar>
                                 </BarChart>
