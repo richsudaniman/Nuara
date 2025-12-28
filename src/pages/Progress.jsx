@@ -19,6 +19,7 @@ export default function Progress() {
   const [newMetricValue, setNewMetricValue] = useState("");
   const [newMetricDate, setNewMetricDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
