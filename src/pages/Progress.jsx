@@ -581,34 +581,82 @@ export default function Progress() {
           {isLoading ? (
             <Skeleton className="h-64 rounded-lg bg-gray-100" />
           ) : goals.length > 0 ? (
-            goals.map(goal => (
-              <Card key={goal.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-colors">
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-black italic text-[#1a1a1a] text-xl">{goal.goal_title}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        <span className="text-[#0ea5e9] font-bold">{goal.current_value}</span> → <span className="font-bold">{goal.target_value}</span>
-                      </p>
-                      {goal.target_date && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Target: {format(new Date(goal.target_date), 'MMM d, yyyy')}
+            goals.map(goal => {
+              const goalLogs = goal.linked_metric_type 
+                ? metrics
+                    .filter(m => m.metric_type === goal.linked_metric_type)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5)
+                : [];
+
+              return (
+                <Card key={goal.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-colors">
+                  <CardContent className="p-5">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-black italic text-[#1a1a1a] text-xl">{goal.goal_title}</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          <span className="text-[#0ea5e9] font-bold">{goal.current_value || 'Start'}</span> → <span className="font-bold">{goal.target_value}</span>
                         </p>
-                      )}
+                        {goal.target_date && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            Target: {format(new Date(goal.target_date), 'MMM d, yyyy')}
+                          </p>
+                        )}
+                      </div>
+                      <div className="bg-[#0ea5e9] px-3 py-1 rounded-full">
+                        <span className="text-white font-black italic">{goal.progress_percentage}%</span>
+                      </div>
                     </div>
-                    <div className="bg-[#0ea5e9] px-3 py-1 rounded-full">
-                      <span className="text-white font-black italic">{goal.progress_percentage}%</span>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
+                      <div 
+                        className="h-full bg-[#0ea5e9] transition-all duration-300"
+                        style={{ width: `${goal.progress_percentage}%` }}
+                      ></div>
                     </div>
-                  </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-[#0ea5e9] transition-all duration-300"
-                      style={{ width: `${goal.progress_percentage}%` }}
-                    ></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+
+                    {/* Goal History & Actions */}
+                    {goal.linked_metric_type && (
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="flex justify-between items-center mb-3">
+                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Recent Logs</h4>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-7 text-xs font-bold text-[#0ea5e9] hover:bg-blue-50 px-2"
+                            onClick={() => {
+                              setSelectedMetricType(goal.linked_metric_type);
+                              document.querySelector('[value="metrics"]').click(); // Switch to metrics tab
+                              setTimeout(() => {
+                                document.getElementById('metric-form')?.scrollIntoView({ behavior: 'smooth' });
+                              }, 100);
+                            }}
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            Log Progress
+                          </Button>
+                        </div>
+                        
+                        {goalLogs.length > 0 ? (
+                          <div className="space-y-2">
+                            {goalLogs.map((log, idx) => (
+                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded-lg">
+                                <span className="text-gray-500 font-medium">{format(new Date(log.date), 'MMM d')}</span>
+                                <span className="font-bold text-gray-900">{log.value} <span className="text-xs font-normal text-gray-500">{log.unit}</span></span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-3 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                            <p className="text-xs text-gray-400 italic">No logs recorded yet</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })
           ) : (
             <EmptyState
               icon={TrendingUp}
