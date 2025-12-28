@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import WeeklySchedule from "../components/workout/WeeklySchedule";
 import ExerciseChecklist from "../components/workout/ExerciseChecklist";
+import CustomWorkoutLogger from "../components/workout/CustomWorkoutLogger";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 import { Dumbbell } from "lucide-react";
@@ -94,6 +95,15 @@ export default function Workout() {
     });
   };
 
+  const handleCustomLog = async (data) => {
+    if (!user?.id) return;
+    await logExerciseMutation.mutateAsync({
+      logged_by_client_id: user.id,
+      completed_date: todayDate,
+      ...data
+    });
+  };
+
   const isLoading = plansLoading || logsLoading;
 
   return (
@@ -105,12 +115,18 @@ export default function Workout() {
           <Skeleton className="h-96 rounded-lg bg-gray-100" />
         </>
       ) : workoutPlans.length === 0 ? (
-        <EmptyState
-          icon={Dumbbell}
-          title="No Workout Plan Yet"
-          description="Your trainer hasn't assigned you a workout plan yet. Check back soon or reach out to your trainer!"
-          variant="info"
-        />
+        <>
+          <EmptyState
+            icon={Dumbbell}
+            title="No Workout Plan Yet"
+            description="Your trainer hasn't assigned you a workout plan yet. Check back soon or reach out to your trainer!"
+            variant="info"
+          />
+          <CustomWorkoutLogger 
+            onLogExercise={handleCustomLog} 
+            todaysLogs={workoutLogs.filter(log => log.completed_date === todayDate)} 
+          />
+        </>
       ) : (
         <>
           <WeeklySchedule
@@ -136,6 +152,14 @@ export default function Workout() {
               title="Rest Day"
               description={`No workout scheduled for ${selectedDay}. Take this time to recover and come back stronger!`}
               variant="success"
+            />
+          )}
+
+          {/* Only show custom logger if selected day is today */}
+          {selectedDay === today && (
+            <CustomWorkoutLogger 
+              onLogExercise={handleCustomLog} 
+              todaysLogs={workoutLogs.filter(log => log.completed_date === todayDate)} 
             />
           )}
         </>
