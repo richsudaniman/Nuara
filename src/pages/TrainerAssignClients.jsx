@@ -213,8 +213,13 @@ export default function TrainerAssignClients() {
           })}
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500 italic">
-          {searchQuery ? "No users found matching your search" : "No users available"}
+        <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-gray-400">
+             <Search className="w-6 h-6" />
+          </div>
+          <p className="text-gray-500 font-medium">
+            {searchQuery ? "No users found matching your search" : "No users available"}
+          </p>
         </div>
       )}
     </div>
