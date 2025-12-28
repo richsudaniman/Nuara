@@ -81,10 +81,17 @@ export default function AdminDashboard() {
     });
   }
 
+  // Role distribution for Pie Chart
+  const roleData = [
+    { name: 'Clients', value: clients.length, color: '#0ea5e9' },
+    { name: 'Trainers', value: trainers.length, color: '#2dd4bf' },
+    { name: 'Admins', value: admins.length, color: '#6366f1' },
+  ];
+
   const isLoading = usersLoading || videosLoading || plansLoading || logsLoading || assignmentsLoading;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="w-full max-w-[1600px] mx-auto px-6 py-8 space-y-8">
       
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -338,31 +345,93 @@ export default function AdminDashboard() {
 
         {/* Sidebar - 1 col */}
         <div className="space-y-6">
-            {/* Platform Health/Status */}
+            {/* User Distribution Pie Chart */}
             <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">System Status</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">User Distribution</h3>
+                <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center justify-center">
+                            <ResponsiveContainer width="100%" height={200}>
+                                <PieChart>
+                                    <Pie
+                                        data={roleData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {roleData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mt-4">
+                            {roleData.map((item, index) => (
+                                <div key={index} className="text-center p-2 bg-gray-50 rounded-lg">
+                                    <div className="flex items-center justify-center gap-1.5 mb-1">
+                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
+                                        <p className="text-[10px] font-semibold text-gray-600 uppercase">{item.name}</p>
+                                    </div>
+                                    <p className="text-lg font-bold text-gray-900">{item.value}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Platform Health/Status with Metrics */}
+            <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Platform Health</h3>
                 <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
                     <CardContent className="p-5 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                                <span className="text-sm font-medium text-gray-700">System Status</span>
+                        <div className="space-y-3">
+                            <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium text-gray-700">Engagement Rate</span>
+                                    <span className="text-[#0ea5e9] font-bold">{engagementRate}%</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div 
+                                        className="h-full bg-gradient-to-r from-[#0ea5e9] to-[#0284c7]"
+                                        style={{ width: `${engagementRate}%` }}
+                                    ></div>
+                                </div>
                             </div>
-                            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">OPERATIONAL</span>
+
+                            <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium text-gray-700">Trainer Utilization</span>
+                                    <span className="text-purple-600 font-bold">
+                                        {trainers.length > 0 ? Math.round((assignments.length / (trainers.length * 10)) * 100) : 0}%
+                                    </span>
+                                </div>
+                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div 
+                                        className="h-full bg-gradient-to-r from-purple-500 to-indigo-600"
+                                        style={{ width: `${trainers.length > 0 ? Math.min((assignments.length / (trainers.length * 10)) * 100, 100) : 0}%` }}
+                                    ></div>
+                                </div>
+                                <p className="text-[10px] text-gray-400 mt-1">Based on 10 client capacity</p>
+                            </div>
                         </div>
                         
                         <div className="pt-4 border-t border-gray-100 space-y-3">
                              <div className="flex justify-between text-sm">
                                 <span className="text-gray-500">Database</span>
-                                <span className="font-medium text-gray-900">Connected</span>
+                                <span className="font-medium text-green-600 flex items-center gap-1">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-600"></div>
+                                    Connected
+                                </span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">File Storage</span>
+                                <span className="text-gray-500">Storage</span>
                                 <span className="font-medium text-gray-900">85% Free</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Last Backup</span>
-                                <span className="font-medium text-gray-900">2h ago</span>
                             </div>
                         </div>
                     </CardContent>
