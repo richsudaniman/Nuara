@@ -109,7 +109,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <ErrorBoundary>
       <AuthGuard>
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 relative overflow-hidden safe-area-inset">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-32 relative overflow-x-hidden safe-area-inset">
               <style>{`
                 :root {
                   --primary-white: #ffffff;
