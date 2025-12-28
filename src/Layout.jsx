@@ -150,9 +150,11 @@ export default function Layout({ children, currentPageName }) {
                 <div className="flex items-center justify-between">
                   <Link to={getHomePath()}>
                     <div className="flex items-center gap-3 cursor-pointer">
-                      <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-2xl flex items-center justify-center shadow-sm">
-                        <Dumbbell className="w-5 h-5 text-white" />
-                      </div>
+                      <img 
+                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
+                        alt="EJT Fitness" 
+                        className="w-12 h-12 object-contain" 
+                      />
                       <div>
                         <h1 className="text-xl font-bold text-[#1a1a1a]">
                           EJT Fitness
@@ -224,9 +226,11 @@ export default function Layout({ children, currentPageName }) {
           <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
             <div className="p-6 border-b border-gray-100">
               <Link to={getHomePath()} className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-xl flex items-center justify-center shadow-sm">
-                  <Dumbbell className="w-5 h-5 text-white" />
-                </div>
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
+                  alt="EJT Fitness" 
+                  className="w-12 h-12 object-contain" 
+                />
                 <div>
                   <h1 className="text-lg font-bold text-[#1a1a1a] leading-tight">EJT Fitness</h1>
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
@@ -288,9 +292,11 @@ export default function Layout({ children, currentPageName }) {
                 <Menu className="w-6 h-6 text-gray-700" />
               </Button>
               <Link to={getHomePath()} className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center shadow-sm">
-                  <Dumbbell className="w-4 h-4 text-white" />
-                </div>
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
+                  alt="EJT Fitness" 
+                  className="w-10 h-10 object-contain" 
+                />
                 <span className="font-bold text-gray-900">EJT Fitness</span>
               </Link>
             </div>
@@ -304,9 +310,11 @@ export default function Layout({ children, currentPageName }) {
               <div className="fixed inset-y-0 left-0 w-[280px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
                 <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                   <Link to={getHomePath()} className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-                    <div className="w-8 h-8 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center shadow-sm">
-                      <Dumbbell className="w-4 h-4 text-white" />
-                    </div>
+                    <img 
+                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
+                      alt="EJT Fitness" 
+                      className="w-10 h-10 object-contain" 
+                    />
                     <div>
                       <h2 className="font-bold text-gray-900">EJT Fitness</h2>
                       <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{isAdminView ? 'Admin' : 'Trainer'}</p>
