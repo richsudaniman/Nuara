@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, ArrowLeft, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { UserPlus, ArrowLeft, CheckCircle2, AlertCircle, Loader2, Lightbulb, Link as LinkIcon, Users, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -36,29 +35,20 @@ export default function AdminInviteUser() {
 
   const inviteUserMutation = useMutation({
     mutationFn: async (userData) => {
-      console.log('Sending invitation with data:', userData);
       try {
         const response = await base44.functions.invoke('inviteUser', userData);
-        console.log('Invitation response:', response);
         return response.data;
       } catch (error) {
-        console.error('Function invoke error:', {
-          message: error.message,
-          response: error.response,
-          status: error.response?.status,
-          data: error.response?.data
-        });
         throw error;
       }
     },
     onSuccess: (data) => {
-      console.log('Invitation successful:', data);
       if (data.warning) {
         setErrorMessage(data.warning);
-        setSuccessMessage(""); // Clear success message if there's a warning
+        setSuccessMessage("");
       } else {
         setSuccessMessage(data.message || 'User invited successfully!');
-        setErrorMessage(""); // Clear error message on success
+        setErrorMessage("");
       }
       setFormData({
         email: "",
@@ -72,24 +62,18 @@ export default function AdminInviteUser() {
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
       queryClient.invalidateQueries({ queryKey: ['allTrainers'] });
       
-      // Clear messages after 5 seconds
       setTimeout(() => {
         setSuccessMessage("");
         setErrorMessage("");
       }, 5000);
     },
     onError: (error) => {
-      console.error("Invite error:", error);
       const errorData = error.response?.data;
       let errorMsg = 'Failed to invite user';
       
       if (errorData) {
         if (errorData.error) errorMsg = errorData.error;
         if (errorData.details) errorMsg += ': ' + errorData.details;
-        if (errorData.serverResponse) {
-          console.error('Server response:', errorData.serverResponse);
-          errorMsg += ' (Check console for details)';
-        }
       } else {
         errorMsg = error.message || errorMsg;
       }
@@ -104,20 +88,17 @@ export default function AdminInviteUser() {
     setSuccessMessage("");
     setErrorMessage("");
 
-    // Validation
     if (!formData.email || !formData.full_name) {
       setErrorMessage("Email and full name are required");
       return;
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setErrorMessage("Please enter a valid email address");
       return;
     }
 
-    // For clients, require trainer assignment
     if (formData.role === 'user' && !formData.assigned_trainer_id) {
       setErrorMessage("Clients must be assigned to a trainer. Please select a trainer or create one first.");
       return;
@@ -131,306 +112,268 @@ export default function AdminInviteUser() {
 
     if (formData.phone) submitData.phone = formData.phone.trim();
     
-    // Add bio based on role
     if (formData.role === 'trainer' && formData.bio) submitData.bio = formData.bio.trim();
-    if (formData.role === 'user' && formData.bio) submitData.notes = formData.bio.trim(); // Client notes are stored as 'notes'
+    if (formData.role === 'user' && formData.bio) submitData.notes = formData.bio.trim();
 
-    // Add trainer-specific fields
-    if (formData.role === 'trainer') {
-      if (formData.specialties) {
-        submitData.specialties = formData.specialties.trim();
-      }
-      console.log('Creating trainer with specialties:', submitData.specialties);
+    if (formData.role === 'trainer' && formData.specialties) {
+      submitData.specialties = formData.specialties.trim();
     }
     
-    // Add client-specific fields
     if (formData.role === 'user' && formData.assigned_trainer_id) {
       submitData.assigned_trainer_id = formData.assigned_trainer_id;
     }
 
-    console.log('Submitting user data:', submitData);
     await inviteUserMutation.mutateAsync(submitData);
   };
 
   return (
-    <div className="p-6 space-y-5 relative">
-      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
-
-      {/* Back Button */}
-      <Link to={createPageUrl("AdminDashboard")}>
-        <Button variant="ghost" className="gap-2 text-gray-600 hover:text-[#0ea5e9]">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
-        </Button>
-      </Link>
-
+    <div className="w-full max-w-[1600px] mx-auto px-6 py-8 space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
-          <UserPlus className="w-5 h-5 text-white" />
-        </div>
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black italic text-[#1a1a1a]">INVITE NEW USER</h1>
-          <p className="text-sm text-gray-600 italic">Add trainers or clients to your platform</p>
+          <h1 className="text-2xl font-bold text-gray-900">Invite New User</h1>
+          <p className="text-sm text-gray-500 mt-1">Add trainers, clients, or administrators to the platform</p>
         </div>
+        <Link to={createPageUrl("AdminDashboard")}>
+          <Button variant="ghost" className="text-gray-500 hover:text-gray-900">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </Link>
       </div>
 
-      {/* Success Message */}
-      {successMessage && (
-        <Card className="bg-green-50 border-2 border-green-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 text-green-800">
-              <CheckCircle2 className="w-6 h-6 flex-shrink-0" />
-              <div>
-                <p className="font-bold">{successMessage}</p>
-                <p className="text-sm mt-1">Welcome email has been sent to the user.</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content - Form */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
+                <div className="p-2 bg-blue-50 rounded-lg text-[#0ea5e9]">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Invitation Details</h3>
+                  <p className="text-sm text-gray-500">Enter user information to send an invite</p>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {/* Error Message */}
-      {errorMessage && (
-        <Card className="bg-red-50 border-2 border-red-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 text-red-800">
-              <AlertCircle className="w-6 h-6 flex-shrink-0" />
-              <div>
-                <p className="font-bold">Error</p>
-                <p className="text-sm mt-1">{errorMessage}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Invite Form */}
-      <Card className="bg-white border-2 border-[#0ea5e9] glow-blue">
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Role Selection */}
-            <div>
-              <label className="text-sm font-bold text-gray-700 mb-2 block">
-                User Role *
-              </label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value })}
-              >
-                <SelectTrigger className="bg-white border-gray-300">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">Client</SelectItem>
-                  <SelectItem value="trainer">Trainer</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500 mt-1">
-                {formData.role === 'trainer' && "Trainers can manage clients, create plans, and upload videos"}
-                {formData.role === 'user' && "Clients follow workout and nutrition plans from their trainer"}
-                {formData.role === 'admin' && "Admins have full platform access"}
-              </p>
-            </div>
-
-            {/* Full Name */}
-            <div>
-              <label className="text-sm font-bold text-gray-700 mb-2 block">
-                Full Name *
-              </label>
-              <Input
-                placeholder="John Doe"
-                value={formData.full_name}
-                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                className="bg-white border-gray-300"
-                required
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="text-sm font-bold text-gray-700 mb-2 block">
-                Email Address *
-              </label>
-              <Input
-                type="email"
-                placeholder="john@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="bg-white border-gray-300"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                User will receive a welcome email with login instructions
-              </p>
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className="text-sm font-bold text-gray-700 mb-2 block">
-                Phone Number
-              </label>
-              <Input
-                type="tel"
-                placeholder="+1 (555) 123-4567"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="bg-white border-gray-300"
-              />
-            </div>
-
-            {/* Trainer-specific fields */}
-            {formData.role === 'trainer' && (
-              <>
-                <div>
-                  <label className="text-sm font-bold text-gray-700 mb-2 block">
-                    Specialties
-                  </label>
-                  <Input
-                    placeholder="e.g., Strength Training, Weight Loss, Nutrition"
-                    value={formData.specialties}
-                    onChange={(e) => setFormData({ ...formData, specialties: e.target.value })}
-                    className="bg-white border-gray-300"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter the trainer's areas of expertise (optional)
-                  </p>
+              {successMessage && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-100 rounded-lg flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-green-800">{successMessage}</p>
+                    <p className="text-xs text-green-600 mt-1">The user has been notified via email.</p>
+                  </div>
                 </div>
-
-                <div>
-                  <label className="text-sm font-bold text-gray-700 mb-2 block">
-                    Bio / About
-                  </label>
-                  <Textarea
-                    placeholder="Tell clients about this trainer's experience and expertise..."
-                    value={formData.bio}
-                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                    className="bg-white border-gray-300 h-24"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Client-specific fields */}
-            {formData.role === 'user' && (
-              <>
-                <div>
-                  <label className="text-sm font-bold text-gray-700 mb-2 block">
-                    Assign to Trainer *
-                  </label>
-                  <Select
-                    value={formData.assigned_trainer_id}
-                    onValueChange={(value) => setFormData({ ...formData, assigned_trainer_id: value })}
-                  >
-                    <SelectTrigger className="bg-white border-gray-300">
-                      <SelectValue placeholder="Select a trainer..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {trainers.length > 0 ? (
-                        trainers.map(trainer => (
-                          <SelectItem key={trainer.id} value={trainer.id}>
-                            {trainer.full_name || trainer.email}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="none" disabled>No trainers available</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {trainers.length === 0 ? (
-                      <span className="text-orange-600">⚠️ Please invite trainers first before adding clients</span>
-                    ) : (
-                      "Trainer will be notified via email about the new client"
-                    )}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="text-sm font-bold text-gray-700 mb-2 block">
-                    Notes (Optional)
-                  </label>
-                  <Textarea
-                    placeholder="Any special notes about this client..."
-                    value={formData.bio} // Re-using bio field for client notes
-                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                    className="bg-white border-gray-300 h-20"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={inviteUserMutation.isPending}
-              className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic py-6 text-lg glow-blue-intense"
-            >
-              {inviteUserMutation.isPending ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Sending Invitation...
-                </>
-              ) : (
-                <>
-                  <UserPlus className="w-5 h-5 mr-2" />
-                  Send Invitation
-                </>
               )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
-      {/* Help Section */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
-        <CardContent className="p-5">
-          <h3 className="font-black italic text-[#1a1a1a] mb-3">💡 TIPS</h3>
-          <ul className="space-y-2 text-sm text-gray-700">
-            <li className="flex gap-2">
-              <span className="text-[#0ea5e9] font-bold">•</span>
-              <span>Invited users will receive an email with login instructions</span>
-            </li>
-            <li className="flex gap-2">
-              <span className="text-[#0ea5e9] font-bold">•</span>
-              <span>Trainers are notified when clients are assigned to them</span>
-            </li>
-            <li className="flex gap-2">
-              <span className="text-[#0ea5e9] font-bold">•</span>
-              <span>You can update user roles later from the Users page</span>
-            </li>
-            <li className="flex gap-2">
-              <span className="text-[#0ea5e9] font-bold">•</span>
-              <span>Clients must be assigned to a trainer to access workout plans</span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+              {errorMessage && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-red-800">Error</p>
+                    <p className="text-xs text-red-600 mt-1">{errorMessage}</p>
+                  </div>
+                </div>
+              )}
 
-      {/* Quick Links */}
-      <Card className="bg-white border-2 border-gray-200">
-        <CardContent className="p-5">
-          <h3 className="font-black italic text-[#1a1a1a] mb-3">AFTER INVITING</h3>
-          <div className="space-y-2">
-            <Link to={createPageUrl("AdminUsers")}>
-              <Button variant="outline" className="w-full justify-start">
-                → View All Users
-              </Button>
-            </Link>
-            <Link to={createPageUrl("AdminTrainers")}>
-              <Button variant="outline" className="w-full justify-start">
-                → Manage Trainers
-              </Button>
-            </Link>
-            <Link to={createPageUrl("AdminClientAssignments")}>
-              <Button variant="outline" className="w-full justify-start">
-                → Manage Client Assignments
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Role</label>
+                    <Select
+                      value={formData.role}
+                      onValueChange={(value) => setFormData({ ...formData, role: value })}
+                    >
+                      <SelectTrigger className="bg-white border-gray-200 h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">Client</SelectItem>
+                        <SelectItem value="trainer">Trainer</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[11px] text-gray-400">
+                      {formData.role === 'trainer' && "Can manage clients and create plans"}
+                      {formData.role === 'user' && "Follows plans assigned by a trainer"}
+                      {formData.role === 'admin' && "Has full system access"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Full Name</label>
+                    <Input
+                      placeholder="e.g. John Doe"
+                      value={formData.full_name}
+                      onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                      className="bg-white border-gray-200 h-10"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Email Address</label>
+                    <Input
+                      type="email"
+                      placeholder="john@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="bg-white border-gray-200 h-10"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Phone (Optional)</label>
+                    <Input
+                      type="tel"
+                      placeholder="+1 (555) 000-0000"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="bg-white border-gray-200 h-10"
+                    />
+                  </div>
+                </div>
+
+                {formData.role === 'trainer' && (
+                  <div className="space-y-6 pt-4 border-t border-gray-50">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase">Specialties</label>
+                      <Input
+                        placeholder="e.g. Weight Loss, Strength, HIIT"
+                        value={formData.specialties}
+                        onChange={(e) => setFormData({ ...formData, specialties: e.target.value })}
+                        className="bg-white border-gray-200 h-10"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase">Bio / About</label>
+                      <Textarea
+                        placeholder="Trainer's background and expertise..."
+                        value={formData.bio}
+                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                        className="bg-white border-gray-200 min-h-[100px] resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.role === 'user' && (
+                  <div className="space-y-6 pt-4 border-t border-gray-50">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase">Assign Trainer</label>
+                      <Select
+                        value={formData.assigned_trainer_id}
+                        onValueChange={(value) => setFormData({ ...formData, assigned_trainer_id: value })}
+                      >
+                        <SelectTrigger className="bg-white border-gray-200 h-10">
+                          <SelectValue placeholder="Select a trainer..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {trainers.map(trainer => (
+                            <SelectItem key={trainer.id} value={trainer.id}>
+                              {trainer.full_name || trainer.email}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {trainers.length === 0 && (
+                        <p className="text-xs text-orange-500 font-medium mt-1">
+                          No trainers available. Please invite a trainer first.
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase">Client Notes</label>
+                      <Textarea
+                        placeholder="Initial notes or requirements for this client..."
+                        value={formData.bio}
+                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                        className="bg-white border-gray-200 min-h-[100px] resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="pt-4 flex justify-end">
+                  <Button
+                    type="submit"
+                    disabled={inviteUserMutation.isPending}
+                    className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold px-8 h-11"
+                  >
+                    {inviteUserMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Send Invitation
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Help Card */}
+          <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-none shadow-md rounded-xl overflow-hidden">
+            <CardContent className="p-6 relative">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Lightbulb className="w-24 h-24" />
+              </div>
+              <div className="relative z-10">
+                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5" />
+                  Quick Tips
+                </h3>
+                <ul className="space-y-3 text-sm text-indigo-100">
+                  <li className="flex gap-2">
+                    <span className="font-bold">•</span>
+                    <span>Invited users receive an email with login credentials.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-bold">•</span>
+                    <span>Trainers are automatically notified when a new client is assigned.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-bold">•</span>
+                    <span>You can modify user roles and permissions anytime from the Users page.</span>
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Links */}
+          <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+            <CardContent className="p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <LinkIcon className="w-4 h-4 text-gray-500" />
+                Management Links
+              </h3>
+              <div className="space-y-2">
+                <Link to={createPageUrl("AdminUsers")}>
+                  <Button variant="ghost" className="w-full justify-start text-gray-600 hover:text-[#0ea5e9] hover:bg-blue-50">
+                    <Users className="w-4 h-4 mr-2" />
+                    View All Users
+                  </Button>
+                </Link>
+                <Link to={createPageUrl("AdminTrainers")}>
+                  <Button variant="ghost" className="w-full justify-start text-gray-600 hover:text-purple-600 hover:bg-purple-50">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Manage Trainers
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
