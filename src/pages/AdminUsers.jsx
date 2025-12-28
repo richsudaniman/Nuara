@@ -49,153 +49,203 @@ export default function AdminUsers() {
   };
 
   const getRoleColor = (role) => {
-    if (role === 'admin') return "text-red-600 bg-red-100";
-    if (role === 'trainer') return "text-purple-600 bg-purple-100";
-    return "text-blue-600 bg-blue-100";
+    if (role === 'admin') return "text-indigo-600 bg-indigo-50";
+    if (role === 'trainer') return "text-teal-600 bg-teal-50";
+    return "text-sky-600 bg-sky-50";
   };
 
-  return (
-    <div className="p-4 md:p-6 space-y-5 relative mb-32">
-      <div className="absolute top-10 right-10 w-20 h-20 border border-[#0ea5e9]/20 rotate-45 pointer-events-none"></div>
+  const trainersCount = allUsers.filter(u => u.role === 'trainer').length;
+  const adminsCount = allUsers.filter(u => u.role === 'admin').length;
+  const newThisMonth = allUsers.filter(u => {
+      const created = new Date(u.created_date);
+      const now = new Date();
+      return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+  }).length;
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#0ea5e9] flex items-center justify-center glow-blue" style={{clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'}}>
-            <Users className="w-5 h-5 text-white" />
-          </div>
-          <h1 className="text-2xl md:text-3xl font-black italic text-[#1a1a1a]">USER MANAGEMENT</h1>
+  return (
+    <div className="w-full max-w-[1600px] mx-auto px-6 py-8 space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage users, roles, and permissions</p>
         </div>
         <Link to={createPageUrl("AdminInviteUser")}>
-          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic gap-2 w-full sm:w-auto">
-            <UserPlus className="w-4 h-4" />
-            <span className="hidden sm:inline">Invite User</span>
-            <span className="sm:hidden">Invite</span>
+          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white shadow-sm rounded-lg font-bold">
+            <UserPlus className="w-4 h-4 mr-2" />
+            Invite User
           </Button>
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            placeholder="Search users..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white border-gray-300"
-          />
-        </div>
-        <Select value={roleFilter} onValueChange={setRoleFilter}>
-          <SelectTrigger className="w-full sm:w-32 bg-white border-gray-300">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Roles</SelectItem>
-            <SelectItem value="admin">Admin</SelectItem>
-            <SelectItem value="trainer">Trainer</SelectItem>
-            <SelectItem value="user">Client</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Users className="w-16 h-16 text-[#0ea5e9]" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Users</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-[#0ea5e9]">{allUsers.length}</span>
+                        <span className="text-xs text-sky-600/70 font-bold bg-sky-50 px-2 py-0.5 rounded-full">ACTIVE</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Award className="w-16 h-16 text-teal-600" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Trainers & Admins</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-teal-600">{trainersCount + adminsCount}</span>
+                        <span className="text-xs text-teal-600/70 font-bold bg-teal-50 px-2 py-0.5 rounded-full">STAFF</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+            <CardContent className="p-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <UserPlus className="w-16 h-16 text-indigo-600" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">New This Month</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-4xl font-black text-indigo-600">{newThisMonth}</span>
+                        <span className="text-xs text-indigo-600/70 font-bold bg-indigo-50 px-2 py-0.5 rounded-full">GROWTH</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
       </div>
 
-      {/* Users List */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 rounded-lg bg-gray-100" />)}
+      {/* Filters and List */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+                placeholder="Search users by name or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] rounded-xl h-11"
+            />
+            </div>
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-full sm:w-48 bg-white border-gray-200 rounded-xl h-11">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="admin">Admins</SelectItem>
+                <SelectItem value="trainer">Trainers</SelectItem>
+                <SelectItem value="user">Clients</SelectItem>
+            </SelectContent>
+            </Select>
         </div>
-      ) : filteredUsers.length > 0 ? (
-        <div className="space-y-3">
-          {filteredUsers.map(user => {
-            const RoleIcon = getRoleIcon(user.role);
-            const isEditing = editingUser?.id === user.id;
-            
-            return (
-              <Card key={user.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-all">
-                <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="flex items-start gap-4 flex-1 w-full">
-                      <div className="w-14 h-14 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
-                        {user.profile_photo_url ? (
-                          <img src={user.profile_photo_url} alt={user.full_name} className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                          <RoleIcon className="w-6 h-6 text-[#0ea5e9]" />
-                        )}
-                      </div>
 
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-black italic text-[#1a1a1a] truncate">{user.full_name || 'User'}</h3>
+        {/* Users Grid */}
+        {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-40 rounded-xl bg-gray-100" />)}
+            </div>
+        ) : filteredUsers.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredUsers.map(user => {
+                const RoleIcon = getRoleIcon(user.role);
+                const isEditing = editingUser?.id === user.id;
+                const roleColor = getRoleColor(user.role);
+                
+                return (
+                <Card key={user.id} className="bg-white border-none shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden group">
+                    <CardContent className="p-5">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
+                            {user.profile_photo_url ? (
+                            <img src={user.profile_photo_url} alt={user.full_name} className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                            <RoleIcon className={`w-6 h-6 ${roleColor.split(' ')[0]}`} />
+                            )}
+                        </div>
+                        <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full tracking-wide ${roleColor}`}>
+                            {user.role || 'CLIENT'}
+                        </span>
+                    </div>
+
+                    <div className="mb-4">
+                        <h3 className="font-bold text-gray-900 truncate text-lg">{user.full_name || 'Unnamed User'}</h3>
                         <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                        <div className="flex items-center gap-2 mt-2 flex-wrap">
-                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${getRoleColor(user.role)}`}>
-                            {user.role || 'user'}
-                          </span>
-                          <span className="text-xs text-gray-400 truncate">ID: {user.id.slice(0, 8)}...</span>
-                        </div>
-                      </div>
+                        <p className="text-xs text-gray-400 mt-1 font-mono">ID: {user.id.slice(0, 8)}</p>
                     </div>
 
-                    <div className="flex flex-col gap-2 w-full sm:w-auto">
-                      {isEditing ? (
-                        <div className="flex flex-col gap-2 w-full">
-                          <Select
-                            value={editingUser.role || 'user'}
-                            onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}
-                          >
-                            <SelectTrigger className="w-full bg-white border-gray-300">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="admin">Admin</SelectItem>
-                              <SelectItem value="trainer">Trainer</SelectItem>
-                              <SelectItem value="user">Client</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setEditingUser(null)}
-                              className="flex-1"
+                    <div className="pt-4 border-t border-gray-50">
+                        {isEditing ? (
+                            <div className="flex flex-col gap-2">
+                            <Select
+                                value={editingUser.role || 'user'}
+                                onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}
                             >
-                              Cancel
-                            </Button>
+                                <SelectTrigger className="w-full h-9 bg-gray-50 border-gray-200">
+                                <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="trainer">Trainer</SelectItem>
+                                <SelectItem value="user">Client</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <div className="flex gap-2">
+                                <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setEditingUser(null)}
+                                className="flex-1 h-8 text-gray-500"
+                                >
+                                Cancel
+                                </Button>
+                                <Button
+                                size="sm"
+                                onClick={() => handleRoleChange(user.id, editingUser.role)}
+                                disabled={updateUserMutation.isPending}
+                                className="flex-1 h-8 bg-[#0ea5e9] hover:bg-[#0284c7] text-white"
+                                >
+                                Save
+                                </Button>
+                            </div>
+                            </div>
+                        ) : (
                             <Button
-                              size="sm"
-                              onClick={() => handleRoleChange(user.id, editingUser.role)}
-                              disabled={updateUserMutation.isPending}
-                              className="flex-1 bg-[#0ea5e9] hover:bg-[#0284c7] text-white"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEditingUser(user)}
+                            className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#0ea5e9]/5 group-hover:text-[#0ea5e9] transition-colors"
                             >
-                              Save
+                                <span className="text-xs font-medium">Manage Role</span>
+                                <Edit className="w-3.5 h-3.5" />
                             </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setEditingUser(user)}
-                          className="gap-2 w-full"
-                        >
-                          <Edit className="w-4 h-4" />
-                          <span className="hidden sm:inline">Edit Role</span>
-                          <span className="sm:hidden">Edit</span>
-                        </Button>
-                      )}
+                        )}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : (
-        <EmptyState
-          icon={Users}
-          title="No Users Found"
-          description={searchQuery ? "No users match your search criteria" : "No users in the system yet"}
-          variant="info"
-        />
-      )}
+                    </CardContent>
+                </Card>
+                );
+            })}
+            </div>
+        ) : (
+            <EmptyState
+            icon={Users}
+            title="No Users Found"
+            description={searchQuery ? "No users match your search criteria" : "No users in the system yet"}
+            variant="info"
+            />
+        )}
+      </div>
     </div>
   );
 }
