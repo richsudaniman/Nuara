@@ -139,7 +139,7 @@ export default function TrainerAssignClients() {
           placeholder="Search users..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white border-gray-300"
+          className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] rounded-xl h-11"
         />
       </div>
 
