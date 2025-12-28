@@ -439,6 +439,52 @@ export default function TrainerDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Clients Requiring Attention */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Clients Requiring Attention</h3>
+            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
+              <CardContent className="p-0">
+                {clientsNeedingAttention.length > 0 ? (
+                  <div className="divide-y divide-gray-100">
+                    {clientsNeedingAttention.map(({ client, reasons }) => (
+                      <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
+                        <div className="p-6 hover:bg-red-50/30 transition-colors cursor-pointer flex items-center gap-4">
+                          <div className="relative">
+                            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">
+                              {client.full_name?.charAt(0) || 'C'}
+                            </div>
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-gray-900">{client.full_name}</h4>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {reasons.map((reason, idx) => (
+                                <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                  {reason}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                            View Profile
+                          </Button>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-12 flex flex-col items-center justify-center bg-blue-50/30">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                      <div className="w-8 h-8 text-[#0ea5e9]">🔔</div>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">All clients on track!</h3>
+                    <p className="text-gray-500">No clients need attention right now.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Compliance Analytics (Right - 7 cols) */}
@@ -511,52 +557,6 @@ export default function TrainerDashboard() {
             </CardContent>
           </Card>
         </div>
-      </div>
-
-      {/* Clients Requiring Attention */}
-      <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Clients Requiring Attention</h3>
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
-          <CardContent className="p-0">
-            {clientsNeedingAttention.length > 0 ? (
-              <div className="divide-y divide-gray-100">
-                {clientsNeedingAttention.map(({ client, reasons }) => (
-                  <Link key={client.id} to={`${createPageUrl('TrainerClientDetail')}?clientId=${client.id}`}>
-                    <div className="p-6 hover:bg-red-50/30 transition-colors cursor-pointer flex items-center gap-4">
-                      <div className="relative">
-                        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">
-                          {client.full_name?.charAt(0) || 'C'}
-                        </div>
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-gray-900">{client.full_name}</h4>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {reasons.map((reason, idx) => (
-                            <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              {reason}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                        View Profile
-                      </Button>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 flex flex-col items-center justify-center bg-blue-50/30">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <div className="w-8 h-8 text-[#0ea5e9]">🔔</div>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900">All clients on track!</h3>
-                <p className="text-gray-500">No clients need attention right now.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       {/* Calendar Section */}
