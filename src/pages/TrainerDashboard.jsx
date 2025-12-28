@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import SessionCalendar from "@/components/trainer/SessionCalendar";
 
 export default function TrainerDashboard() {
   const { data: trainer } = useQuery({
@@ -350,6 +351,12 @@ export default function TrainerDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Calendar Section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Session Calendar</h3>
+        <SessionCalendar trainerId={trainer?.id} clients={clients} />
+      </div>
 
       {/* Quick Actions */}
       <div>

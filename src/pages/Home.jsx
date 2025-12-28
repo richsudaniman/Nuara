@@ -11,7 +11,9 @@ import MotivationalMessage from "../components/home/MotivationalMessage";
 import TodayWorkoutPreview from "../components/home/TodayWorkoutPreview";
 import NutritionSummary from "../components/home/NutritionSummary";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Calendar, Clock } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -127,6 +129,26 @@ export default function Home() {
     refetchOnWindowFocus: false,
   });
 
+  const { data: upcomingSessions } = useQuery({
+    queryKey: ['upcomingSessions', user?.id],
+    queryFn: async () => {
+      const sessions = await base44.entities.ScheduledSession.filter({
+        client_id: user.id,
+        status: 'scheduled'
+      });
+      // Filter for future dates only and sort
+      const now = new Date();
+      return sessions
+        .filter(s => new Date(s.start_time) > now)
+        .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+    },
+    initialData: [],
+    enabled: !!user?.id,
+    refetchInterval: 60000 // Refresh every minute
+  });
+
+  const nextSession = upcomingSessions[0];
+
   // Don't fetch goals on home page - not critical
   const goals = [];
 
@@ -204,6 +226,37 @@ export default function Home() {
         <Skeleton className="h-24 rounded-lg bg-gray-100" />
       ) : (
         <TrainerCard trainer={trainer} clientName={user?.full_name} />
+      )}
+
+      {/* Next Session Card */}
+      {nextSession && (
+        <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-md text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Calendar className="w-24 h-24" />
+          </div>
+          <CardContent className="p-5 relative z-10">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">Next Session</p>
+                <h3 className="text-xl font-bold text-white mb-1">
+                  {format(new Date(nextSession.start_time), 'EEEE, MMM do')}
+                </h3>
+                <div className="flex items-center gap-2 text-blue-50 text-sm font-medium">
+                  <Clock className="w-4 h-4" />
+                  {format(new Date(nextSession.start_time), 'h:mm a')} ({nextSession.duration_minutes} min)
+                </div>
+                {nextSession.notes && (
+                  <p className="mt-3 text-sm text-blue-50 bg-black/10 p-2 rounded-lg border border-white/10">
+                    "{nextSession.notes}"
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Daily Progress Bar */}
