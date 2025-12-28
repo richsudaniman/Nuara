@@ -149,16 +149,17 @@ export default function Layout({ children, currentPageName }) {
               <div className="max-w-md mx-auto">
                 <div className="flex items-center justify-between">
                   <Link to={getHomePath()}>
-                    <div className="flex items-center gap-3 cursor-pointer">
+                    <div className="flex items-center gap-4 cursor-pointer">
                       <img 
                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
                         alt="EJT Fitness" 
-                        className="w-12 h-12 object-contain" 
+                        className="w-16 h-16 object-contain" 
                       />
                       <div>
-                        <h1 className="text-xl font-bold text-[#1a1a1a]">
-                          EJT Fitness
+                        <h1 className="text-2xl font-black italic text-[#1a1a1a] tracking-tight">
+                          EJT FITNESS
                         </h1>
+                        <p className="text-[10px] font-bold text-[#0ea5e9] uppercase tracking-wider">Elevate • Journey • Transform</p>
                       </div>
                     </div>
                   </Link>
@@ -225,15 +226,16 @@ export default function Layout({ children, currentPageName }) {
           {/* Desktop Sidebar */}
           <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
             <div className="p-6 border-b border-gray-100">
-              <Link to={getHomePath()} className="flex items-center gap-3">
+              <Link to={getHomePath()} className="flex items-center gap-4">
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
                   alt="EJT Fitness" 
-                  className="w-12 h-12 object-contain" 
+                  className="w-16 h-16 object-contain" 
                 />
                 <div>
-                  <h1 className="text-lg font-bold text-[#1a1a1a] leading-tight">EJT Fitness</h1>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
+                  <h1 className="text-2xl font-black italic text-[#1a1a1a] tracking-tight leading-none mb-1">EJT FITNESS</h1>
+                  <p className="text-[9px] font-bold text-[#0ea5e9] uppercase tracking-wider mb-1">Elevate • Journey • Transform</p>
+                  <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
                 </div>
               </Link>
             </div>
@@ -291,13 +293,16 @@ export default function Layout({ children, currentPageName }) {
               <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
                 <Menu className="w-6 h-6 text-gray-700" />
               </Button>
-              <Link to={getHomePath()} className="flex items-center gap-2">
+              <Link to={getHomePath()} className="flex items-center gap-3">
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
                   alt="EJT Fitness" 
-                  className="w-10 h-10 object-contain" 
+                  className="w-12 h-12 object-contain" 
                 />
-                <span className="font-bold text-gray-900">EJT Fitness</span>
+                <div>
+                  <span className="font-black italic text-gray-900 text-lg block leading-none">EJT FITNESS</span>
+                  <span className="text-[8px] font-bold text-[#0ea5e9] uppercase tracking-wider block">Elevate • Journey • Transform</span>
+                </div>
               </Link>
             </div>
             <div className="w-8"></div> {/* Spacer for balance */}
@@ -309,15 +314,16 @@ export default function Layout({ children, currentPageName }) {
               <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
               <div className="fixed inset-y-0 left-0 w-[280px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
                 <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-                  <Link to={getHomePath()} className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link to={getHomePath()} className="flex items-center gap-3" onClick={() => setIsMobileMenuOpen(false)}>
                     <img 
                       src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ec491d7ea69205b631f4de/af90f763e_Gemini_Generated_Image_mwaxnhmwaxnhmwax.png" 
                       alt="EJT Fitness" 
-                      className="w-10 h-10 object-contain" 
+                      className="w-14 h-14 object-contain" 
                     />
                     <div>
-                      <h2 className="font-bold text-gray-900">EJT Fitness</h2>
-                      <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{isAdminView ? 'Admin' : 'Trainer'}</p>
+                      <h2 className="text-xl font-black italic text-gray-900 leading-none mb-1">EJT FITNESS</h2>
+                      <p className="text-[9px] font-bold text-[#0ea5e9] uppercase tracking-wider mb-1">Elevate • Journey • Transform</p>
+                      <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
                     </div>
                   </Link>
                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
