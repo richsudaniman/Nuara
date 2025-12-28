@@ -15,32 +15,32 @@ export default function AdminDashboard() {
     queryKey: ['allUsers'],
     queryFn: () => base44.entities.User.list(),
     initialData: [],
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const { data: videos, isLoading: videosLoading } = useQuery({
     queryKey: ['allVideos'],
     queryFn: () => base44.entities.ExerciseVideo.list('-created_date'),
     initialData: [],
-    staleTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const { data: workoutPlans, isLoading: plansLoading } = useQuery({
     queryKey: ['allWorkoutPlans'],
     queryFn: () => base44.entities.WorkoutPlan.list('-created_date'),
     initialData: [],
-    staleTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['allWorkoutLogs'],
     queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 100),
     initialData: [],
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
@@ -48,38 +48,39 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.TrainerClientAssignment.filter({ is_active: true }),
     initialData: [],
     enabled: !usersLoading,
-    staleTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const trainers = allUsers.filter(u => u.role === 'trainer');
   const clients = allUsers.filter(u => u.role === 'user' || !u.role);
   const admins = allUsers.filter(u => u.role === 'admin');
 
-  const thisWeekStart = new Date();
-  thisWeekStart.setDate(thisWeekStart.getDate() - 7);
-  const weeklyLogs = workoutLogs.filter(log => new Date(log.completed_date) >= thisWeekStart);
+  // Calculate weekly activity with proper date handling (local time)
+  const last7DaysDates = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d;
+  });
+
+  const last7DaysStrings = last7DaysDates.map(d => format(d, 'yyyy-MM-dd'));
+  
+  const weeklyLogs = workoutLogs.filter(log => last7DaysStrings.includes(log.completed_date));
 
   // Calculate engagement rate
   const activeClients = new Set(weeklyLogs.map(log => log.logged_by_client_id)).size;
   const engagementRate = clients.length > 0 ? Math.round((activeClients / clients.length) * 100) : 0;
 
   // Prepare chart data for weekly activity
-  const weeklyActivityData = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-    const displayDate = d.toLocaleDateString('en-US', { weekday: 'short' });
-    
-    // Count workouts for this day
+  const weeklyActivityData = last7DaysDates.map(d => {
+    const dateStr = format(d, 'yyyy-MM-dd');
+    const displayDate = format(d, 'EEE');
     const dayWorkouts = workoutLogs.filter(log => log.completed_date === dateStr).length;
-    
-    weeklyActivityData.push({
+    return {
       date: displayDate,
       workouts: dayWorkouts
-    });
-  }
+    };
+  });
 
   // Role distribution for Pie Chart
   const roleData = [
