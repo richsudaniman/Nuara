@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Camera, Plus, Calendar, AlertCircle, Flame, Target, Dumbbell, UtensilsCrossed, Award, TrendingDown, Activity } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
+import { format, subDays, startOfWeek, endOfWeek, differenceInCalendarDays } from "date-fns";
 import EmptyState from "../components/EmptyState";
 
 
@@ -194,7 +194,6 @@ export default function Progress() {
   // Calculate dashboard metrics
   const calculateDashboardMetrics = () => {
     const today = new Date();
-    const sevenDaysAgo = subDays(today, 7);
     const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
 
     // 1. Weekly Workout Adherence
@@ -202,7 +201,7 @@ export default function Progress() {
       const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(plan.day_of_week);
       const planDate = new Date(weekStart);
       planDate.setDate(planDate.getDate() + dayIndex);
-      return planDate >= weekStart && planDate <= today;
+      return planDate <= today;
     }).length;
 
     const completedThisWeek = new Set(
@@ -213,7 +212,7 @@ export default function Progress() {
 
     const workoutAdherence = assignedThisWeek > 0 
       ? Math.min(Math.round((completedThisWeek / assignedThisWeek) * 100), 100)
-      : 0;
+      : 100;
 
     // 2. Total Volume (This Week)
     const thisWeekLogs = workoutLogs.filter(log => 
@@ -242,21 +241,27 @@ export default function Progress() {
       ? Math.round(((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100)
       : 0;
 
-    // 3. 7-Day Nutrition Consistency
+    // 3. Nutrition Consistency (This Week)
     const calorieTarget = user?.daily_calorie_target || 2200;
     const buffer = Math.round(calorieTarget * 0.1); // 10% buffer
-    
-    const last7Days = [];
-    for (let i = 0; i < 7; i++) {
-      const date = subDays(today, i).toISOString().split('T')[0];
-      const dayLogs = calorieLogs.filter(log => log.date === date);
+
+    const daysElapsed = differenceInCalendarDays(today, weekStart) + 1;
+    const daysToCheck = Math.max(1, Math.min(daysElapsed, 7));
+
+    let daysOnTarget = 0;
+    for (let i = 0; i < daysToCheck; i++) {
+      const checkDate = new Date(weekStart);
+      checkDate.setDate(checkDate.getDate() + i);
+      const dateStr = format(checkDate, 'yyyy-MM-dd');
+
+      const dayLogs = calorieLogs.filter(log => log.date === dateStr);
       const dayCalories = dayLogs.reduce((sum, log) => sum + (log.calories || 0), 0);
-      const onTarget = dayCalories >= (calorieTarget - buffer) && dayCalories <= (calorieTarget + buffer);
-      last7Days.push({ date, onTarget });
+      if (dayCalories >= (calorieTarget - buffer) && dayCalories <= (calorieTarget + buffer)) {
+        daysOnTarget++;
+      }
     }
 
-    const daysOnTarget = last7Days.filter(d => d.onTarget).length;
-    const nutritionConsistency = Math.round((daysOnTarget / 7) * 100);
+    const nutritionConsistency = Math.round((daysOnTarget / daysToCheck) * 100);
 
     return {
       workoutAdherence,
@@ -266,6 +271,7 @@ export default function Progress() {
       volumeChange,
       nutritionConsistency,
       daysOnTarget,
+      totalDaysChecked: daysToCheck
     };
   };
 
@@ -357,7 +363,7 @@ export default function Progress() {
                 <UtensilsCrossed className="w-6 h-6 text-white/80 mb-1" />
                 <p className="text-[10px] text-white/80 uppercase font-semibold">Nutrition Consistency</p>
                 <p className="text-5xl font-bold text-white mt-1">{dashboardMetrics.nutritionConsistency}%</p>
-                <p className="text-[10px] text-white/70 mt-1">{dashboardMetrics.daysOnTarget}/7 days on target</p>
+                <p className="text-[10px] text-white/70 mt-1">{dashboardMetrics.daysOnTarget}/{dashboardMetrics.totalDaysChecked} days on target</p>
               </CardContent>
             </Card>
           </div>
