@@ -352,12 +352,6 @@ export default function TrainerDashboard() {
         </CardContent>
       </Card>
 
-      {/* Calendar Section */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Session Calendar</h3>
-        <SessionCalendar trainerId={trainer?.id} clients={clients} />
-      </div>
-
       {/* Quick Actions */}
       <div>
         <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
@@ -563,6 +557,12 @@ export default function TrainerDashboard() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Calendar Section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Session Calendar</h3>
+        <SessionCalendar trainerId={trainer?.id} clients={clients} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
