@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Dumbbell, UtensilsCrossed, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle } from "lucide-react";
+import { Home, Dumbbell, UtensilsCrossed, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { Button } from "@/components/ui/button";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -69,6 +71,7 @@ export default function Layout({ children, currentPageName }) {
   const isTrainerView = viewMode === 'trainer';
   const isAdminView = viewMode === 'admin';
   const isClientView = viewMode === 'client';
+  const isManagementView = isAdminView || isTrainerView;
 
   // Client navigation
   const clientNavItems = [
@@ -84,6 +87,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home },
     { name: "Clients", path: createPageUrl("TrainerClients"), icon: Users },
     { name: "Videos", path: createPageUrl("TrainerVideos"), icon: Video },
+    { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, badge: unreadCount },
   ];
 
   // Admin navigation
@@ -92,6 +96,8 @@ export default function Layout({ children, currentPageName }) {
     { name: "Users", path: createPageUrl("AdminUsers"), icon: Users },
     { name: "Trainers", path: createPageUrl("AdminTrainers"), icon: Award },
     { name: "Videos", path: createPageUrl("AdminVideos"), icon: Video },
+    { name: "Education", path: createPageUrl("AdminEducationalContent"), icon: GraduationCap },
+    { name: "Announcements", path: createPageUrl("AdminAnnouncements"), icon: MessageCircle },
   ];
 
   const navItems = isAdminView ? adminNavItems : (isTrainerView ? trainerNavItems : clientNavItems);
@@ -106,71 +112,132 @@ export default function Layout({ children, currentPageName }) {
     return createPageUrl("Home");
   };
 
+  const handleLogout = () => {
+    base44.auth.logout();
+  };
+
+  // CLIENT LAYOUT (Mobile-first, Bottom Nav)
+  if (isClientView) {
+    return (
+      <ErrorBoundary>
+        <AuthGuard>
+          <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24 relative overflow-x-hidden safe-area-inset">
+            <style>{`
+              :root {
+                --primary-white: #ffffff;
+                --accent-blue: #0ea5e9;
+                --text-dark: #1a1a1a;
+                --card-light: #f8fafc;
+                --border-gray: #e2e8f0;
+              }
+              .safe-area-inset {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+              }
+              * {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+              }
+              html {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+              }
+              body {
+                overscroll-behavior-y: contain;
+              }
+            `}</style>
+
+            {/* Header */}
+            <header className="bg-white/80 backdrop-blur-xl px-6 py-4 sticky top-0 z-50 border-b border-gray-100">
+              <div className="max-w-md mx-auto">
+                <div className="flex items-center justify-between">
+                  <Link to={getHomePath()}>
+                    <div className="flex items-center gap-3 cursor-pointer">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-2xl flex items-center justify-center shadow-sm">
+                        <Dumbbell className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h1 className="text-xl font-bold text-[#1a1a1a]">
+                          EJT Fitness
+                        </h1>
+                      </div>
+                    </div>
+                  </Link>
+                  <Button variant="ghost" size="icon" onClick={handleLogout} className="text-gray-400">
+                    <LogOut className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="relative z-10 max-w-md mx-auto">
+              {children}
+            </main>
+
+            {/* Bottom Navigation */}
+            <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-50 border-t border-gray-100" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+              <div className="flex justify-around items-center px-2 py-3 max-w-md mx-auto">
+                {navItems.map((item) => {
+                  const isActive = isNavItemActive(item.path);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className="flex flex-col items-center gap-1 transition-all duration-200 relative py-2 px-4"
+                    >
+                      {isActive && (
+                        <div className="absolute inset-0 bg-[#0ea5e9]/5 rounded-xl"></div>
+                      )}
+                      <div className="relative">
+                        <Icon className={`w-6 h-6 transition-colors ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`} />
+                        {item.badge > 0 && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-[8px] font-bold">{item.badge > 9 ? '9+' : item.badge}</span>
+                          </div>
+                        )}
+                      </div>
+                      <span className={`text-[10px] font-medium ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`}>{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </nav>
+          </div>
+        </AuthGuard>
+      </ErrorBoundary>
+    );
+  }
+
+  // MANAGEMENT LAYOUT (Admin & Trainer - Desktop Sidebar / Mobile Drawer)
   return (
     <ErrorBoundary>
       <AuthGuard>
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-48 relative overflow-x-hidden safe-area-inset">
-              <style>{`
-                :root {
-                  --primary-white: #ffffff;
-                  --accent-blue: #0ea5e9;
-                  --text-dark: #1a1a1a;
-                  --card-light: #f8fafc;
-                  --border-gray: #e2e8f0;
-                }
+        <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+          <style>{`
+            :root {
+              --primary-white: #ffffff;
+              --accent-blue: #0ea5e9;
+              --text-dark: #1a1a1a;
+            }
+          `}</style>
 
-                /* PWA optimizations */
-                .safe-area-inset {
-                  padding-top: env(safe-area-inset-top);
-                  padding-bottom: env(safe-area-inset-bottom);
-                }
-
-                /* Touch optimizations */
-                * {
-                  -webkit-tap-highlight-color: transparent;
-                  -webkit-touch-callout: none;
-                }
-
-                /* Smooth scrolling */
-                html {
-                  -webkit-overflow-scrolling: touch;
-                  scroll-behavior: smooth;
-                }
-
-                /* Prevent pull-to-refresh on Chrome */
-                body {
-                  overscroll-behavior-y: contain;
-                }
-              `}</style>
-
-          {/* Header */}
-          <header className="bg-white/80 backdrop-blur-xl px-6 py-5 sticky top-0 z-50">
-            <div className={`relative ${isClientView ? 'max-w-md mx-auto' : 'max-w-7xl mx-auto'}`}>
-              <div className="flex items-center justify-between">
-                <Link to={getHomePath()}>
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-2xl flex items-center justify-center shadow-sm">
-                      <Dumbbell className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h1 className="text-xl font-bold text-[#1a1a1a]">
-                        EJT Fitness
-                      </h1>
-                    </div>
-                    </div>
-                    </Link>
-                    </div>
+          {/* Desktop Sidebar */}
+          <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
+            <div className="p-6 border-b border-gray-100">
+              <Link to={getHomePath()} className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-xl flex items-center justify-center shadow-sm">
+                  <Dumbbell className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-[#1a1a1a] leading-tight">EJT Fitness</h1>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Trainer Portal'}</p>
+                </div>
+              </Link>
             </div>
-          </header>
 
-          {/* Main Content */}
-          <main className={`relative z-10 ${isClientView ? 'max-w-md mx-auto' : ''}`}>
-            {children}
-          </main>
-
-          {/* Bottom Navigation */}
-          <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-            <div className={`flex justify-around items-center px-2 py-3 ${isClientView ? 'max-w-md mx-auto' : 'max-w-7xl mx-auto'}`}>
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item.path);
                 const Icon = item.icon;
@@ -178,25 +245,135 @@ export default function Layout({ children, currentPageName }) {
                   <Link
                     key={item.name}
                     to={item.path}
-                    className="flex flex-col items-center gap-0.5 transition-all duration-200 relative py-2 px-4"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                      isActive 
+                        ? "bg-[#0ea5e9]/10 text-[#0ea5e9] font-semibold" 
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
                   >
-                    {isActive && (
-                      <div className="absolute inset-0 bg-[#0ea5e9]/10 rounded-2xl"></div>
+                    <Icon className={`w-5 h-5 ${isActive ? "text-[#0ea5e9]" : "text-gray-400 group-hover:text-gray-600"}`} />
+                    <span>{item.name}</span>
+                    {item.badge > 0 && (
+                      <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        {item.badge > 9 ? '9+' : item.badge}
+                      </span>
                     )}
-                    <div className="relative">
-                      <Icon className={`w-6 h-6 transition-colors ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`} />
-                      {item.badge > 0 && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-[8px] font-bold">{item.badge > 9 ? '9+' : item.badge}</span>
-                        </div>
-                      )}
-                    </div>
-                    <span className={`text-[10px] font-medium ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`}>{item.name}</span>
                   </Link>
                 );
               })}
+            </nav>
+
+            <div className="p-4 border-t border-gray-100">
+              <div className="flex items-center gap-3 px-3 py-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-xs border border-gray-200">
+                  {user?.full_name?.charAt(0) || 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-gray-900 truncate">{user?.full_name}</p>
+                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-200"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
             </div>
-          </nav>
+          </aside>
+
+          {/* Mobile Header */}
+          <div className="lg:hidden bg-white border-b border-gray-200 sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
+                <Menu className="w-6 h-6 text-gray-700" />
+              </Button>
+              <Link to={getHomePath()} className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center shadow-sm">
+                  <Dumbbell className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-gray-900">EJT Fitness</span>
+              </Link>
+            </div>
+            <div className="w-8"></div> {/* Spacer for balance */}
+          </div>
+
+          {/* Mobile Menu Overlay */}
+          {isMobileMenuOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
+              <div className="fixed inset-y-0 left-0 w-[280px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
+                <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+                  <Link to={getHomePath()} className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center shadow-sm">
+                      <Dumbbell className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="font-bold text-gray-900">EJT Fitness</h2>
+                      <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{isAdminView ? 'Admin' : 'Trainer'}</p>
+                    </div>
+                  </Link>
+                  <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
+                    <X className="w-5 h-5 text-gray-400" />
+                  </Button>
+                </div>
+
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                  {navItems.map((item) => {
+                    const isActive = isNavItemActive(item.path);
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                          isActive 
+                            ? "bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold" 
+                            : "text-gray-600 hover:bg-gray-50"
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 ${isActive ? "text-[#0ea5e9]" : "text-gray-400"}`} />
+                        <span>{item.name}</span>
+                        {item.badge > 0 && (
+                          <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                            {item.badge > 9 ? '9+' : item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </nav>
+
+                <div className="p-4 border-t border-gray-100">
+                  <div className="flex items-center gap-3 px-2 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-sm border border-gray-200">
+                      {user?.full_name?.charAt(0) || 'U'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-gray-900 truncate">{user?.full_name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-center text-red-600 border-red-100 hover:bg-red-50"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Main Content Area */}
+          <main className="flex-1 min-w-0 overflow-y-auto">
+            {children}
+          </main>
         </div>
       </AuthGuard>
     </ErrorBoundary>
