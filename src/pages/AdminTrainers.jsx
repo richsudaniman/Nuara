@@ -460,7 +460,7 @@ export default function AdminTrainers() {
                     </h3>
                     <p className="text-purple-100 text-xs mt-1">Grant trainer access to existing users</p>
                 </div>
-                <CardContent className="p-0 max-h-[calc(100vh-250px)] overflow-y-auto">
+                <CardContent className="p-0 max-h-[calc(100vh-350px)] overflow-y-auto">
                     {regularUsers.length > 0 ? (
                         <div className="divide-y divide-gray-100">
                         {regularUsers.map(user => (
@@ -496,6 +496,7 @@ export default function AdminTrainers() {
             </Card>
         </div>
       </div>
+      <div className="h-24"></div>
     </div>
   );
 }
