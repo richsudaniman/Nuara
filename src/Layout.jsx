@@ -96,8 +96,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Users", path: createPageUrl("AdminUsers"), icon: Users },
     { name: "Trainers", path: createPageUrl("AdminTrainers"), icon: Award },
     { name: "Videos", path: createPageUrl("AdminVideos"), icon: Video },
-    { name: "Education", path: createPageUrl("AdminEducationalContent"), icon: GraduationCap },
-    { name: "Announcements", path: createPageUrl("AdminAnnouncements"), icon: MessageCircle },
   ];
 
   const navItems = isAdminView ? adminNavItems : (isTrainerView ? trainerNavItems : clientNavItems);
