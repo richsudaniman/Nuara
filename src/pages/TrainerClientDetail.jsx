@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, ArrowLeft, Dumbbell, UtensilsCrossed, Target, FileText } from "lucide-react";
+import { User, ArrowLeft, Dumbbell, UtensilsCrossed, Target, FileText, TrendingUp, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
