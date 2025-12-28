@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 
 export default function GoalForm({ clientId, trainerId, existingGoal, onClose }) {
@@ -14,8 +15,23 @@ export default function GoalForm({ clientId, trainerId, existingGoal, onClose })
     current_value: "",
     target_date: "",
     progress_percentage: 0,
+    linked_metric_type: "",
     is_active: true,
   });
+
+  const metricTypes = [
+    { value: "weight", label: "Weight" },
+    { value: "body_fat", label: "Body Fat %" },
+    { value: "muscle_mass", label: "Muscle Mass" },
+    { value: "chest", label: "Chest" },
+    { value: "waist", label: "Waist" },
+    { value: "hips", label: "Hips" },
+    { value: "arms", label: "Arms" },
+    { value: "legs", label: "Legs" },
+    { value: "max_bench", label: "Max Bench" },
+    { value: "max_squat", label: "Max Squat" },
+    { value: "max_deadlift", label: "Max Deadlift" },
+  ];
 
   const saveGoalMutation = useMutation({
     mutationFn: async (data) => {
