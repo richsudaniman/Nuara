@@ -497,23 +497,24 @@ export default function Progress() {
           <Card className="bg-white border-2 border-[#0ea5e9]/30 glow-blue">
             <CardContent className="p-5">
               <h3 className="font-black italic text-[#1a1a1a] mb-4">UPLOAD PROGRESS PHOTO</h3>
-              <label className="block">
+              <div className="block">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoUpload}
                   className="hidden"
                   disabled={uploadingPhoto}
+                  ref={fileInputRef}
                 />
                 <Button
-                  as="span"
                   disabled={uploadingPhoto}
+                  onClick={() => fileInputRef.current?.click()}
                   className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic glow-blue cursor-pointer"
                 >
                   <Camera className="w-5 h-5 mr-2" />
                   {uploadingPhoto ? "UPLOADING..." : "CHOOSE PHOTO"}
                 </Button>
-              </label>
+              </div>
               <p className="text-xs text-gray-500 mt-2 text-center">Max size: 10MB • Formats: JPG, PNG, HEIC</p>
             </CardContent>
           </Card>
