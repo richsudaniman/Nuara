@@ -409,7 +409,7 @@ export default function Progress() {
 
         <TabsContent value="metrics" className="space-y-4 mt-4">
           {/* Add New Metric */}
-          <Card className="bg-white border-2 border-[#0ea5e9]/30 glow-blue">
+          <Card id="metric-form" className="bg-white border-2 border-[#0ea5e9]/30 glow-blue">
             <CardContent className="p-5">
               <h3 className="font-black italic text-[#1a1a1a] mb-4">LOG NEW METRIC</h3>
               <div className="space-y-3">
