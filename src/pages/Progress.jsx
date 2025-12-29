@@ -426,12 +426,11 @@ export default function Progress() {
       )}
 
       <Tabs defaultValue="pain" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-100">
-          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Pain</TabsTrigger>
-          <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Posture</TabsTrigger>
-          <TabsTrigger value="metrics" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Metrics</TabsTrigger>
-          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Photos</TabsTrigger>
-          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Goals</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Pain</TabsTrigger>
+          <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Posture</TabsTrigger>
+          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Photos</TabsTrigger>
+          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Goals</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pain" className="space-y-4 mt-4">
@@ -446,114 +445,6 @@ export default function Progress() {
             onUploadProgress={(file) => handlePostureUpload(file, "posture_progress")}
             isUploading={uploadPostureMutation.isPending}
           />
-        </TabsContent>
-
-        <TabsContent value="metrics" className="space-y-4 mt-4">
-          {/* Add New Metric */}
-          <Card id="metric-form" className="bg-white border-teal-100">
-            <CardContent className="p-5">
-              <h3 className="font-bold text-gray-900 mb-4">LOG NEW METRIC</h3>
-              <div className="space-y-3">
-                <Select value={selectedMetricType} onValueChange={setSelectedMetricType}>
-                  <SelectTrigger className="bg-white border-gray-300">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {metricTypes.map(type => (
-                      <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    type="number"
-                    placeholder="Value"
-                    value={newMetricValue}
-                    onChange={(e) => setNewMetricValue(e.target.value)}
-                    className="bg-white border-gray-300"
-                    min="0"
-                    step="0.1"
-                  />
-                  <Input
-                    type="date"
-                    value={newMetricDate}
-                    onChange={(e) => setNewMetricDate(e.target.value)}
-                    className="bg-white border-gray-300"
-                    max={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
-                <Button
-                  onClick={handleAddMetric}
-                  disabled={addMetricMutation.isPending || !newMetricValue}
-                  className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  {addMetricMutation.isPending ? "Adding..." : "Add Metric"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Charts */}
-          {isLoading ? (
-            <Skeleton className="h-96 rounded-lg bg-gray-100" />
-          ) : metrics.length === 0 ? (
-            <EmptyState
-              icon={TrendingUp}
-              title="No Metrics Yet"
-              description="Start tracking your progress by logging your first measurement above!"
-              variant="info"
-            />
-          ) : (
-            metricTypes.map(type => {
-              const chartData = getChartData(type.value);
-              if (chartData.length === 0) return null;
-
-              return (
-                <Card key={type.value} className="bg-white border border-gray-200 hover:border-[#0ea5e9] transition-colors">
-                  <CardContent className="p-5">
-                    <h3 className="font-black italic text-[#1a1a1a] mb-4">{type.label}</h3>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <AreaChart data={chartData}>
-                        <defs>
-                          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                        <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '12px' }} />
-                        <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '2px solid #0ea5e9',
-                            borderRadius: '4px',
-                            fontWeight: 'bold'
-                          }}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="value" 
-                          stroke="#0ea5e9" 
-                          strokeWidth={3}
-                          fillOpacity={1}
-                          fill="url(#colorValue)"
-                          dot={{ fill: '#0ea5e9', r: 5 }}
-                          activeDot={{ r: 7 }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                    <div className="mt-3 text-center">
-                      <p className="text-sm text-gray-600">
-                        Current: <span className="font-black italic text-[#0ea5e9] text-lg">{chartData[chartData.length - 1]?.value}</span>
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
         </TabsContent>
 
         <TabsContent value="photos" className="space-y-4 mt-4">
