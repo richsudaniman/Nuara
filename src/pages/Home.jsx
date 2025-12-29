@@ -221,11 +221,11 @@ export default function Home() {
 
   return (
     <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
-      {/* Trainer Card */}
+      {/* Chiropractor Card */}
       {trainerLoading ? (
         <Skeleton className="h-24 rounded-lg bg-gray-100" />
       ) : (
-        <TrainerCard trainer={trainer} clientName={user?.full_name} />
+        <TrainerCard trainer={trainer} clientName={user?.full_name} isChiropractic={true} />
       )}
 
       {/* Next Session Card */}
@@ -278,14 +278,14 @@ export default function Home() {
       {/* Motivational Message */}
       <MotivationalMessage message={motivations?.[0]?.message} />
 
-      {/* Today's Workout */}
+      {/* Today's Rehabilitation */}
       {isLoading ? (
         <Skeleton className="h-64 rounded-lg bg-gray-100" />
       ) : (
-        <TodayWorkoutPreview workout={todayWorkout} />
+        <TodayWorkoutPreview workout={todayWorkout} isRehabilitation={true} />
       )}
 
-      {/* Nutrition Summary */}
+      {/* Dietary Recommendations */}
       {calorieLogsLoading ? (
         <Skeleton className="h-56 rounded-lg bg-gray-100" />
       ) : (
@@ -293,6 +293,7 @@ export default function Home() {
           caloriesConsumed={todayCalories}
           calorieGoal={user?.daily_calorie_target || 2200}
           macros={todayMacros}
+          isDietary={true}
         />
       )}
     </div>

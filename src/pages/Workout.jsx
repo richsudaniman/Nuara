@@ -108,6 +108,12 @@ export default function Workout() {
 
   return (
     <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
+          <Dumbbell className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">Rehabilitation Program</h1>
+      </div>
       
       {isLoading ? (
         <>
@@ -118,13 +124,14 @@ export default function Workout() {
         <>
           <EmptyState
             icon={Dumbbell}
-            title="No Workout Plan Yet"
-            description="Your trainer hasn't assigned you a workout plan yet. Check back soon or reach out to your trainer!"
+            title="No Rehabilitation Plan Yet"
+            description="Your chiropractor hasn't assigned you a rehabilitation plan yet. Check back soon or reach out to your provider!"
             variant="info"
           />
           <CustomWorkoutLogger 
             onLogExercise={handleCustomLog} 
-            todaysLogs={workoutLogs.filter(log => log.completed_date === todayDate)} 
+            todaysLogs={workoutLogs.filter(log => log.completed_date === todayDate)}
+            isRehabilitation={true}
           />
         </>
       ) : (
@@ -150,7 +157,7 @@ export default function Workout() {
             <EmptyState
               icon={Dumbbell}
               title="Rest Day"
-              description={`No workout scheduled for ${selectedDay}. Take this time to recover and come back stronger!`}
+              description={`No exercises scheduled for ${selectedDay}. Rest is an important part of recovery!`}
               variant="success"
             />
           )}
@@ -159,7 +166,8 @@ export default function Workout() {
           {selectedDay === today && (
             <CustomWorkoutLogger 
               onLogExercise={handleCustomLog} 
-              todaysLogs={workoutLogs.filter(log => log.completed_date === todayDate)} 
+              todaysLogs={workoutLogs.filter(log => log.completed_date === todayDate)}
+              isRehabilitation={true}
             />
           )}
         </>
