@@ -201,6 +201,29 @@ Keep the tone positive and motivational. Focus on visible improvements. Be speci
         />
       )}
 
+      {/* AI Analysis Results */}
+      {analysis && (
+        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <h3 className="text-lg font-bold text-gray-900">POSTURE ANALYSIS</h3>
+            </div>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{analysis}</p>
+            </div>
+            <div className="mt-4 p-3 bg-white/60 rounded-lg border border-purple-200">
+              <div className="flex items-start gap-2">
+                <TrendingUp className="w-4 h-4 text-teal-600 mt-0.5" />
+                <p className="text-xs text-gray-600">
+                  <span className="font-bold">Keep it up!</span> Consistent adherence to your rehabilitation program is key to maintaining these improvements.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* All Progress Photos */}
       {posturePhotos.filter(p => p.view_type === "posture_progress").length > 1 && (
         <Card className="bg-white border-gray-200">
