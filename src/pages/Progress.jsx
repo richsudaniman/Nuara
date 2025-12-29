@@ -6,6 +6,7 @@ import { createPageUrl } from "@/utils";
 import PainLoggerSlider from "../components/pain/PainLoggerSlider";
 import PainHistory from "../components/pain/PainHistory";
 import PostureComparison from "../components/progress/PostureComparison";
+import AIPostureScanner from "../components/progress/AIPostureScanner";
 
 function PainTrackingSection({ userId }) {
   const queryClient = useQueryClient();
@@ -426,11 +427,12 @@ export default function Progress() {
       )}
 
       <Tabs defaultValue="posture" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
-          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Pain</TabsTrigger>
-          <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Posture</TabsTrigger>
-          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Photos</TabsTrigger>
-          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Goals</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5 bg-gray-100">
+          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Pain</TabsTrigger>
+          <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Compare</TabsTrigger>
+          <TabsTrigger value="scanner" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">AI Scan</TabsTrigger>
+          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Photos</TabsTrigger>
+          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Goals</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pain" className="space-y-4 mt-4">
@@ -445,6 +447,10 @@ export default function Progress() {
             onUploadProgress={(file) => handlePostureUpload(file, "posture_progress")}
             isUploading={uploadPostureMutation.isPending}
           />
+        </TabsContent>
+
+        <TabsContent value="scanner" className="space-y-4 mt-4">
+          <AIPostureScanner userId={user?.id} />
         </TabsContent>
 
         <TabsContent value="photos" className="space-y-4 mt-4">

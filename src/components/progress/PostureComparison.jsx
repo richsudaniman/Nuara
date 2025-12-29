@@ -1,15 +1,12 @@
 import React, { useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Camera, ArrowRight, Calendar, Sparkles, TrendingUp, AlertCircle } from "lucide-react";
+import { Camera, ArrowRight, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import EmptyState from "../EmptyState";
-import { base44 } from "@/api/base44Client";
 
 export default function PostureComparison({ posturePhotos, onUploadBaseline, onUploadProgress, isUploading }) {
   const [sliderPosition, setSliderPosition] = useState(50);
-  const [analysis, setAnalysis] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const baselineInputRef = useRef(null);
   const progressInputRef = useRef(null);
 
@@ -23,34 +20,6 @@ export default function PostureComparison({ posturePhotos, onUploadBaseline, onU
     .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 
   const hasComparison = baselinePhoto && progressPhoto;
-
-  const analyzePosture = async () => {
-    if (!hasComparison) return;
-    
-    setIsAnalyzing(true);
-    try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze these two posture photos from a chiropractic patient. The first is their baseline (Day 1), the second is their current progress photo.
-
-Provide a brief, encouraging analysis covering:
-1. Head and neck alignment improvements
-2. Shoulder positioning changes
-3. Spine alignment observations
-4. Overall structural improvements
-5. Specific areas that show the most progress
-
-Keep the tone positive and motivational. Focus on visible improvements. Be specific about postural changes you observe.`,
-        file_urls: [baselinePhoto.photo_url, progressPhoto.photo_url],
-      });
-
-      setAnalysis(result);
-    } catch (error) {
-      console.error('Analysis error:', error);
-      alert('Failed to analyze posture. Please try again.');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -177,16 +146,6 @@ Keep the tone positive and motivational. Focus on visible improvements. Be speci
                 {format(new Date(baselinePhoto.date), 'MMM d')} → {format(new Date(progressPhoto.date), 'MMM d, yyyy')}
               </span>
             </div>
-
-            {/* Analysis Button */}
-            <Button
-              onClick={analyzePosture}
-              disabled={isAnalyzing}
-              className="w-full mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              {isAnalyzing ? 'Analyzing...' : 'Analyze My Posture Progress'}
-            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -199,29 +158,6 @@ Keep the tone positive and motivational. Focus on visible improvements. Be speci
           }
           variant="info"
         />
-      )}
-
-      {/* AI Analysis Results */}
-      {analysis && (
-        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-purple-600" />
-              <h3 className="text-lg font-bold text-gray-900">POSTURE ANALYSIS</h3>
-            </div>
-            <div className="prose prose-sm max-w-none">
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{analysis}</p>
-            </div>
-            <div className="mt-4 p-3 bg-white/60 rounded-lg border border-purple-200">
-              <div className="flex items-start gap-2">
-                <TrendingUp className="w-4 h-4 text-teal-600 mt-0.5" />
-                <p className="text-xs text-gray-600">
-                  <span className="font-bold">Keep it up!</span> Consistent adherence to your rehabilitation program is key to maintaining these improvements.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       )}
 
       {/* All Progress Photos */}
