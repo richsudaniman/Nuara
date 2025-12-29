@@ -425,7 +425,7 @@ export default function Progress() {
         </>
       )}
 
-      <Tabs defaultValue="pain" className="w-full">
+      <Tabs defaultValue="posture" className="w-full">
         <TabsList className="grid w-full grid-cols-4 bg-gray-100">
           <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Pain</TabsTrigger>
           <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Posture</TabsTrigger>
