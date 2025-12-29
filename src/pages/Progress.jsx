@@ -336,13 +336,8 @@ export default function Progress() {
   const weeklyWorkoutData = getWeeklyWorkoutData();
 
   return (
-    <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
-          <TrendingUp className="w-5 h-5 text-white" />
-        </div>
-        <h1 className="text-2xl font-bold text-[#1a1a1a]">Your Progress</h1>
-      </div>
+    <div className="p-5 space-y-5 bg-gradient-to-b from-teal-50/30 to-white min-h-screen">
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">YOUR PROGRESS</h1>
 
       {/* Dashboard Overview */}
       {isLoading ? (
@@ -411,12 +406,21 @@ export default function Progress() {
         </>
       )}
 
-      <Tabs defaultValue="metrics" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-100">
-          <TabsTrigger value="metrics" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic">Metrics</TabsTrigger>
-          <TabsTrigger value="photos" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic">Photos</TabsTrigger>
-          <TabsTrigger value="goals" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic">Goals</TabsTrigger>
+      <Tabs defaultValue="pain" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Pain</TabsTrigger>
+          <TabsTrigger value="metrics" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Metrics</TabsTrigger>
+          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Photos</TabsTrigger>
+          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Goals</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="pain" className="space-y-4 mt-4">
+          <Card className="bg-white border-teal-100">
+            <CardContent className="p-5">
+              <p className="text-sm text-gray-600">View detailed pain tracking and trends on the <Link to={createPageUrl("PainTracking")} className="text-teal-600 font-semibold hover:underline">Pain Tracking page</Link>.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="metrics" className="space-y-4 mt-4">
           {/* Add New Metric */}

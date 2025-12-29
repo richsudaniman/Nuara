@@ -1,7 +1,7 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import PainLogger from "../components/pain/PainLogger";
+import PainLoggerSlider from "../components/pain/PainLoggerSlider";
 import PainHistory from "../components/pain/PainHistory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
@@ -36,22 +36,15 @@ export default function PainTracking() {
   });
 
   return (
-    <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-md shadow-red-200">
-          <AlertCircle className="w-5 h-5 text-white" />
-        </div>
-        <h1 className="text-2xl font-bold text-[#1e293b]">Pain Tracking</h1>
-      </div>
-
+    <div className="p-5 space-y-5 bg-gradient-to-b from-orange-50/30 to-white min-h-screen">
       {isLoading ? (
         <>
-          <Skeleton className="h-48 rounded-lg bg-gray-100" />
+          <Skeleton className="h-96 rounded-lg bg-gray-100" />
           <Skeleton className="h-96 rounded-lg bg-gray-100" />
         </>
       ) : (
         <>
-          <PainLogger 
+          <PainLoggerSlider
             onLogPain={(data) => logPainMutation.mutate(data)}
             isLoading={logPainMutation.isPending}
           />
