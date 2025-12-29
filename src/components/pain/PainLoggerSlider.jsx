@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 
 const bodyAreas = [
   "Neck", "Upper Back", "Mid Back", "Lower Back", 
@@ -31,6 +32,11 @@ export default function PainLoggerSlider({ onLogPain, isLoading }) {
     if (level <= 5) return "Moderate Pain";
     if (level <= 7) return "Severe Pain";
     return "Worst Pain";
+  };
+
+  const getSliderColor = (level) => {
+    const percentage = (level / 10) * 100;
+    return `linear-gradient(to right, #fbbf24 0%, #fbbf24 ${percentage/3}%, #fb923c ${percentage/2}%, #ef4444 ${percentage}%, #d1d5db ${percentage}%, #d1d5db 100%)`;
   };
 
   const handleSubmit = () => {
