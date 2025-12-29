@@ -11,7 +11,6 @@ import DiagnosticTool from './pages/DiagnosticTool';
 import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Messages from './pages/Messages';
-import Nutrition from './pages/Nutrition';
 import Progress from './pages/Progress';
 import SwitchRole from './pages/SwitchRole';
 import TrainerAssignClients from './pages/TrainerAssignClients';
@@ -20,8 +19,8 @@ import TrainerClients from './pages/TrainerClients';
 import TrainerDashboard from './pages/TrainerDashboard';
 import TrainerMessages from './pages/TrainerMessages';
 import TrainerVideos from './pages/TrainerVideos';
-import Workout from './pages/Workout';
 import PainTracking from './pages/PainTracking';
+import Exercises from './pages/Exercises';
 import __Layout from './Layout.jsx';
 
 
@@ -39,7 +38,6 @@ export const PAGES = {
     "Home": Home,
     "Learn": Learn,
     "Messages": Messages,
-    "Nutrition": Nutrition,
     "Progress": Progress,
     "SwitchRole": SwitchRole,
     "TrainerAssignClients": TrainerAssignClients,
@@ -48,8 +46,8 @@ export const PAGES = {
     "TrainerDashboard": TrainerDashboard,
     "TrainerMessages": TrainerMessages,
     "TrainerVideos": TrainerVideos,
-    "Workout": Workout,
     "PainTracking": PainTracking,
+    "Exercises": Exercises,
 }
 
 export const pagesConfig = {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Dumbbell, UtensilsCrossed, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings } from "lucide-react";
+import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -73,11 +73,10 @@ export default function Layout({ children, currentPageName }) {
   const isClientView = viewMode === 'client';
   const isManagementView = isAdminView || isTrainerView;
 
-  // Client navigation
+  // Patient navigation
   const clientNavItems = [
     { name: "Home", path: createPageUrl("Home"), icon: Home },
-    { name: "Workout", path: createPageUrl("Workout"), icon: Dumbbell },
-    { name: "Nutrition", path: createPageUrl("Nutrition"), icon: UtensilsCrossed },
+    { name: "Exercises", path: createPageUrl("Exercises"), icon: Activity },
     { name: "Progress", path: createPageUrl("Progress"), icon: TrendingUp },
     { name: "Learn", path: createPageUrl("Learn"), icon: GraduationCap },
   ];

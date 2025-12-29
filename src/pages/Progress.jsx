@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Camera, Plus, Calendar, AlertCircle, Flame, Target, Dumbbell, UtensilsCrossed, Award, TrendingDown, Activity } from "lucide-react";
+import { TrendingUp, Camera, Plus, Calendar, AlertCircle, Target, Activity, TrendingDown } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format, subDays, startOfWeek, endOfWeek, differenceInCalendarDays } from "date-fns";
@@ -50,7 +50,17 @@ export default function Progress() {
 
   const { data: goals, isLoading: goalsLoading } = useQuery({
     queryKey: ['goals', user?.id],
-    queryFn: () => base44.entities.FitnessGoal.filter({ assigned_to_client_id: user.id, is_active: true }),
+    queryFn: async () => {
+      // Try new RecoveryGoal first
+      try {
+        const recoveryGoals = await base44.entities.RecoveryGoal.filter({ assigned_to_patient_id: user.id, is_active: true });
+        if (recoveryGoals.length > 0) return recoveryGoals;
+      } catch (e) {
+        console.log('RecoveryGoal not available, falling back to FitnessGoal');
+      }
+      // Fallback to old FitnessGoal
+      return await base44.entities.FitnessGoal.filter({ assigned_to_client_id: user.id, is_active: true });
+    },
     initialData: [],
     enabled: !!user?.id,
     staleTime: 15 * 60 * 1000,
@@ -66,21 +76,9 @@ export default function Progress() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: calorieLogs, isLoading: calorieLogsLoading } = useQuery({
-    queryKey: ['calorieLogs', user?.id],
-    queryFn: () => base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date'),
-    initialData: [],
-    enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
 
-  const { data: nutritionStatuses, isLoading: statusesLoading } = useQuery({
-    queryKey: ['nutritionStatuses', user?.id],
-    queryFn: () => base44.entities.DailyNutritionStatus.filter({ client_id: user.id }, '-date'),
-    initialData: [],
-    enabled: !!user?.id,
-  });
+
+
 
   const addMetricMutation = useMutation({
     mutationFn: (data) => base44.entities.ProgressMetric.create(data),
@@ -118,17 +116,12 @@ export default function Progress() {
     }
     
     const units = {
-      weight: "lbs",
-      body_fat: "%",
-      muscle_mass: "lbs",
-      chest: "inches",
-      waist: "inches",
-      hips: "inches",
-      arms: "inches",
-      legs: "inches",
-      max_bench: "lbs",
-      max_squat: "lbs",
-      max_deadlift: "lbs"
+      range_of_motion: "degrees",
+      flexibility_score: "score",
+      strength_test: "score",
+      balance_score: "score",
+      pain_score: "score",
+      functional_capacity: "score"
     };
 
     // Add the metric
@@ -141,24 +134,24 @@ export default function Progress() {
     });
 
     // Check if there's a linked goal and update it
-    const linkedGoal = goals.find(g => g.linked_metric_type === selectedMetricType && g.is_active);
-    if (linkedGoal) {
-      try {
-        // Try to calculate progress if target is numeric
+    try {
+      const linkedGoal = goals.find(g => g.linked_metric_type === selectedMetricType && g.is_active);
+      if (linkedGoal) {
         let updates = { current_value: `${value} ${units[selectedMetricType]}` };
-        
-        const targetNum = parseFloat(linkedGoal.target_value);
-        if (!isNaN(targetNum)) {
-          // Simple heuristic: assuming the goal is to reach the target
-          // This is a rough approximation as we don't know the start value
-          // We'll leave percentage manual or implement smarter logic later if needed
-          // For now just update current value which is most important
-        }
-
-        await base44.entities.FitnessGoal.update(linkedGoal.id, updates);
+        await base44.entities.RecoveryGoal.update(linkedGoal.id, updates);
         queryClient.invalidateQueries({ queryKey: ['goals'] });
-      } catch (err) {
-        console.error("Failed to update linked goal", err);
+      }
+    } catch (err) {
+      // Fallback to FitnessGoal if RecoveryGoal doesn't exist yet
+      try {
+        const linkedGoal = goals.find(g => g.linked_metric_type === selectedMetricType && g.is_active);
+        if (linkedGoal) {
+          let updates = { current_value: `${value} ${units[selectedMetricType]}` };
+          await base44.entities.FitnessGoal.update(linkedGoal.id, updates);
+          queryClient.invalidateQueries({ queryKey: ['goals'] });
+        }
+      } catch (err2) {
+        console.error("Failed to update linked goal", err2);
       }
     }
   };
@@ -193,7 +186,15 @@ export default function Progress() {
 
   const { data: workoutPlans } = useQuery({
     queryKey: ['workoutPlans', user?.id],
-    queryFn: () => base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }),
+    queryFn: async () => {
+      // Try new RehabilitationProgram first
+      try {
+        const programs = await base44.entities.RehabilitationProgram.filter({ assigned_to_patient_id: user.id });
+        if (programs.length > 0) return programs;
+      } catch (e) {}
+      // Fallback to old WorkoutPlan
+      return await base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id });
+    },
     initialData: [],
     enabled: !!user?.id,
     staleTime: 15 * 60 * 1000,
@@ -250,44 +251,16 @@ export default function Progress() {
       ? Math.round(((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100)
       : 0;
 
-    // 3. Nutrition Consistency (This Week)
-    const calorieTarget = user?.daily_calorie_target || 2200;
-    const buffer = Math.round(calorieTarget * 0.1); // 10% buffer
-
+    // 3. Pain Management (This Week)
     const daysElapsed = differenceInCalendarDays(today, weekStart) + 1;
     const daysToCheck = Math.max(1, Math.min(daysElapsed, 7));
-
-    let daysOnTarget = 0;
-    for (let i = 0; i < daysToCheck; i++) {
-      const checkDate = new Date(weekStart);
-      checkDate.setDate(checkDate.getDate() + i);
-      const dateStr = format(checkDate, 'yyyy-MM-dd');
-
-      // Check manual status first
-      const manualStatus = nutritionStatuses.find(s => s.date === dateStr);
-      if (manualStatus) {
-        if (manualStatus.status === 'hit') daysOnTarget++;
-      } else {
-        // Fallback to calculated calories
-        const dayLogs = calorieLogs.filter(log => log.date === dateStr);
-        const dayCalories = dayLogs.reduce((sum, log) => sum + (log.calories || 0), 0);
-        if (dayCalories >= (calorieTarget - buffer) && dayCalories <= (calorieTarget + buffer)) {
-          daysOnTarget++;
-        }
-      }
-    }
-
-    const nutritionConsistency = Math.round((daysOnTarget / daysToCheck) * 100);
 
     return {
       workoutAdherence,
       assignedThisWeek,
       completedThisWeek,
       thisWeekVolume: Math.round(thisWeekVolume),
-      volumeChange,
-      nutritionConsistency,
-      daysOnTarget,
-      totalDaysChecked: daysToCheck
+      volumeChange
     };
   };
 
@@ -322,18 +295,15 @@ export default function Progress() {
   };
 
   const metricTypes = [
-    { value: "weight", label: "Weight", icon: TrendingUp },
-    { value: "body_fat", label: "Body Fat %", icon: TrendingUp },
-    { value: "muscle_mass", label: "Muscle Mass", icon: TrendingUp },
-    { value: "chest", label: "Chest", icon: TrendingUp },
-    { value: "waist", label: "Waist", icon: TrendingUp },
-    { value: "arms", label: "Arms", icon: TrendingUp },
-    { value: "max_bench", label: "Max Bench", icon: TrendingUp },
-    { value: "max_squat", label: "Max Squat", icon: TrendingUp },
-    { value: "max_deadlift", label: "Max Deadlift", icon: TrendingUp },
+    { value: "range_of_motion", label: "Range of Motion", icon: TrendingUp },
+    { value: "flexibility_score", label: "Flexibility Score", icon: TrendingUp },
+    { value: "strength_test", label: "Strength Test", icon: TrendingUp },
+    { value: "balance_score", label: "Balance Score", icon: TrendingDown },
+    { value: "pain_score", label: "Pain Score", icon: TrendingDown },
+    { value: "functional_capacity", label: "Functional Capacity", icon: TrendingUp },
   ];
 
-  const isLoading = metricsLoading || photosLoading || goalsLoading || logsLoading || calorieLogsLoading;
+  const isLoading = metricsLoading || photosLoading || goalsLoading || logsLoading;
   const dashboardMetrics = calculateDashboardMetrics();
   const weeklyWorkoutData = getWeeklyWorkoutData();
 
@@ -360,8 +330,8 @@ export default function Progress() {
 
             <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none rounded-2xl">
               <CardContent className="p-3">
-                <Dumbbell className="w-6 h-6 text-white/80 mb-1" />
-                <p className="text-[10px] text-white/80 uppercase font-semibold">Total Volume</p>
+                <Activity className="w-6 h-6 text-white/80 mb-1" />
+                <p className="text-[10px] text-white/80 uppercase font-semibold">Exercise Volume</p>
                 <p className="text-5xl font-bold text-white mt-1">{(dashboardMetrics.thisWeekVolume / 1000).toFixed(1)}k</p>
                 <p className="text-[10px] text-white/70 mt-1">
                   {dashboardMetrics.volumeChange > 0 ? '+' : ''}{dashboardMetrics.volumeChange}% vs last week
@@ -369,21 +339,14 @@ export default function Progress() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-none rounded-2xl col-span-2">
-              <CardContent className="p-3">
-                <UtensilsCrossed className="w-6 h-6 text-white/80 mb-1" />
-                <p className="text-[10px] text-white/80 uppercase font-semibold">Nutrition Consistency</p>
-                <p className="text-5xl font-bold text-white mt-1">{dashboardMetrics.nutritionConsistency}%</p>
-                <p className="text-[10px] text-white/70 mt-1">{dashboardMetrics.daysOnTarget}/{dashboardMetrics.totalDaysChecked} days on target</p>
-              </CardContent>
-            </Card>
+
           </div>
 
-          {/* Weekly Workout Chart */}
+          {/* Weekly Exercise Chart */}
           {weeklyWorkoutData.some(d => d.workouts > 0) && (
-            <Card className="bg-white border-2 border-gray-200">
+            <Card className="bg-white border-teal-100">
               <CardContent className="p-5">
-                <h3 className="font-black italic text-[#1a1a1a] mb-4">WEEKLY WORKOUT CONSISTENCY</h3>
+                <h3 className="font-bold text-gray-900 mb-4">WEEKLY EXERCISE CONSISTENCY</h3>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={weeklyWorkoutData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -397,7 +360,7 @@ export default function Progress() {
                         fontWeight: 'bold'
                       }}
                     />
-                    <Bar dataKey="workouts" fill="#0ea5e9" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="workouts" fill="#14b8a6" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -426,9 +389,9 @@ export default function Progress() {
 
         <TabsContent value="metrics" className="space-y-4 mt-4">
           {/* Add New Metric */}
-          <Card id="metric-form" className="bg-white border-2 border-[#0ea5e9]/30 glow-blue">
+          <Card id="metric-form" className="bg-white border-teal-100">
             <CardContent className="p-5">
-              <h3 className="font-black italic text-[#1a1a1a] mb-4">LOG NEW METRIC</h3>
+              <h3 className="font-bold text-gray-900 mb-4">LOG NEW METRIC</h3>
               <div className="space-y-3">
                 <Select value={selectedMetricType} onValueChange={setSelectedMetricType}>
                   <SelectTrigger className="bg-white border-gray-300">
@@ -461,10 +424,10 @@ export default function Progress() {
                 <Button
                   onClick={handleAddMetric}
                   disabled={addMetricMutation.isPending || !newMetricValue}
-                  className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic glow-blue"
+                  className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold"
                 >
                   <Plus className="w-5 h-5 mr-2" />
-                  {addMetricMutation.isPending ? "ADDING..." : "ADD METRIC"}
+                  {addMetricMutation.isPending ? "Adding..." : "Add Metric"}
                 </Button>
               </div>
             </CardContent>

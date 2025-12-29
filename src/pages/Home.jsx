@@ -173,7 +173,7 @@ export default function Home() {
       </Card>
 
       {/* Today's Exercises */}
-      <Link to={createPageUrl("Workout")}>
+      <Link to={createPageUrl("Exercises")}>
         <Card className="bg-white border-teal-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
