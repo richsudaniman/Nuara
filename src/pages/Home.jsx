@@ -99,12 +99,12 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      {/* Adherence Rate Card */}
+      {/* Exercise Completion Card */}
       <Card className="bg-white border-teal-100 shadow-sm">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-teal-600" />
-            <h2 className="text-lg font-bold text-gray-900">ADHERENCE RATE</h2>
+            <h2 className="text-lg font-bold text-gray-900">EXERCISE COMPLETION</h2>
           </div>
 
           {/* Last 7 Days */}
@@ -123,7 +123,7 @@ export default function Home() {
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-500 mb-2">{adherence.completed7} of {adherence.totalPlans7} sessions completed</p>
+            <p className="text-sm text-gray-500 mb-2">{adherence.completed7} of {adherence.totalPlans7} exercises completed</p>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div 
                 className={`h-full transition-all ${adherence.adherence7 >= 70 ? 'bg-teal-500' : 'bg-red-500'}`}
@@ -148,7 +148,7 @@ export default function Home() {
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-500 mb-2">{adherence.completed30} of {adherence.totalPlans30} sessions completed</p>
+            <p className="text-sm text-gray-500 mb-2">{adherence.completed30} of {adherence.totalPlans30} exercises completed</p>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div 
                 className={`h-full transition-all ${adherence.adherence30 >= 70 ? 'bg-teal-500' : 'bg-red-500'}`}

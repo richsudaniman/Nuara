@@ -350,35 +350,20 @@ export default function Progress() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-2">
-            <Card className="bg-gradient-to-br from-[#0ea5e9] to-blue-600 border-none rounded-2xl">
-              <CardContent className="p-3">
-                <Target className="w-6 h-6 text-white/80 mb-1" />
-                <p className="text-[10px] text-white/80 uppercase font-semibold">Workout Adherence</p>
-                <p className="text-5xl font-bold text-white mt-1">{dashboardMetrics.workoutAdherence}%</p>
-                <p className="text-[10px] text-white/70 mt-1">{dashboardMetrics.completedThisWeek}/{dashboardMetrics.assignedThisWeek} workouts</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-purple-500 to-pink-500 border-none rounded-2xl">
-              <CardContent className="p-3">
-                <Activity className="w-6 h-6 text-white/80 mb-1" />
-                <p className="text-[10px] text-white/80 uppercase font-semibold">Exercise Volume</p>
-                <p className="text-5xl font-bold text-white mt-1">{(dashboardMetrics.thisWeekVolume / 1000).toFixed(1)}k</p>
-                <p className="text-[10px] text-white/70 mt-1">
-                  {dashboardMetrics.volumeChange > 0 ? '+' : ''}{dashboardMetrics.volumeChange}% vs last week
-                </p>
-              </CardContent>
-            </Card>
-
-
-          </div>
+          <Card className="bg-gradient-to-br from-teal-500 to-emerald-500 border-none rounded-2xl">
+            <CardContent className="p-4">
+              <Target className="w-7 h-7 text-white/80 mb-2" />
+              <p className="text-xs text-white/80 uppercase font-semibold">Exercise Completion</p>
+              <p className="text-5xl font-bold text-white mt-2">{dashboardMetrics.workoutAdherence}%</p>
+              <p className="text-xs text-white/70 mt-2">{dashboardMetrics.completedThisWeek}/{dashboardMetrics.assignedThisWeek} exercises this week</p>
+            </CardContent>
+          </Card>
 
           {/* Weekly Exercise Chart */}
           {weeklyWorkoutData.some(d => d.workouts > 0) && (
             <Card className="bg-white border-teal-100">
               <CardContent className="p-5">
-                <h3 className="font-bold text-gray-900 mb-4">WEEKLY EXERCISE CONSISTENCY</h3>
+                <h3 className="font-bold text-gray-900 mb-4">WEEKLY EXERCISE ACTIVITY</h3>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={weeklyWorkoutData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
