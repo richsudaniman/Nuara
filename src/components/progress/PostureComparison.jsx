@@ -1,12 +1,15 @@
 import React, { useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Camera, ArrowRight, Calendar } from "lucide-react";
+import { Camera, ArrowRight, Calendar, Sparkles, TrendingUp, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import EmptyState from "../EmptyState";
+import { base44 } from "@/api/base44Client";
 
 export default function PostureComparison({ posturePhotos, onUploadBaseline, onUploadProgress, isUploading }) {
   const [sliderPosition, setSliderPosition] = useState(50);
+  const [analysis, setAnalysis] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const baselineInputRef = useRef(null);
   const progressInputRef = useRef(null);
 
@@ -20,6 +23,34 @@ export default function PostureComparison({ posturePhotos, onUploadBaseline, onU
     .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 
   const hasComparison = baselinePhoto && progressPhoto;
+
+  const analyzePosture = async () => {
+    if (!hasComparison) return;
+    
+    setIsAnalyzing(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze these two posture photos from a chiropractic patient. The first is their baseline (Day 1), the second is their current progress photo.
+
+Provide a brief, encouraging analysis covering:
+1. Head and neck alignment improvements
+2. Shoulder positioning changes
+3. Spine alignment observations
+4. Overall structural improvements
+5. Specific areas that show the most progress
+
+Keep the tone positive and motivational. Focus on visible improvements. Be specific about postural changes you observe.`,
+        file_urls: [baselinePhoto.photo_url, progressPhoto.photo_url],
+      });
+
+      setAnalysis(result);
+    } catch (error) {
+      console.error('Analysis error:', error);
+      alert('Failed to analyze posture. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -146,6 +177,16 @@ export default function PostureComparison({ posturePhotos, onUploadBaseline, onU
                 {format(new Date(baselinePhoto.date), 'MMM d')} → {format(new Date(progressPhoto.date), 'MMM d, yyyy')}
               </span>
             </div>
+
+            {/* Analysis Button */}
+            <Button
+              onClick={analyzePosture}
+              disabled={isAnalyzing}
+              className="w-full mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              {isAnalyzing ? 'Analyzing...' : 'Analyze My Posture Progress'}
+            </Button>
           </CardContent>
         </Card>
       ) : (
