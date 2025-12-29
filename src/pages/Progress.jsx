@@ -3,6 +3,38 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import PainLoggerSlider from "../components/pain/PainLoggerSlider";
+import PainHistory from "../components/pain/PainHistory";
+
+function PainTrackingSection({ userId }) {
+  const queryClient = useQueryClient();
+  
+  const { data: painLogs, isLoading } = useQuery({
+    queryKey: ['painLogs', userId],
+    queryFn: () => base44.entities.PainLog.filter({ patient_id: userId }, '-date'),
+    initialData: [],
+    enabled: !!userId,
+  });
+
+  const logPainMutation = useMutation({
+    mutationFn: (data) => base44.entities.PainLog.create({ ...data, patient_id: userId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['painLogs'] });
+    },
+  });
+
+  if (isLoading) return <div>Loading pain data...</div>;
+
+  return (
+    <>
+      <PainLoggerSlider
+        onLogPain={(data) => logPainMutation.mutate(data)}
+        isLoading={logPainMutation.isPending}
+      />
+      <PainHistory painLogs={painLogs} />
+    </>
+  );
+}
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -380,11 +412,8 @@ export default function Progress() {
         </TabsList>
 
         <TabsContent value="pain" className="space-y-4 mt-4">
-          <Card className="bg-white border-teal-100">
-            <CardContent className="p-5">
-              <p className="text-sm text-gray-600">View detailed pain tracking and trends on the <Link to={createPageUrl("PainTracking")} className="text-teal-600 font-semibold hover:underline">Pain Tracking page</Link>.</p>
-            </CardContent>
-          </Card>
+          {/* Pain Logs Section */}
+          <PainTrackingSection userId={user?.id} />
         </TabsContent>
 
         <TabsContent value="metrics" className="space-y-4 mt-4">

@@ -223,7 +223,7 @@ export default function Home() {
 
       {/* Quick Pain Check */}
       {latestPain && (
-        <Link to={createPageUrl("PainTracking")}>
+        <Link to={createPageUrl("Progress")}>
           <Card className="bg-white border-orange-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
