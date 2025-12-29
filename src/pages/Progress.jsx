@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import PainLoggerSlider from "../components/pain/PainLoggerSlider";
 import PainHistory from "../components/pain/PainHistory";
+import PostureComparison from "../components/progress/PostureComparison";
 
 function PainTrackingSection({ userId }) {
   const queryClient = useQueryClient();
@@ -135,6 +136,21 @@ export default function Progress() {
     },
   });
 
+  const uploadPostureMutation = useMutation({
+    mutationFn: async ({ file, photoType }) => {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      return base44.entities.ProgressPhoto.create({
+        client_id: user.id,
+        photo_url: file_url,
+        date: new Date().toISOString().split('T')[0],
+        view_type: photoType
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['progressPhotos'] });
+    },
+  });
+
   const handleAddMetric = async () => {
     if (!newMetricValue || !user?.id) {
       alert("Please enter a value");
@@ -213,6 +229,27 @@ export default function Progress() {
     } finally {
       setUploadingPhoto(false);
       e.target.value = '';
+    }
+  };
+
+  const handlePostureUpload = async (file, photoType) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('Image is too large. Maximum size is 10MB');
+      return;
+    }
+    
+    try {
+      await uploadPostureMutation.mutateAsync({ file, photoType });
+    } catch (error) {
+      alert('Error uploading photo: ' + error.message);
     }
   };
 
@@ -389,16 +426,26 @@ export default function Progress() {
       )}
 
       <Tabs defaultValue="pain" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
-          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Pain</TabsTrigger>
-          <TabsTrigger value="metrics" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Metrics</TabsTrigger>
-          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Photos</TabsTrigger>
-          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold">Goals</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5 bg-gray-100">
+          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Pain</TabsTrigger>
+          <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Posture</TabsTrigger>
+          <TabsTrigger value="metrics" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Metrics</TabsTrigger>
+          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Photos</TabsTrigger>
+          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Goals</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pain" className="space-y-4 mt-4">
           {/* Pain Logs Section */}
           <PainTrackingSection userId={user?.id} />
+        </TabsContent>
+
+        <TabsContent value="posture" className="space-y-4 mt-4">
+          <PostureComparison
+            posturePhotos={photos.filter(p => p.view_type === "posture_baseline" || p.view_type === "posture_progress")}
+            onUploadBaseline={(file) => handlePostureUpload(file, "posture_baseline")}
+            onUploadProgress={(file) => handlePostureUpload(file, "posture_progress")}
+            isUploading={uploadPostureMutation.isPending}
+          />
         </TabsContent>
 
         <TabsContent value="metrics" className="space-y-4 mt-4">
