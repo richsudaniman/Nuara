@@ -35,10 +35,10 @@ export default function Learn() {
   return (
     <div className="p-5 space-y-5 relative overscroll-contain touch-pan-y">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] rounded-2xl flex items-center justify-center">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-md shadow-purple-200">
           <GraduationCap className="w-5 h-5 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-[#1a1a1a]">Learn & Grow</h1>
+        <h1 className="text-2xl font-bold text-[#1e293b]">Education & Resources</h1>
       </div>
 
       {/* Filters */}
@@ -85,7 +85,7 @@ export default function Learn() {
           {filteredVideos.map(video => (
             <Card 
               key={video.id} 
-              className="bg-white border-2 border-gray-100 hover:border-[#0ea5e9] shadow-sm rounded-2xl transition-all cursor-pointer overflow-hidden group"
+              className="bg-white border-2 border-gray-100 hover:border-teal-500 hover:shadow-lg shadow-sm rounded-2xl transition-all cursor-pointer overflow-hidden group"
               onClick={() => setSelectedVideo(video)}
             >
               <CardContent className="p-0">
@@ -99,7 +99,7 @@ export default function Learn() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                        <Play className="w-10 h-10 text-[#0ea5e9]/50" />
+                        <Play className="w-10 h-10 text-teal-500/50" />
                       </div>
                     )}
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -118,7 +118,7 @@ export default function Learn() {
 
                   <div className="flex-1 p-4 flex flex-col justify-center">
                     <div className="flex items-start justify-between gap-2 mb-2">
-                       <span className="px-2 py-1 text-[10px] font-black italic bg-[#0ea5e9]/10 text-[#0ea5e9] rounded uppercase tracking-wider">
+                       <span className="px-2 py-1 text-[10px] font-bold bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-700 rounded uppercase tracking-wider">
                         {video.category}
                       </span>
                       {video.difficulty_level && (
@@ -128,10 +128,10 @@ export default function Learn() {
                       )}
                     </div>
 
-                    <h3 className="font-black italic text-[#1a1a1a] text-lg mb-2 leading-tight">{video.title}</h3>
+                    <h3 className="font-bold text-[#1e293b] text-lg mb-2 leading-tight">{video.title}</h3>
                     <p className="text-xs text-gray-500 mb-3 line-clamp-2">{video.description}</p>
                     
-                    <div className="mt-auto pt-2 flex items-center text-[#0ea5e9] text-xs font-bold uppercase tracking-wider group-hover:underline">
+                    <div className="mt-auto pt-2 flex items-center text-teal-600 text-xs font-bold uppercase tracking-wider group-hover:underline">
                       Watch Video
                     </div>
                   </div>
@@ -180,7 +180,7 @@ export default function Learn() {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6 bg-white">
                <div className="flex items-center gap-3 mb-4">
-                 <span className="px-3 py-1 text-xs font-black italic bg-[#0ea5e9] text-white rounded uppercase tracking-wider shadow-sm shadow-blue-200">
+                 <span className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded uppercase tracking-wider shadow-md shadow-purple-200">
                     {selectedVideo.category}
                   </span>
                   {selectedVideo.difficulty_level && (
@@ -196,7 +196,7 @@ export default function Learn() {
                   )}
                </div>
 
-              <h2 className="text-2xl font-black italic text-[#1a1a1a] mb-4 leading-tight">{selectedVideo.title}</h2>
+              <h2 className="text-2xl font-bold text-[#1e293b] mb-4 leading-tight">{selectedVideo.title}</h2>
               
               {selectedVideo.description && (
                 <div className="prose prose-sm max-w-none text-gray-600">
