@@ -56,7 +56,7 @@ export default function Layout({ children, currentPageName }) {
     }
     
     // Client pages - always show client view
-    const clientPages = ['Home', 'Workout', 'Nutrition', 'Progress', 'Learn', 'Messages'];
+    const clientPages = ['Home', 'Exercises', 'Progress', 'Learn', 'Messages'];
     if (clientPages.includes(currentPageName)) {
       return 'client';
     }
