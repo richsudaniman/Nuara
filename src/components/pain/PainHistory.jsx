@@ -33,10 +33,10 @@ export default function PainHistory({ painLogs = [] }) {
     <div className="space-y-4">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-3">
-        <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-0 shadow-sm rounded-2xl">
+        <Card className="bg-gradient-to-br from-teal-50 to-emerald-50 border-0 shadow-sm rounded-2xl">
           <CardContent className="p-4">
             <p className="text-xs font-bold text-gray-600 mb-1">Latest Pain</p>
-            <p className="text-3xl font-black text-[#0ea5e9]">{latestLog.pain_level}/10</p>
+            <p className="text-3xl font-black text-teal-600">{latestLog.pain_level}/10</p>
             {trend !== 0 && (
               <div className="flex items-center gap-1 mt-2">
                 {trend < 0 ? (
@@ -84,9 +84,9 @@ export default function PainHistory({ painLogs = [] }) {
               <Line 
                 type="monotone" 
                 dataKey="pain" 
-                stroke="#0ea5e9" 
+                stroke="#14b8a6" 
                 strokeWidth={3}
-                dot={{ fill: '#0ea5e9', r: 4 }}
+                dot={{ fill: '#14b8a6', r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>

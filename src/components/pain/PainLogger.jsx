@@ -86,7 +86,7 @@ export default function PainLogger({ onLogPain, isLoading }) {
             <Button
               onClick={() => setShowForm(true)}
               size="sm"
-              className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold rounded-xl"
+              className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-md shadow-teal-200"
             >
               <Plus className="w-4 h-4 mr-1" />
               Log Pain
@@ -117,7 +117,7 @@ export default function PainLogger({ onLogPain, isLoading }) {
           {/* Pain Level Slider */}
           <div>
             <label className="text-sm font-bold text-gray-700 mb-3 block">
-              Pain Level: <span className="text-2xl text-[#0ea5e9] font-black">{formData.pain_level}</span>/10
+              Pain Level: <span className="text-2xl text-teal-600 font-black">{formData.pain_level}</span>/10
             </label>
             <Slider
               value={[formData.pain_level]}
@@ -156,7 +156,7 @@ export default function PainLogger({ onLogPain, isLoading }) {
                   onClick={() => toggleArea(area.value)}
                   className={`py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
                     formData.affected_areas.includes(area.value)
-                      ? 'bg-[#0ea5e9] text-white'
+                      ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -212,7 +212,7 @@ export default function PainLogger({ onLogPain, isLoading }) {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold rounded-xl py-6"
+            className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold rounded-xl py-6 shadow-lg shadow-teal-200"
           >
             {isLoading ? "Saving..." : "Save Pain Log"}
           </Button>
