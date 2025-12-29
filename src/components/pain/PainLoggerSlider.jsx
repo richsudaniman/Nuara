@@ -54,57 +54,49 @@ export default function PainLoggerSlider({ onLogPain, isLoading }) {
   };
 
   return (
-    <Card className="bg-white border-teal-100 shadow-sm">
-      <CardContent className="p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-6">LOG PAIN LEVEL</h2>
+    <Card className="bg-gradient-to-br from-white to-teal-50/30 border-0 shadow-lg rounded-3xl">
+      <CardContent className="p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Record Pain Level</h2>
+          <p className="text-sm text-gray-500">Track your pain to monitor recovery progress</p>
+        </div>
 
-        {/* Pain Level Display */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-700">Pain Level: {painLevel}</span>
-            <span className="text-sm font-semibold text-gray-600">{getPainText(painLevel)}</span>
+        {/* Large Pain Level Display */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+          <div className="text-center mb-4">
+            <div className="text-6xl font-black text-teal-600 mb-2">{painLevel}</div>
+            <div className="text-lg font-semibold text-gray-700">{getPainText(painLevel)}</div>
           </div>
 
-          {/* Color Slider */}
-          <div className="relative">
-            <div className="h-8 rounded-lg overflow-hidden flex mb-4">
-              {[...Array(11)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`flex-1 ${getPainColor(i)} ${painLevel === i ? 'ring-4 ring-teal-500 ring-inset' : ''}`}
-                  onClick={() => setPainLevel(i)}
-                  style={{ cursor: 'pointer' }}
-                />
-              ))}
-            </div>
-            
-            {/* Numeric Range */}
-            <div className="flex justify-between text-xs text-gray-400 font-semibold">
-              <span>0 (No Pain)</span>
-              <span>10 (Worst Pain)</span>
-            </div>
-          </div>
-
-          {/* Visual Squares */}
-          <div className="grid grid-cols-10 gap-2 mt-4">
-            {[...Array(10)].map((_, i) => (
+          {/* Simple Number Buttons */}
+          <div className="grid grid-cols-11 gap-2">
+            {[...Array(11)].map((_, i) => (
               <button
                 key={i}
-                onClick={() => setPainLevel(i + 1)}
-                className={`aspect-square rounded-lg transition-all ${
-                  painLevel >= i + 1 ? getPainColor(i + 1) : 'bg-gray-100'
-                } ${painLevel === i + 1 ? 'ring-2 ring-teal-500 scale-110' : ''}`}
-              />
+                onClick={() => setPainLevel(i)}
+                className={`aspect-square rounded-xl font-bold text-sm transition-all ${
+                  painLevel === i 
+                    ? 'bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-lg scale-110' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {i}
+              </button>
             ))}
+          </div>
+          
+          <div className="flex justify-between text-xs text-gray-400 mt-3 px-1">
+            <span>No Pain</span>
+            <span>Worst Pain</span>
           </div>
         </div>
 
         {/* Body Area */}
         <div className="mb-4">
-          <label className="text-sm font-bold text-gray-700 mb-2 block">Body Area</label>
+          <label className="text-sm font-semibold text-gray-700 mb-2 block">Affected Body Area *</label>
           <Select value={selectedArea} onValueChange={setSelectedArea}>
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Select body area" />
+            <SelectTrigger className="bg-white border-gray-200 h-12 rounded-xl">
+              <SelectValue placeholder="Select where you feel pain" />
             </SelectTrigger>
             <SelectContent>
               {bodyAreas.map(area => (
@@ -116,24 +108,24 @@ export default function PainLoggerSlider({ onLogPain, isLoading }) {
 
         {/* Date */}
         <div className="mb-4">
-          <label className="text-sm font-bold text-gray-700 mb-2 block">Date</label>
+          <label className="text-sm font-semibold text-gray-700 mb-2 block">Date</label>
           <Input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split('T')[0]}
-            className="bg-white"
+            className="bg-white border-gray-200 h-12 rounded-xl"
           />
         </div>
 
         {/* Notes */}
         <div className="mb-6">
-          <label className="text-sm font-bold text-gray-700 mb-2 block">Notes (Optional)</label>
+          <label className="text-sm font-semibold text-gray-700 mb-2 block">Additional Notes</label>
           <Textarea
-            placeholder="Describe your pain (e.g., sharp, dull, comes and goes...)"
+            placeholder="Describe your pain (sharp, dull, radiating, etc.)"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="bg-white min-h-[80px]"
+            className="bg-white border-gray-200 min-h-[100px] rounded-xl"
           />
         </div>
 
@@ -141,9 +133,9 @@ export default function PainLoggerSlider({ onLogPain, isLoading }) {
         <Button
           onClick={handleSubmit}
           disabled={isLoading || !selectedArea}
-          className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold py-6 rounded-xl shadow-md"
+          className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold py-6 rounded-xl shadow-md text-base"
         >
-          + LOG PAIN
+          {isLoading ? 'Logging...' : 'Log Pain Entry'}
         </Button>
       </CardContent>
     </Card>
