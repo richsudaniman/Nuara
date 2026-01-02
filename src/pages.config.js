@@ -21,6 +21,7 @@ import TrainerClients from './pages/TrainerClients';
 import TrainerDashboard from './pages/TrainerDashboard';
 import TrainerMessages from './pages/TrainerMessages';
 import TrainerVideos from './pages/TrainerVideos';
+import MockMessages from './pages/MockMessages';
 import __Layout from './Layout.jsx';
 
 
@@ -48,6 +49,7 @@ export const PAGES = {
     "TrainerDashboard": TrainerDashboard,
     "TrainerMessages": TrainerMessages,
     "TrainerVideos": TrainerVideos,
+    "MockMessages": MockMessages,
 }
 
 export const pagesConfig = {

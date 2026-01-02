@@ -20,6 +20,54 @@ export default function Exercises() {
     staleTime: 30 * 60 * 1000,
   });
 
+  // Mock therapy data for demo
+  const mockWeeklyPlan = {
+    Monday: { 
+      day_of_week: "Monday",
+      program_type: "Articulation Practice",
+      exercises: [
+        { name: "Practice /s/ Sound - Initial Position", reps: 10, notes: "Say 'sun', 'sit', 'sand' clearly" },
+        { name: "Practice /s/ Sound - Medial Position", reps: 10, notes: "Say 'basket', 'listen', 'castle'" },
+        { name: "Minimal Pairs: /s/ vs /th/", reps: 8, notes: "Distinguish 'sink' from 'think'" }
+      ]
+    },
+    Tuesday: {
+      day_of_week: "Tuesday",
+      program_type: "Language & Vocabulary",
+      exercises: [
+        { name: "Sentence Building - Level 3", reps: 5, notes: "Create 5-7 word sentences" },
+        { name: "Category Naming", reps: 15, notes: "Name items in 'Animals', 'Food', 'Clothing'" },
+        { name: "Following Directions", reps: 1, notes: "Listen and follow 3-step instructions" }
+      ]
+    },
+    Wednesday: {
+      day_of_week: "Wednesday",
+      program_type: "Fluency & Rhythm",
+      exercises: [
+        { name: "Slow Speech Practice", reps: 10, notes: "Speak slowly and clearly" },
+        { name: "Breathing Exercises", reps: 5, notes: "Deep breaths before speaking" },
+        { name: "Easy Onset Technique", reps: 8, notes: "Start words gently" }
+      ]
+    },
+    Thursday: {
+      day_of_week: "Thursday",
+      program_type: "Articulation Practice",
+      exercises: [
+        { name: "Practice /r/ Sound - Words", reps: 12, notes: "Say 'red', 'run', 'road'" },
+        { name: "Practice /r/ Sound - Phrases", reps: 8, notes: "Use /r/ words in short phrases" }
+      ]
+    },
+    Friday: {
+      day_of_week: "Friday",
+      program_type: "Listening & Comprehension",
+      exercises: [
+        { name: "Story Retelling", reps: 1, notes: "Listen to a story and retell it" },
+        { name: "Answer Questions", reps: 10, notes: "Answer 'who, what, where' questions" },
+        { name: "Sound Recognition", reps: 15, notes: "Identify target sounds in words" }
+      ]
+    }
+  };
+
   // First check WorkoutPlan, then RehabilitationProgram
   const { data: programs, isLoading: programsLoading } = useQuery({
     queryKey: ['programs', user?.id],
@@ -54,8 +102,9 @@ export default function Exercises() {
     },
   });
 
-  const selectedProgram = programs.find(p => p.day_of_week === selectedDay);
+  const selectedProgram = programs.find(p => p.day_of_week === selectedDay) || mockWeeklyPlan[selectedDay];
   const todayDate = new Date().toISOString().split('T')[0];
+  const hasRealData = programs.length > 0;
 
   const handleExerciseComplete = async (exercise) => {
     await logExerciseMutation.mutateAsync({
@@ -94,14 +143,15 @@ export default function Exercises() {
               <h3 className="text-sm font-bold text-gray-700 mb-3">THIS WEEK'S THERAPY PLAN</h3>
               <div className="grid grid-cols-7 gap-1">
                 {daysOfWeek.map(day => {
-                  const hasProgram = programs.some(p => p.day_of_week === day);
+                  const hasProgram = programs.some(p => p.day_of_week === day) || mockWeeklyPlan[day];
                   const isToday = day === today;
                   const isSelected = day === selectedDay;
                   const dayLogs = logs.filter(log => {
                     const program = programs.find(p => p.day_of_week === day);
                     return log.completed_date === todayDate && log.workout_plan_id === program?.id;
                   });
-                  const isCompleted = hasProgram && dayLogs.length > 0;
+                  // Mock completion for Monday and Tuesday for demo
+                  const isCompleted = (hasProgram && dayLogs.length > 0) || (!hasRealData && (day === 'Monday' || day === 'Tuesday'));
 
                   return (
                     <button

@@ -79,7 +79,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Therapy", path: createPageUrl("Exercises"), icon: Activity },
     { name: "Practice", path: createPageUrl("Learn"), icon: Gamepad2 },
     { name: "Progress", path: createPageUrl("Progress"), icon: TrendingUp },
-    { name: "Messages", path: createPageUrl("Messages"), icon: MessageCircle, badge: unreadCount },
+    { name: "Messages", path: createPageUrl("MockMessages"), icon: MessageCircle, badge: 2 },
   ];
 
   // Trainer navigation

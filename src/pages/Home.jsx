@@ -29,6 +29,15 @@ export default function Home() {
     enabled: !!user?.assigned_trainer_id,
   });
 
+  // Mock therapy activities for demo
+  const mockTodayActivities = [
+    { id: 1, name: "Practice /s/ Sound", reps: 10, completed: true },
+    { id: 2, name: "Sentence Builder - Level 3", reps: 5, completed: true },
+    { id: 3, name: "Tongue Twisters Challenge", reps: 8, completed: false },
+    { id: 4, name: "Listening Comprehension", reps: 1, completed: false },
+    { id: 5, name: "Word Association Game", reps: 15, completed: false }
+  ];
+
   const { data: workoutPlans } = useQuery({
     queryKey: ['workoutPlans', user?.id],
     queryFn: () => base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }),
@@ -72,8 +81,10 @@ export default function Home() {
   const adherence = calculateAdherence();
   const todayDate = new Date().toISOString().split('T')[0];
   const todayWorkout = workoutPlans.find(plan => plan.day_of_week === new Date().toLocaleDateString('en-US', { weekday: 'long' }));
-  const todayExercises = todayWorkout?.exercises?.length || 0;
-  const todayCompleted = workoutLogs.filter(log => log.completed_date === todayDate && log.workout_plan_id === todayWorkout?.id).length;
+  
+  // Use mock data if no real data exists
+  const todayExercises = todayWorkout?.exercises?.length || mockTodayActivities.length;
+  const todayCompleted = todayWorkout ? workoutLogs.filter(log => log.completed_date === todayDate && log.workout_plan_id === todayWorkout?.id).length : mockTodayActivities.filter(a => a.completed).length;
 
   // Get latest pain level
   const latestPain = painLogs[0];
@@ -156,26 +167,24 @@ export default function Home() {
       </Card>
 
       {/* Your Therapist Card */}
-      {provider && (
-        <Card className="bg-white border-purple-100 shadow-sm">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
-                {provider.full_name?.charAt(0) || 'T'}
-              </div>
-              <div className="flex-1">
-                <p className="text-xs font-semibold text-gray-500 mb-1">YOUR SPEECH THERAPIST</p>
-                <p className="text-lg font-bold text-gray-900">{provider.full_name}</p>
-              </div>
-              <Link to={createPageUrl("Messages")}>
-                <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white">
-                  Message
-                </Button>
-              </Link>
+      <Card className="bg-white border-purple-100 shadow-sm">
+        <CardContent className="p-5">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+              {provider?.full_name?.charAt(0) || 'E'}
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-gray-500 mb-1">YOUR SPEECH THERAPIST</p>
+              <p className="text-lg font-bold text-gray-900">{provider?.full_name || "Dr. Emily Chen"}</p>
+            </div>
+            <Link to={createPageUrl("MockMessages")}>
+              <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white">
+                Message
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Today's Therapy Homework */}
       <Link to={createPageUrl("Exercises")}>
@@ -207,11 +216,10 @@ export default function Home() {
             
             {todayExercises > 0 ? (
               <div className="space-y-2">
-                {todayWorkout.exercises.slice(0, 3).map((exercise, idx) => {
-                  const isCompleted = workoutLogs.some(log => 
-                    log.completed_date === todayDate && 
-                    log.exercise_name === exercise.name
-                  );
+                {(todayWorkout?.exercises || mockTodayActivities).slice(0, 3).map((exercise, idx) => {
+                  const isCompleted = todayWorkout 
+                    ? workoutLogs.some(log => log.completed_date === todayDate && log.exercise_name === exercise.name)
+                    : exercise.completed;
                   return (
                     <div key={idx} className={`flex items-center gap-3 p-4 rounded-xl transition-all ${isCompleted ? 'bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200' : 'bg-gray-50 border-2 border-gray-200'}`}>
                       {isCompleted ? (
@@ -231,8 +239,8 @@ export default function Home() {
                     </div>
                   );
                 })}
-                {todayWorkout.exercises.length > 3 && (
-                  <p className="text-xs text-gray-500 text-center pt-2 font-semibold">+{todayWorkout.exercises.length - 3} more activities to complete</p>
+                {(todayWorkout?.exercises.length > 3 || mockTodayActivities.length > 3) && (
+                  <p className="text-xs text-gray-500 text-center pt-2 font-semibold">+{(todayWorkout?.exercises.length || mockTodayActivities.length) - 3} more activities to complete</p>
                 )}
               </div>
             ) : (
@@ -261,29 +269,33 @@ export default function Home() {
 
           {/* Featured Practice Activities */}
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="p-4 bg-white rounded-xl shadow-sm border-2 border-purple-100 hover:border-purple-300 transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-2 shadow-md">
-                <Star className="w-6 h-6 text-white" />
+            <Link to={createPageUrl("Learn")}>
+              <div className="p-4 bg-white rounded-xl shadow-sm border-2 border-purple-100 hover:border-purple-300 transition-all cursor-pointer">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-2 shadow-md">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <p className="text-sm font-bold text-gray-900 mb-1">Sound Match Game</p>
+                <p className="text-xs text-gray-500">Practice /s/ sounds</p>
+                <div className="mt-2 flex items-center gap-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                  <span className="text-xs font-bold text-yellow-600">+10 pts</span>
+                </div>
               </div>
-              <p className="text-sm font-bold text-gray-900 mb-1">Sound Match</p>
-              <p className="text-xs text-gray-500">Practice /s/ sounds</p>
-              <div className="mt-2 flex items-center gap-1">
-                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                <span className="text-xs font-bold text-yellow-600">+10 pts</span>
-              </div>
-            </div>
+            </Link>
 
-            <div className="p-4 bg-white rounded-xl shadow-sm border-2 border-blue-100 hover:border-blue-300 transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mb-2 shadow-md">
-                <Sparkles className="w-6 h-6 text-white" />
+            <Link to={createPageUrl("Learn")}>
+              <div className="p-4 bg-white rounded-xl shadow-sm border-2 border-blue-100 hover:border-blue-300 transition-all cursor-pointer">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mb-2 shadow-md">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <p className="text-sm font-bold text-gray-900 mb-1">Sentence Builder</p>
+                <p className="text-xs text-gray-500">Build complex sentences</p>
+                <div className="mt-2 flex items-center gap-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                  <span className="text-xs font-bold text-yellow-600">+15 pts</span>
+                </div>
               </div>
-              <p className="text-sm font-bold text-gray-900 mb-1">Word Builder</p>
-              <p className="text-xs text-gray-500">Build sentences</p>
-              <div className="mt-2 flex items-center gap-1">
-                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                <span className="text-xs font-bold text-yellow-600">+15 pts</span>
-              </div>
-            </div>
+            </Link>
           </div>
 
           <Link to={createPageUrl("Learn")}>
