@@ -314,22 +314,34 @@ export default function Home() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-teal-600" />
-                <h2 className="text-lg font-bold text-gray-900">My Progress</h2>
+                <h2 className="text-lg font-bold text-gray-900">My Therapy Goals</h2>
               </div>
-              <span className="text-xs font-semibold text-teal-600">View Details →</span>
+              <span className="text-xs font-semibold text-teal-600">View All →</span>
             </div>
 
             <div className="space-y-3">
-              {/* Mock Goal Progress */}
+              {/* Goal 1 */}
               <div className="p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-bold text-gray-900">/r/ Sound Production</p>
-                  <span className="text-2xl font-black text-teal-600">75%</span>
+                  <p className="text-sm font-bold text-gray-900">/r/ Sound Accuracy</p>
+                  <span className="text-2xl font-black text-teal-600">78%</span>
                 </div>
                 <div className="h-2 bg-white rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full bg-gradient-to-r from-teal-500 to-blue-500 rounded-full" style={{ width: '75%' }} />
+                  <div className="h-full bg-gradient-to-r from-teal-500 to-blue-500 rounded-full" style={{ width: '78%' }} />
                 </div>
-                <p className="text-xs text-gray-600 mt-2">You're doing great! Keep practicing!</p>
+                <p className="text-xs text-gray-600 mt-2">Target: 90% accuracy by March 2026</p>
+              </div>
+
+              {/* Goal 2 */}
+              <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-bold text-gray-900">Sentence Complexity</p>
+                  <span className="text-2xl font-black text-purple-600">65%</span>
+                </div>
+                <div className="h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: '65%' }} />
+                </div>
+                <p className="text-xs text-gray-600 mt-2">Target: 7-word sentences consistently</p>
               </div>
             </div>
           </CardContent>
