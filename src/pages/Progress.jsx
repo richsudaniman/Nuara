@@ -377,149 +377,122 @@ export default function Progress() {
   const dashboardMetrics = calculateDashboardMetrics();
   const weeklyWorkoutData = getWeeklyWorkoutData();
 
+  // Mock therapy goals for demo
+  const mockTherapyGoals = [
+    {
+      id: 1,
+      goal_title: "/r/ Sound Production Accuracy",
+      current_value: "78% accuracy",
+      target_value: "90% accuracy",
+      progress_percentage: 78,
+      target_date: "2026-03-15",
+      linked_metric_type: "articulation_accuracy"
+    },
+    {
+      id: 2,
+      goal_title: "Sentence Length & Complexity",
+      current_value: "5.2 words average",
+      target_value: "7 words average",
+      progress_percentage: 65,
+      target_date: "2026-04-01",
+      linked_metric_type: "sentence_length"
+    },
+    {
+      id: 3,
+      goal_title: "Speech Fluency Rate",
+      current_value: "82% fluent",
+      target_value: "95% fluent",
+      progress_percentage: 82,
+      target_date: "2026-05-01",
+      linked_metric_type: "fluency_rate"
+    }
+  ];
+
+  // Mock progress data for charts
+  const mockArticulationData = [
+    { date: 'Dec 5', value: 65 },
+    { date: 'Dec 12', value: 68 },
+    { date: 'Dec 19', value: 72 },
+    { date: 'Dec 26', value: 75 },
+    { date: 'Jan 2', value: 78 }
+  ];
+
+  const mockSentenceLengthData = [
+    { date: 'Dec 5', value: 4.2 },
+    { date: 'Dec 12', value: 4.5 },
+    { date: 'Dec 19', value: 4.8 },
+    { date: 'Dec 26', value: 5.0 },
+    { date: 'Jan 2', value: 5.2 }
+  ];
+
+  const mockWeeklyPracticeData = [
+    { week: 'Nov 11', sessions: 3 },
+    { week: 'Nov 18', sessions: 4 },
+    { week: 'Nov 25', sessions: 5 },
+    { week: 'Dec 2', sessions: 5 },
+    { week: 'Dec 9', sessions: 6 },
+    { week: 'Dec 16', sessions: 5 },
+    { week: 'Dec 23', sessions: 4 },
+    { week: 'Dec 30', sessions: 5 }
+  ];
+
   return (
-    <div className="p-5 space-y-5 bg-gradient-to-b from-teal-50/30 to-white min-h-screen">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">YOUR PROGRESS</h1>
+    <div className="p-5 space-y-5 bg-gradient-to-b from-purple-50/30 via-blue-50/20 to-white min-h-screen">
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">MY PROGRESS</h1>
 
       {/* Dashboard Overview */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-3">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-lg bg-gray-100" />)}
-        </div>
-      ) : (
-        <>
-          <Card className="bg-gradient-to-br from-teal-500 to-emerald-500 border-none rounded-2xl">
-            <CardContent className="p-4">
-              <Target className="w-7 h-7 text-white/80 mb-2" />
-              <p className="text-xs text-white/80 uppercase font-semibold">Exercise Completion</p>
-              <p className="text-5xl font-bold text-white mt-2">{dashboardMetrics.workoutAdherence}%</p>
-              <p className="text-xs text-white/70 mt-2">{dashboardMetrics.completedThisWeek}/{dashboardMetrics.assignedThisWeek} exercises this week</p>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="bg-gradient-to-br from-purple-500 to-blue-500 border-none rounded-2xl">
+          <CardContent className="p-5">
+            <Target className="w-7 h-7 text-white/80 mb-2" />
+            <p className="text-xs text-white/80 uppercase font-semibold">This Week</p>
+            <p className="text-5xl font-bold text-white mt-2">92%</p>
+            <p className="text-xs text-white/70 mt-2">Practice Completion</p>
+          </CardContent>
+        </Card>
 
-          {/* Weekly Exercise Chart */}
-          {weeklyWorkoutData.some(d => d.workouts > 0) && (
-            <Card className="bg-white border-teal-100">
-              <CardContent className="p-5">
-                <h3 className="font-bold text-gray-900 mb-4">WEEKLY EXERCISE ACTIVITY</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={weeklyWorkoutData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="week" stroke="#6b7280" style={{ fontSize: '11px' }} />
-                    <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#fff', 
-                        border: '2px solid #0ea5e9',
-                        borderRadius: '4px',
-                        fontWeight: 'bold'
-                      }}
-                    />
-                    <Bar dataKey="workouts" fill="#14b8a6" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          )}
+        <Card className="bg-gradient-to-br from-teal-500 to-emerald-500 border-none rounded-2xl">
+          <CardContent className="p-5">
+            <Activity className="w-7 h-7 text-white/80 mb-2" />
+            <p className="text-xs text-white/80 uppercase font-semibold">Current Streak</p>
+            <p className="text-5xl font-bold text-white mt-2">7</p>
+            <p className="text-xs text-white/70 mt-2">Days in a row! 🔥</p>
+          </CardContent>
+        </Card>
+      </div>
 
+      {/* Weekly Practice Chart */}
+      <Card className="bg-white border-purple-100 shadow-sm">
+        <CardContent className="p-5">
+          <h3 className="font-bold text-gray-900 mb-4">WEEKLY PRACTICE SESSIONS</h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={mockWeeklyPracticeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="week" stroke="#6b7280" style={{ fontSize: '11px' }} />
+              <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#fff', 
+                  border: '2px solid #8b5cf6',
+                  borderRadius: '8px',
+                  fontWeight: 'bold'
+                }}
+              />
+              <Bar dataKey="sessions" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-        </>
-      )}
-
-      <Tabs defaultValue="posture" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-100">
-          <TabsTrigger value="pain" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Pain</TabsTrigger>
-          <TabsTrigger value="posture" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Compare</TabsTrigger>
-          <TabsTrigger value="scanner" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">AI Scan</TabsTrigger>
-          <TabsTrigger value="photos" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Photos</TabsTrigger>
-          <TabsTrigger value="goals" className="data-[state=active]:bg-teal-500 data-[state=active]:text-white font-bold text-xs">Goals</TabsTrigger>
+      <Tabs defaultValue="goals" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-gray-100">
+          <TabsTrigger value="goals" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white font-bold text-xs">Goals</TabsTrigger>
+          <TabsTrigger value="articulation" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white font-bold text-xs">Sounds</TabsTrigger>
+          <TabsTrigger value="language" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white font-bold text-xs">Language</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pain" className="space-y-4 mt-4">
-          {/* Pain Logs Section */}
-          <PainTrackingSection userId={user?.id} />
-        </TabsContent>
-
-        <TabsContent value="posture" className="space-y-4 mt-4">
-          <PostureComparison
-            posturePhotos={photos.filter(p => p.view_type === "posture_baseline" || p.view_type === "posture_progress")}
-            onUploadBaseline={(file) => handlePostureUpload(file, "posture_baseline")}
-            onUploadProgress={(file) => handlePostureUpload(file, "posture_progress")}
-            isUploading={uploadPostureMutation.isPending}
-          />
-        </TabsContent>
-
-        <TabsContent value="scanner" className="space-y-4 mt-4">
-          <AIPostureScanner userId={user?.id} />
-        </TabsContent>
-
-        <TabsContent value="photos" className="space-y-4 mt-4">
-          {/* Upload Photo */}
-          <Card className="bg-white border-2 border-[#0ea5e9]/30 glow-blue">
-            <CardContent className="p-5">
-              <h3 className="font-black italic text-[#1a1a1a] mb-4">UPLOAD PROGRESS PHOTO</h3>
-              <div className="block">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                  disabled={uploadingPhoto}
-                  ref={fileInputRef}
-                />
-                <Button
-                  disabled={uploadingPhoto}
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-black italic glow-blue cursor-pointer"
-                >
-                  <Camera className="w-5 h-5 mr-2" />
-                  {uploadingPhoto ? "UPLOADING..." : "CHOOSE PHOTO"}
-                </Button>
-              </div>
-              <p className="text-xs text-gray-500 mt-2 text-center">Max size: 10MB • Formats: JPG, PNG, HEIC</p>
-            </CardContent>
-          </Card>
-
-          {/* Photo Grid */}
-          {isLoading ? (
-            <div className="grid grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-64 rounded-lg bg-gray-100" />)}
-            </div>
-          ) : photos.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
-              {photos.map(photo => (
-                <Card key={photo.id} className="bg-white border border-gray-200 overflow-hidden hover:border-[#0ea5e9] transition-colors">
-                  <div className="aspect-square relative">
-                    <img 
-                      src={photo.photo_url} 
-                      alt="Progress" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <Calendar className="w-3 h-3 text-[#0ea5e9]" />
-                      <span className="font-semibold">{format(new Date(photo.date), 'MMM d, yyyy')}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon={Camera}
-              title="No Progress Photos Yet"
-              description="Start tracking your transformation by uploading your first photo!"
-              variant="info"
-            />
-          )}
-        </TabsContent>
-
         <TabsContent value="goals" className="space-y-4 mt-4">
-          {isLoading ? (
-            <Skeleton className="h-64 rounded-lg bg-gray-100" />
-          ) : goals.length > 0 ? (
-            goals.map(goal => {
+          {mockTherapyGoals.map(goal => {
               const goalLogs = goal.linked_metric_type 
                 ? metrics
                     .filter(m => m.metric_type === goal.linked_metric_type)
@@ -528,81 +501,88 @@ export default function Progress() {
                 : [];
 
               return (
-                <Card key={goal.id} className="bg-white border-2 border-gray-200 hover:border-[#0ea5e9] transition-colors">
+                <Card key={goal.id} className="bg-white border-2 border-purple-200 hover:border-purple-400 transition-colors rounded-2xl">
                   <CardContent className="p-5">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-black italic text-[#1a1a1a] text-xl">{goal.goal_title}</h3>
+                        <h3 className="font-bold text-gray-900 text-lg">{goal.goal_title}</h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          <span className="text-[#0ea5e9] font-bold">{goal.current_value || 'Start'}</span> → <span className="font-bold">{goal.target_value}</span>
+                          <span className="text-purple-600 font-bold">{goal.current_value}</span> → <span className="font-bold">{goal.target_value}</span>
                         </p>
-                        {goal.target_date && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            Target: {format(new Date(goal.target_date), 'MMM d, yyyy')}
-                          </p>
-                        )}
+                        <p className="text-xs text-gray-500 mt-1">
+                          Target: {format(new Date(goal.target_date), 'MMM d, yyyy')}
+                        </p>
                       </div>
-                      <div className="bg-[#0ea5e9] px-3 py-1 rounded-full">
-                        <span className="text-white font-black italic">{goal.progress_percentage}%</span>
+                      <div className="bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 rounded-full shadow-md">
+                        <span className="text-white font-black text-lg">{goal.progress_percentage}%</span>
                       </div>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
+                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-[#0ea5e9] transition-all duration-300"
+                        className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300"
                         style={{ width: `${goal.progress_percentage}%` }}
                       ></div>
                     </div>
-
-                    {/* Goal History & Actions */}
-                    {goal.linked_metric_type && (
-                      <div className="pt-4 border-t border-gray-100">
-                        <div className="flex justify-between items-center mb-3">
-                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Recent Logs</h4>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-7 text-xs font-bold text-[#0ea5e9] hover:bg-blue-50 px-2"
-                            onClick={() => {
-                              setSelectedMetricType(goal.linked_metric_type);
-                              document.querySelector('[value="metrics"]').click(); // Switch to metrics tab
-                              setTimeout(() => {
-                                document.getElementById('metric-form')?.scrollIntoView({ behavior: 'smooth' });
-                              }, 100);
-                            }}
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Log Progress
-                          </Button>
-                        </div>
-                        
-                        {goalLogs.length > 0 ? (
-                          <div className="space-y-2">
-                            {goalLogs.map((log, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded-lg">
-                                <span className="text-gray-500 font-medium">{format(new Date(log.date), 'MMM d')}</span>
-                                <span className="font-bold text-gray-900">{log.value} <span className="text-xs font-normal text-gray-500">{log.unit}</span></span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-3 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                            <p className="text-xs text-gray-400 italic">No logs recorded yet</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               );
-            })
-          ) : (
-            <EmptyState
-              icon={TrendingUp}
-              title="No Active Goals"
-              description="Your trainer will set personalized goals for you to help track your progress!"
-              variant="info"
-            />
-          )}
+            })}
+        </TabsContent>
+
+        <TabsContent value="articulation" className="space-y-4 mt-4">
+          <Card className="bg-white border-purple-100 shadow-sm">
+            <CardContent className="p-5">
+              <h3 className="font-bold text-gray-900 mb-4">/r/ SOUND ACCURACY PROGRESS</h3>
+              <ResponsiveContainer width="100%" height={220}>
+                <AreaChart data={mockArticulationData}>
+                  <defs>
+                    <linearGradient id="colorAccuracy" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '11px' }} />
+                  <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} domain={[0, 100]} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#fff', 
+                      border: '2px solid #8b5cf6',
+                      borderRadius: '8px',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorAccuracy)" strokeWidth={3} />
+                </AreaChart>
+              </ResponsiveContainer>
+              <p className="text-sm text-gray-600 mt-4 text-center">🎉 Great progress! You've improved <span className="font-bold text-purple-600">13%</span> in the last month!</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="language" className="space-y-4 mt-4">
+          <Card className="bg-white border-blue-100 shadow-sm">
+            <CardContent className="p-5">
+              <h3 className="font-bold text-gray-900 mb-4">AVERAGE SENTENCE LENGTH</h3>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={mockSentenceLengthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '11px' }} />
+                  <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} domain={[0, 10]} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#fff', 
+                      border: '2px solid #3b82f6',
+                      borderRadius: '8px',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 5 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              <p className="text-sm text-gray-600 mt-4 text-center">📈 Your sentences are getting longer and more complex! Keep practicing!</p>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
