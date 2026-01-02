@@ -71,8 +71,8 @@ export default function Exercises() {
   const isLoading = programsLoading || logsLoading;
 
   return (
-    <div className="p-5 space-y-5 bg-gradient-to-b from-teal-50/30 to-white min-h-screen">
-      <h1 className="text-2xl font-bold text-gray-900">REHABILITATION EXERCISES</h1>
+    <div className="p-5 space-y-5 bg-gradient-to-b from-purple-50/30 via-blue-50/20 to-white min-h-screen">
+          <h1 className="text-2xl font-bold text-gray-900">MY THERAPY HOMEWORK</h1>
 
       {isLoading ? (
         <>
@@ -82,16 +82,16 @@ export default function Exercises() {
       ) : programs.length === 0 ? (
         <EmptyState
           icon={Activity}
-          title="No Rehabilitation Program Yet"
-          description="Your chiropractor will create a personalized rehabilitation program for you soon."
+          title="No Therapy Activities Yet"
+          description="Your speech therapist will assign your personalized therapy homework soon."
           variant="info"
         />
       ) : (
         <>
           {/* Weekly Schedule */}
-          <Card className="bg-white border-teal-100 shadow-sm">
+          <Card className="bg-white border-purple-100 shadow-sm">
             <CardContent className="p-4">
-              <h3 className="text-sm font-bold text-gray-700 mb-3">WEEKLY SCHEDULE</h3>
+              <h3 className="text-sm font-bold text-gray-700 mb-3">THIS WEEK'S THERAPY PLAN</h3>
               <div className="grid grid-cols-7 gap-1">
                 {daysOfWeek.map(day => {
                   const hasProgram = programs.some(p => p.day_of_week === day);
@@ -109,9 +109,9 @@ export default function Exercises() {
                       onClick={() => setSelectedDay(day)}
                       className={`p-2 rounded-lg text-xs font-bold transition-all ${
                         isSelected
-                          ? 'bg-teal-500 text-white shadow-md'
+                          ? 'bg-purple-500 text-white shadow-md'
                           : hasProgram
-                          ? 'bg-teal-50 text-teal-700 hover:bg-teal-100'
+                          ? 'bg-purple-50 text-purple-700 hover:bg-purple-100'
                           : 'bg-gray-50 text-gray-400'
                       }`}
                     >
@@ -126,17 +126,17 @@ export default function Exercises() {
             </CardContent>
           </Card>
 
-          {/* Today's Exercises */}
+          {/* Today's Activities */}
           {selectedProgram ? (
-            <Card className="bg-white border-teal-100 shadow-sm">
+            <Card className="bg-white border-blue-100 shadow-sm">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">{selectedProgram.program_type || selectedProgram.workout_type}</h3>
                     <p className="text-sm text-gray-500">{selectedDay}</p>
                   </div>
-                  <span className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-bold">
-                    {selectedProgram.exercises?.length || 0} exercises
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
+                    {selectedProgram.exercises?.length || 0} activities
                   </span>
                 </div>
 
@@ -151,30 +151,32 @@ export default function Exercises() {
                     return (
                       <div
                         key={idx}
-                        className={`p-4 rounded-lg border-2 transition-all ${
-                          isCompleted
-                            ? 'bg-teal-50 border-teal-200'
-                            : 'bg-white border-gray-200'
-                        }`}
+                        className={`p-4 rounded-xl border-2 transition-all ${
+                            isCompleted
+                              ? 'bg-gradient-to-r from-green-50 to-teal-50 border-green-200'
+                              : 'bg-white border-gray-200'
+                          }`}
                       >
                         <div className="flex items-start gap-3">
                           <button
                             onClick={() => !isCompleted && handleExerciseComplete(exercise)}
                             disabled={isCompleted || logExerciseMutation.isPending}
                             className="mt-1 flex-shrink-0"
-                          >
+                            >
                             {isCompleted ? (
-                              <CheckCircle className="w-6 h-6 text-teal-600" />
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center shadow-md">
+                                <CheckCircle className="w-5 h-5 text-white" />
+                              </div>
                             ) : (
-                              <Circle className="w-6 h-6 text-gray-300 hover:text-teal-500 transition-colors cursor-pointer" />
+                              <div className="w-8 h-8 rounded-full border-3 border-gray-300 bg-white shadow-sm hover:border-purple-400 transition-colors cursor-pointer" />
                             )}
-                          </button>
+                            </button>
 
                           <div className="flex-1">
                             <h4 className="font-bold text-gray-900 mb-1">{exercise.name}</h4>
                             <div className="flex items-center gap-3 text-sm text-gray-600 mb-2">
-                              {exercise.sets && <span>{exercise.sets} sets</span>}
-                              {exercise.reps && <span>× {exercise.reps} reps</span>}
+                              {exercise.reps && <span>Repeat {exercise.reps} times</span>}
+                              {exercise.sets && <span>{exercise.sets} rounds</span>}
                               {exercise.hold_duration && <span>Hold {exercise.hold_duration}s</span>}
                             </div>
                             {exercise.notes && (
@@ -202,8 +204,8 @@ export default function Exercises() {
           ) : (
             <EmptyState
               icon={Activity}
-              title="Rest Day"
-              description={`No exercises scheduled for ${selectedDay}. Rest is important for recovery!`}
+              title="No Activities Today"
+              description={`No therapy homework scheduled for ${selectedDay}. Take a break and relax!`}
               variant="success"
             />
           )}

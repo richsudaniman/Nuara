@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings } from "lucide-react";
+import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -76,9 +76,10 @@ export default function Layout({ children, currentPageName }) {
   // Patient navigation
   const clientNavItems = [
     { name: "Home", path: createPageUrl("Home"), icon: Home },
-    { name: "Exercises", path: createPageUrl("Exercises"), icon: Activity },
+    { name: "Therapy", path: createPageUrl("Exercises"), icon: Activity },
+    { name: "Practice", path: createPageUrl("Learn"), icon: Gamepad2 },
     { name: "Progress", path: createPageUrl("Progress"), icon: TrendingUp },
-    { name: "Learn", path: createPageUrl("Learn"), icon: GraduationCap },
+    { name: "Messages", path: createPageUrl("Messages"), icon: MessageCircle, badge: unreadCount },
   ];
 
   // Trainer navigation
@@ -160,9 +161,9 @@ export default function Layout({ children, currentPageName }) {
                       </div>
                       <div>
                         <h1 className="text-2xl font-bold text-[#1e293b] tracking-tight">
-                          Chirotec
+                          SLP-tec
                         </h1>
-                        <p className="text-[9px] font-semibold text-teal-600 uppercase tracking-wider">Advanced Chiropractic Care</p>
+                        <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider">Speech Therapy Portal</p>
                       </div>
                     </div>
                   </Link>
@@ -237,9 +238,9 @@ export default function Layout({ children, currentPageName }) {
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-[#1e293b] tracking-tight leading-none mb-1">Chirotec</h1>
-                  <p className="text-[9px] font-semibold text-teal-600 uppercase tracking-wider mb-1">Advanced Care</p>
-                  <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Provider Portal'}</p>
+                  <h1 className="text-2xl font-bold text-[#1e293b] tracking-tight leading-none mb-1">SLP-tec</h1>
+                  <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider mb-1">Speech Therapy</p>
+                  <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Therapist Portal'}</p>
                 </div>
               </Link>
             </div>
@@ -304,8 +305,8 @@ export default function Layout({ children, currentPageName }) {
                   </svg>
                 </div>
                 <div>
-                  <span className="font-bold text-gray-900 text-lg block leading-none">Chirotec</span>
-                  <span className="text-[8px] font-semibold text-teal-600 uppercase tracking-wider block">Chiropractic Care</span>
+                  <span className="font-bold text-gray-900 text-lg block leading-none">SLP-tec</span>
+                  <span className="text-[8px] font-semibold text-purple-600 uppercase tracking-wider block">Speech Therapy Portal</span>
                 </div>
               </Link>
             </div>
@@ -325,9 +326,9 @@ export default function Layout({ children, currentPageName }) {
                       </svg>
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900 leading-none mb-1">Chirotec</h2>
-                      <p className="text-[9px] font-semibold text-teal-600 uppercase tracking-wider mb-1">Advanced Care</p>
-                      <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">{isAdminView ? 'Admin Portal' : 'Provider Portal'}</p>
+                      <h2 className="text-xl font-bold text-gray-900 leading-none mb-1">SLP-tec</h2>
+                      <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider mb-1">Speech Therapy</p>
+                      <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">{isAdminView ? 'Admin Portal' : 'Therapist Portal'}</p>
                     </div>
                   </Link>
                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
