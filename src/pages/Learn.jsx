@@ -14,16 +14,91 @@ export default function Learn() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  const { data: videos, isLoading } = useQuery({
-    queryKey: ['allVideos'],
-    queryFn: async () => {
-      const allVideos = await base44.entities.ExerciseVideo.list('-created_date');
-      return allVideos;
+  // Mock practice activities for demo
+  const mockActivities = [
+    {
+      id: 1,
+      title: "Sound Match Challenge",
+      description: "Listen to pairs of words and identify if they have the same or different sounds. Perfect for practicing /s/ and /th/ sounds!",
+      category: "articulation",
+      difficulty_level: "beginner",
+      duration_minutes: 10,
+      video_url: null,
+      notes: "Tap 'Same' or 'Different' as you hear the word pairs."
     },
-    initialData: [],
-    staleTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+    {
+      id: 2,
+      title: "Sentence Builder - Level 3",
+      description: "Create complex sentences using picture prompts. Build sentences with 6-8 words to improve language skills.",
+      category: "language",
+      difficulty_level: "intermediate",
+      duration_minutes: 15,
+      video_url: null,
+      notes: "Drag and drop words to create meaningful sentences."
+    },
+    {
+      id: 3,
+      title: "/r/ Sound Recording Studio",
+      description: "Record yourself saying /r/ words and compare them to the correct pronunciation. Get instant feedback!",
+      category: "articulation",
+      difficulty_level: "intermediate",
+      duration_minutes: 12,
+      video_url: null,
+      notes: "Practice words: red, rabbit, run, road, rain, ring"
+    },
+    {
+      id: 4,
+      title: "Fluency Breathing Game",
+      description: "Interactive breathing exercises to help with speech fluency and pacing. Breathe in sync with the animated guide.",
+      category: "fluency",
+      difficulty_level: "beginner",
+      duration_minutes: 8,
+      video_url: null,
+      notes: "Follow the circle as it expands (breathe in) and shrinks (breathe out)"
+    },
+    {
+      id: 5,
+      title: "Story Sequencing Challenge",
+      description: "Put story events in the correct order and then retell the story. Great for narrative skills!",
+      category: "language",
+      difficulty_level: "intermediate",
+      duration_minutes: 15,
+      video_url: null,
+      notes: "Drag pictures to arrange them in story order, then record yourself telling the story"
+    },
+    {
+      id: 6,
+      title: "Tongue Twister Marathon",
+      description: "Try saying fun tongue twisters at different speeds. Perfect for articulation practice!",
+      category: "articulation",
+      difficulty_level: "advanced",
+      duration_minutes: 10,
+      video_url: null,
+      notes: "Start slow, then increase speed as you get better!"
+    },
+    {
+      id: 7,
+      title: "Category Naming Speed Round",
+      description: "Name as many items as you can in a category within 60 seconds. Boost your word-finding skills!",
+      category: "language",
+      difficulty_level: "beginner",
+      duration_minutes: 5,
+      video_url: null,
+      notes: "Categories include: Animals, Food, Clothing, Transportation, and more!"
+    },
+    {
+      id: 8,
+      title: "Listening Comprehension Quiz",
+      description: "Listen to short stories and answer questions about what you heard. Improve your listening skills!",
+      category: "listening",
+      difficulty_level: "intermediate",
+      duration_minutes: 20,
+      video_url: null,
+      notes: "Answer 'who, what, where, when, why' questions after each story"
+    }
+  ];
+
+  const videos = mockActivities;
 
   const filteredVideos = videos.filter(video => {
     const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -68,11 +143,7 @@ export default function Learn() {
                   <SelectItem value="articulation">Articulation</SelectItem>
                   <SelectItem value="language">Language</SelectItem>
                   <SelectItem value="fluency">Fluency</SelectItem>
-                  <SelectItem value="voice">Voice</SelectItem>
-                  <SelectItem value="phonology">Phonology</SelectItem>
-                  <SelectItem value="games">Games</SelectItem>
                   <SelectItem value="listening">Listening</SelectItem>
-                  <SelectItem value="reading">Reading</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -81,11 +152,7 @@ export default function Learn() {
       </Card>
 
       {/* Videos Grid */}
-      {isLoading ? (
-        <div className="grid gap-3">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-lg bg-gray-100" />)}
-        </div>
-      ) : filteredVideos.length > 0 ? (
+      {filteredVideos.length > 0 ? (
         <div className="grid gap-3">
           {filteredVideos.map(video => (
             <Card 
@@ -95,18 +162,8 @@ export default function Learn() {
             >
               <CardContent className="p-0">
                 <div className="flex flex-col sm:flex-row gap-0 sm:gap-4">
-                  <div className="w-full sm:w-40 h-48 sm:h-auto bg-gradient-to-br from-purple-100 to-pink-100 flex-shrink-0 relative overflow-hidden">
-                    {video.video_url ? (
-                      <video 
-                        src={video.video_url} 
-                        className="w-full h-full object-cover"
-                        preload="metadata"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Gamepad2 className="w-10 h-10 text-purple-400" />
-                      </div>
-                    )}
+                  <div className="w-full sm:w-40 h-48 sm:h-auto bg-gradient-to-br from-purple-100 to-pink-100 flex-shrink-0 relative overflow-hidden flex items-center justify-center">
+                    <Gamepad2 className="w-16 h-16 text-purple-400" />
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-xl">
                         <Play className="w-7 h-7 text-white fill-current" />
@@ -174,16 +231,12 @@ export default function Learn() {
               </button>
 
              {/* Video Container */}
-            <div className="w-full bg-black relative aspect-video flex-shrink-0">
-              <video 
-                src={selectedVideo.video_url} 
-                controls 
-                autoPlay
-                playsInline
-                className="w-full h-full"
-              >
-                Your browser does not support the video tag.
-              </video>
+            <div className="w-full bg-gradient-to-br from-purple-100 to-pink-100 relative aspect-video flex-shrink-0 flex items-center justify-center">
+              <div className="text-center p-8">
+                <Gamepad2 className="w-24 h-24 text-purple-400 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to Play?</h3>
+                <p className="text-gray-600">This interactive game will load when you click start!</p>
+              </div>
             </div>
 
             {/* Content */}
@@ -211,11 +264,10 @@ export default function Learn() {
                 </div>
               )}
 
-              {selectedVideo.notes && (
-                <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-xl">
-                  <p className="text-sm text-gray-700">{selectedVideo.notes}</p>
-                </div>
-              )}
+              <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-xl">
+                <p className="text-sm font-semibold text-gray-900 mb-2">How to Play:</p>
+                <p className="text-sm text-gray-700">{selectedVideo.notes}</p>
+              </div>
 
               <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl">
                 <div className="flex items-center gap-3">
@@ -224,7 +276,13 @@ export default function Learn() {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-purple-100 flex justify-end">
+              <div className="mt-8 pt-6 border-t border-purple-100 flex gap-3 justify-between">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-6 rounded-xl"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Start Game
+                </Button>
                 <Button
                   onClick={() => setSelectedVideo(null)}
                   variant="outline"

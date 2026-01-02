@@ -90,25 +90,8 @@ export default function Exercises() {
     }
   };
 
-  // First check WorkoutPlan, then RehabilitationProgram
-  const { data: programs, isLoading: programsLoading } = useQuery({
-    queryKey: ['programs', user?.id],
-    queryFn: async () => {
-      // Try new RehabilitationProgram first
-      try {
-        const rehabPrograms = await base44.entities.RehabilitationProgram.filter({ assigned_to_patient_id: user.id }, 'order');
-        if (rehabPrograms.length > 0) return rehabPrograms;
-      } catch (e) {
-        console.log('RehabilitationProgram not available, falling back to WorkoutPlan');
-      }
-      
-      // Fallback to old WorkoutPlan
-      const workoutPlans = await base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }, 'order');
-      return workoutPlans;
-    },
-    initialData: [],
-    enabled: !!user?.id,
-  });
+  // Use mock data for demo - convert mockWeeklyPlan to array format
+  const programs = Object.values(mockWeeklyPlan);
 
   const { data: logs, isLoading: logsLoading } = useQuery({
     queryKey: ['exerciseLogs', user?.id],
@@ -124,9 +107,8 @@ export default function Exercises() {
     },
   });
 
-  const selectedProgram = programs.find(p => p.day_of_week === selectedDay) || mockWeeklyPlan[selectedDay];
+  const selectedProgram = mockWeeklyPlan[selectedDay];
   const todayDate = new Date().toISOString().split('T')[0];
-  const hasRealData = programs.length > 0;
 
   const handleExerciseComplete = async (exercise) => {
     await logExerciseMutation.mutateAsync({
@@ -139,7 +121,7 @@ export default function Exercises() {
     });
   };
 
-  const isLoading = programsLoading || logsLoading;
+  const isLoading = logsLoading;
 
   return (
     <div className="p-5 space-y-5 bg-gradient-to-b from-purple-50/30 via-blue-50/20 to-white min-h-screen">
@@ -150,7 +132,7 @@ export default function Exercises() {
           <Skeleton className="h-32 rounded-lg" />
           <Skeleton className="h-96 rounded-lg" />
         </>
-      ) : programs.length === 0 ? (
+      ) : false ? (
         <EmptyState
           icon={Activity}
           title="No Therapy Activities Yet"
@@ -165,15 +147,11 @@ export default function Exercises() {
               <h3 className="text-sm font-bold text-gray-700 mb-3">THIS WEEK'S THERAPY PLAN</h3>
               <div className="grid grid-cols-7 gap-1">
                 {daysOfWeek.map(day => {
-                  const hasProgram = programs.some(p => p.day_of_week === day) || mockWeeklyPlan[day];
+                  const hasProgram = mockWeeklyPlan[day];
                   const isToday = day === today;
                   const isSelected = day === selectedDay;
-                  const dayLogs = logs.filter(log => {
-                    const program = programs.find(p => p.day_of_week === day);
-                    return log.completed_date === todayDate && log.workout_plan_id === program?.id;
-                  });
                   // Mock completion for Monday and Tuesday for demo
-                  const isCompleted = (hasProgram && dayLogs.length > 0) || (!hasRealData && (day === 'Monday' || day === 'Tuesday'));
+                  const isCompleted = (day === 'Monday' || day === 'Tuesday');
 
                   return (
                     <button
