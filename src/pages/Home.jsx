@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Calendar, Activity, TrendingDown, TrendingUp, CheckCircle, AlertTriangle } from "lucide-react";
+import { AlertCircle, Calendar, Activity, TrendingDown, TrendingUp, CheckCircle, AlertTriangle, Star, Flame, Trophy, Sparkles, Gamepad2, PlayCircle } from "lucide-react";
 import { format, subDays, startOfWeek } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -88,104 +88,122 @@ export default function Home() {
     );
   }
 
+  // Mock gamification data (will be replaced with real data later)
+  const mockPoints = 1250;
+  const mockLevel = 5;
+  const mockLevelName = "Word Wizard";
+  const mockStreak = 7;
+  const mockNextLevelPoints = 1500;
+  const mockProgressToNextLevel = Math.round((mockPoints / mockNextLevelPoints) * 100);
+
   return (
-    <div className="p-5 space-y-5 bg-gradient-to-b from-teal-50/30 to-white min-h-screen">
+    <div className="p-5 space-y-5 bg-gradient-to-b from-purple-50/30 via-blue-50/20 to-white min-h-screen">
       {/* Welcome Card */}
-      <Card className="bg-gradient-to-r from-teal-500 to-emerald-500 border-none shadow-lg">
+      <Card className="bg-gradient-to-r from-purple-500 via-blue-500 to-teal-500 border-none shadow-lg">
         <CardContent className="p-6">
-          <p className="text-teal-100 text-sm font-semibold mb-1">Welcome back,</p>
+          <p className="text-purple-100 text-sm font-semibold mb-1">Welcome back,</p>
           <h1 className="text-3xl font-bold text-white mb-2">{user?.full_name}</h1>
-          <p className="text-teal-50 text-sm">Let's continue your recovery journey</p>
+          <p className="text-purple-50 text-sm">Let's practice together today! 🎯</p>
         </CardContent>
       </Card>
 
-      {/* Exercise Completion Card */}
-      <Card className="bg-white border-teal-100 shadow-sm">
+      {/* Gamification Hub */}
+      <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-md">
         <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-teal-600" />
-            <h2 className="text-lg font-bold text-gray-900">EXERCISE COMPLETION</h2>
-          </div>
-
-          {/* Last 7 Days */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span className="font-semibold">Last 7 Days</span>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <Trophy className="w-8 h-8 text-white" />
               </div>
-              <div className="flex items-center gap-3">
-                <span className={`text-4xl font-bold ${adherence.adherence7 >= 70 ? 'text-teal-600' : 'text-red-500'}`}>
-                  {adherence.adherence7}%
-                </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${adherence.adherence7 >= 70 ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'}`}>
-                  {adherence.adherence7 >= 70 ? 'On Track' : 'Needs Improvement'}
-                </span>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-2">{adherence.completed7} of {adherence.totalPlans7} exercises completed</p>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div 
-                className={`h-full transition-all ${adherence.adherence7 >= 70 ? 'bg-teal-500' : 'bg-red-500'}`}
-                style={{ width: `${adherence.adherence7}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Last 30 Days */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span className="font-semibold">Last 30 Days</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`text-4xl font-bold ${adherence.adherence30 >= 70 ? 'text-teal-600' : 'text-red-500'}`}>
-                  {adherence.adherence30}%
-                </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${adherence.adherence30 >= 70 ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'}`}>
-                  {adherence.adherence30 >= 70 ? 'On Track' : 'Needs Improvement'}
-                </span>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-2">{adherence.completed30} of {adherence.totalPlans30} exercises completed</p>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div 
-                className={`h-full transition-all ${adherence.adherence30 >= 70 ? 'bg-teal-500' : 'bg-red-500'}`}
-                style={{ width: `${adherence.adherence30}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Motivational Message */}
-          {adherence.adherence7 < 70 && (
-            <div className="bg-teal-50 border-l-4 border-teal-500 p-4 rounded-lg">
-              <div className="flex gap-3">
-                <AlertCircle className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Let's get back on track!</p>
-                  <p className="text-xs text-gray-600">Consistency is key to your recovery. Your chiropractor is here to help.</p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                  <span className="text-2xl font-black text-gray-900">{mockPoints} Points</span>
                 </div>
+                <p className="text-sm font-bold text-gray-600">Level {mockLevel}: {mockLevelName}</p>
               </div>
             </div>
-          )}
+            <div className="text-right">
+              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-md">
+                <Flame className="w-5 h-5 text-white" />
+                <span className="text-lg font-black text-white">{mockStreak} Day Streak!</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress to next level */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-semibold text-gray-700">Progress to Level {mockLevel + 1}</span>
+              <span className="font-bold text-purple-600">{mockPoints} / {mockNextLevelPoints}</span>
+            </div>
+            <div className="h-3 bg-white rounded-full overflow-hidden shadow-inner">
+              <div 
+                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                style={{ width: `${mockProgressToNextLevel}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Achievement Badge */}
+          <div className="mt-4 p-3 bg-white rounded-xl border-2 border-yellow-300 shadow-sm">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-5 h-5 text-yellow-500" />
+              <p className="text-sm font-semibold text-gray-700">Keep it up! You're on fire this week! 🔥</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Today's Exercises */}
+      {/* Your Therapist Card */}
+      {provider && (
+        <Card className="bg-white border-purple-100 shadow-sm">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                {provider.full_name?.charAt(0) || 'T'}
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-gray-500 mb-1">YOUR SPEECH THERAPIST</p>
+                <p className="text-lg font-bold text-gray-900">{provider.full_name}</p>
+              </div>
+              <Link to={createPageUrl("Messages")}>
+                <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white">
+                  Message
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Today's Therapy Homework */}
       <Link to={createPageUrl("Exercises")}>
-        <Card className="bg-white border-teal-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="bg-white border-blue-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-teal-600" />
-                <h2 className="text-lg font-bold text-gray-900">TODAY'S EXERCISES</h2>
+                <Activity className="w-6 h-6 text-blue-600" />
+                <h2 className="text-xl font-bold text-gray-900">Today's Therapy Homework</h2>
               </div>
-              <div className={`px-3 py-1 rounded-full text-sm font-bold ${todayCompleted === todayExercises && todayExercises > 0 ? 'bg-teal-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
-                {todayCompleted === todayExercises && todayExercises > 0 ? '100%' : `${Math.round((todayCompleted / todayExercises) * 100) || 0}%`}
+              <div className={`px-4 py-2 rounded-full text-sm font-bold shadow-sm ${todayCompleted === todayExercises && todayExercises > 0 ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white' : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700'}`}>
+                {todayCompleted === todayExercises && todayExercises > 0 ? '✓ Complete!' : `${todayCompleted}/${todayExercises}`}
               </div>
             </div>
-            <p className="text-sm text-gray-500 mb-3">{todayCompleted} of {todayExercises} exercises completed</p>
+            
+            {/* Progress Bar */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-gray-600">Daily Progress</span>
+                <span className="text-sm font-bold text-blue-600">{Math.round((todayCompleted / todayExercises) * 100) || 0}%</span>
+              </div>
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.round((todayCompleted / todayExercises) * 100) || 0}%` }}
+                />
+              </div>
+            </div>
             
             {todayExercises > 0 ? (
               <div className="space-y-2">
@@ -195,53 +213,117 @@ export default function Home() {
                     log.exercise_name === exercise.name
                   );
                   return (
-                    <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div key={idx} className={`flex items-center gap-3 p-4 rounded-xl transition-all ${isCompleted ? 'bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200' : 'bg-gray-50 border-2 border-gray-200'}`}>
                       {isCompleted ? (
-                        <CheckCircle className="w-5 h-5 text-teal-600 flex-shrink-0" />
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center shadow-md">
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        </div>
                       ) : (
-                        <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0" />
+                        <div className="w-8 h-8 rounded-full border-3 border-gray-300 bg-white shadow-sm" />
                       )}
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-900">{exercise.name}</p>
-                        <p className="text-xs text-gray-500">{exercise.sets} sets × {exercise.reps} reps</p>
+                        <p className="text-sm font-bold text-gray-900">{exercise.name}</p>
+                        <p className="text-xs text-gray-600">Repeat {exercise.reps || 10} times</p>
                       </div>
+                      {!isCompleted && (
+                        <PlayCircle className="w-6 h-6 text-blue-500" />
+                      )}
                     </div>
                   );
                 })}
                 {todayWorkout.exercises.length > 3 && (
-                  <p className="text-xs text-gray-500 text-center pt-2">+{todayWorkout.exercises.length - 3} more exercises</p>
+                  <p className="text-xs text-gray-500 text-center pt-2 font-semibold">+{todayWorkout.exercises.length - 3} more activities to complete</p>
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500">No exercises scheduled for today. Rest and recover!</p>
+              <div className="text-center py-10 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-dashed border-purple-200">
+                <Activity className="w-12 h-12 text-purple-300 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-gray-700">No homework scheduled for today</p>
+                <p className="text-xs text-gray-500 mt-1">Check out Extra Practice below!</p>
               </div>
             )}
           </CardContent>
         </Card>
       </Link>
 
-      {/* Quick Pain Check */}
-      {latestPain && (
-        <Link to={createPageUrl("Progress")}>
-          <Card className="bg-white border-orange-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Latest Pain Level</p>
-                  <div className="flex items-center gap-3">
-                    <span className="text-4xl font-bold text-gray-900">{latestPain.pain_level}/10</span>
-                    <span className="text-sm text-gray-500">{format(new Date(latestPain.date), 'MMM d')}</span>
-                  </div>
-                </div>
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
-                  <AlertTriangle className="w-8 h-8 text-orange-600" />
-                </div>
+      {/* Extra Practice & Games */}
+      <Card className="bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 border-pink-200 shadow-md">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg">
+              <Gamepad2 className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Extra Practice & Games</h2>
+              <p className="text-sm text-gray-600">Boost your skills with fun activities!</p>
+            </div>
+          </div>
+
+          {/* Featured Practice Activities */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="p-4 bg-white rounded-xl shadow-sm border-2 border-purple-100 hover:border-purple-300 transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-2 shadow-md">
+                <Star className="w-6 h-6 text-white" />
               </div>
-            </CardContent>
-          </Card>
-        </Link>
-      )}
+              <p className="text-sm font-bold text-gray-900 mb-1">Sound Match</p>
+              <p className="text-xs text-gray-500">Practice /s/ sounds</p>
+              <div className="mt-2 flex items-center gap-1">
+                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                <span className="text-xs font-bold text-yellow-600">+10 pts</span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-white rounded-xl shadow-sm border-2 border-blue-100 hover:border-blue-300 transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mb-2 shadow-md">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-sm font-bold text-gray-900 mb-1">Word Builder</p>
+              <p className="text-xs text-gray-500">Build sentences</p>
+              <div className="mt-2 flex items-center gap-1">
+                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                <span className="text-xs font-bold text-yellow-600">+15 pts</span>
+              </div>
+            </div>
+          </div>
+
+          <Link to={createPageUrl("Learn")}>
+            <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-6 rounded-xl shadow-md">
+              <Gamepad2 className="w-5 h-5 mr-2" />
+              View All Practice Games
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+
+      {/* My Progress Overview */}
+      <Link to={createPageUrl("Progress")}>
+        <Card className="bg-white border-teal-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-teal-600" />
+                <h2 className="text-lg font-bold text-gray-900">My Progress</h2>
+              </div>
+              <span className="text-xs font-semibold text-teal-600">View Details →</span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Mock Goal Progress */}
+              <div className="p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-bold text-gray-900">/r/ Sound Production</p>
+                  <span className="text-2xl font-black text-teal-600">75%</span>
+                </div>
+                <div className="h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-gradient-to-r from-teal-500 to-blue-500 rounded-full" style={{ width: '75%' }} />
+                </div>
+                <p className="text-xs text-gray-600 mt-2">You're doing great! Keep practicing!</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
     </div>
   );
 }
