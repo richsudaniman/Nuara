@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, Mic, ClipboardList, BarChart2 } from "lucide-react";
+import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, Mic, ClipboardList, BarChart2, UserCheck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -56,7 +56,7 @@ export default function Layout({ children, currentPageName }) {
     }
     
     // Client pages - always show client view
-    const clientPages = ['Home', 'Exercises', 'Progress', 'Learn', 'Messages', 'PainTracking'];
+    const clientPages = ['Home', 'Exercises', 'Progress', 'Learn', 'Messages', 'PainTracking', 'MockMessages'];
     if (clientPages.includes(currentPageName)) {
       return 'client';
     }
@@ -93,7 +93,8 @@ export default function Layout({ children, currentPageName }) {
   // Trainer navigation — grouped
   const trainerNavItems = [
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home, group: "CLINIC" },
-    { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 0 },
+    { name: "Clients", path: createPageUrl("TrainerClientsList"), icon: UserCheck, group: "CLINIC", badge: trainerAssignments?.length || 0 },
+    { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC" },
     { name: "Recordings", path: createPageUrl("TrainerVideos"), icon: Mic, group: "CLINIC" },
     { name: "Homework builder", path: createPageUrl("TrainerVideos"), icon: ClipboardList, group: "CLINIC" },
     { name: "Progress & goals", path: createPageUrl("TrainerClients"), icon: BarChart2, group: "REPORTS" },
