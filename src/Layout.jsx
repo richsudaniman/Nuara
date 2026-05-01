@@ -130,7 +130,7 @@ export default function Layout({ children, currentPageName }) {
     return (
       <ErrorBoundary>
         <AuthGuard>
-          <div className="min-h-screen bg-[#FAFAFB] pb-32 relative overflow-x-hidden safe-area-inset">
+          <div className="min-h-screen bg-[#FAFAFB] pb-44 relative overflow-x-hidden safe-area-inset">
             <style>{`
               .safe-area-inset {
                 padding-top: env(safe-area-inset-top);
