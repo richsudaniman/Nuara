@@ -48,7 +48,8 @@ export default function Layout({ children, currentPageName }) {
     if (!user) return 'client';
     
     // Check current page name to determine context
-    if (currentPageName?.startsWith('Trainer')) {
+    const trainerPages = ['HomeworkBuilder', 'Recordings'];
+    if (currentPageName?.startsWith('Trainer') || trainerPages.includes(currentPageName)) {
       return 'trainer';
     }
     if (currentPageName?.startsWith('Admin')) {
