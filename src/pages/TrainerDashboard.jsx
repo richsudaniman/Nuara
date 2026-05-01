@@ -52,6 +52,9 @@ export default function TrainerDashboard() {
   const clientIds = assignments.map((a) => a.client_id);
   const clients = allUsers.filter((u) => clientIds.includes(u.id));
 
+  // --- Demo data fallback for empty caseload ---
+  const isDemo = !isLoading && assignments.length === 0;
+
   // --- Greeting ---
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -169,6 +172,80 @@ export default function TrainerDashboard() {
     });
   });
 
+  // --- Demo overrides ---
+  const DEMO_DATA = {
+    statData: {
+      activeClients: 14,
+      onHold: 2,
+      avgCompliance: 78,
+      complianceChange: 5,
+      pendingRecordings: 6,
+      plansExpiring: 3,
+    },
+    todaySessions: [
+      { time: "09:00", clientName: "Jalal Abdelrahim", sessionType: "Articulation · /r/ /s/", tag: "In 1h", tagType: "soon" },
+      { time: "10:30", clientName: "Mia Chen", sessionType: "Language · sentence building", tag: "Prep needed", tagType: "prep" },
+      { time: "13:00", clientName: "Noah Patel", sessionType: "Fluency · easy onset", tag: "Afternoon", tagType: "afternoon" },
+      { time: "14:30", clientName: "Sophia Reyes", sessionType: "Reassessment", tag: "Afternoon", tagType: "afternoon" },
+    ],
+    alerts: [
+      {
+        type: "urgent",
+        title: "Liam Garcia — no activity for 9 days",
+        description: "0% this week · Check in needed",
+        linkLabel: "View client →",
+        linkTo: createPageUrl("TrainerClientDetail"),
+      },
+      {
+        type: "warning",
+        title: "Olivia Brooks — compliance at 32%",
+        description: "Down from 71% last week · Consider check in",
+        linkLabel: "View client →",
+        linkTo: createPageUrl("TrainerClientDetail"),
+      },
+      {
+        type: "warning",
+        title: "6 recordings awaiting review",
+        description: "Oldest submitted 3 days ago",
+        linkLabel: "Open recordings →",
+        linkTo: createPageUrl("Recordings"),
+      },
+      {
+        type: "info",
+        title: "3 homework plans expire by Sunday",
+        description: "Jalal A., Mia C., Noah P.",
+        linkLabel: "Open homework builder →",
+        linkTo: createPageUrl("HomeworkBuilder"),
+      },
+    ],
+    weeklyTrendData: [
+      { label: "W1", value: 64 },
+      { label: "W2", value: 70 },
+      { label: "W3", value: 73 },
+      { label: "W4", value: 75 },
+      { label: "Now", value: 78 },
+    ],
+    caseloadCompliance: [
+      { id: "d1", name: "Jalal Abdelrahim", focusArea: "Articulation · /r/ /s/", compliance: 86 },
+      { id: "d2", name: "Mia Chen", focusArea: "Language", compliance: 82 },
+      { id: "d3", name: "Noah Patel", focusArea: "Fluency", compliance: 76 },
+      { id: "d4", name: "Sophia Reyes", focusArea: "Articulation · /th/", compliance: 68 },
+      { id: "d5", name: "Olivia Brooks", focusArea: "Language · vocabulary", compliance: 32 },
+      { id: "d6", name: "Liam Garcia", focusArea: "Articulation · /l/", compliance: 0 },
+    ],
+    totalCaseload: 14,
+  };
+
+  const finalStatData = isDemo ? DEMO_DATA.statData : statData;
+  const finalSessions = isDemo ? DEMO_DATA.todaySessions : todaySessions;
+  const finalAlerts = isDemo ? DEMO_DATA.alerts : alerts;
+  const finalAvgCompliance = isDemo ? DEMO_DATA.statData.avgCompliance : avgCompliance;
+  const finalWeeklyTrend = isDemo ? DEMO_DATA.weeklyTrendData : weeklyTrendData;
+  const finalCaseload = isDemo ? DEMO_DATA.caseloadCompliance : clientCompliance.slice(0, 6);
+  const finalTotalCount = isDemo ? DEMO_DATA.totalCaseload : clientCompliance.length;
+  const finalSessionCount = isDemo ? DEMO_DATA.todaySessions.length : todaySessions.length;
+  const finalFirstName = therapist?.full_name?.split(" ").pop() || (isDemo ? "Chen" : "");
+
   if (isLoading) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -191,10 +268,10 @@ export default function TrainerDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {greeting}, Dr. {firstName}
+            {greeting}, Dr. {finalFirstName}
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">
-            {todayFormatted} · {todaySessions.length} session{todaySessions.length !== 1 ? "s" : ""} today
+            {todayFormatted} · {finalSessionCount} session{finalSessionCount !== 1 ? "s" : ""} today
           </p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors self-start">
@@ -204,26 +281,26 @@ export default function TrainerDashboard() {
       </div>
 
       {/* Stat Cards */}
-      <DashboardStatCards data={statData} />
+      <DashboardStatCards data={finalStatData} />
 
       {/* Middle row: Alerts + Sessions / Compliance trend */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Left: Alerts */}
         <div className="lg:col-span-3 space-y-4">
-          <AlertsPanel alerts={alerts} />
+          <AlertsPanel alerts={finalAlerts} />
         </div>
 
         {/* Right: Sessions + Trend */}
         <div className="lg:col-span-2 space-y-4">
-          <TodaysSessionsPanel sessions={todaySessions} />
-          <ComplianceTrendPanel currentCompliance={avgCompliance} weeklyData={weeklyTrendData} />
+          <TodaysSessionsPanel sessions={finalSessions} />
+          <ComplianceTrendPanel currentCompliance={finalAvgCompliance} weeklyData={finalWeeklyTrend} />
         </div>
       </div>
 
       {/* Caseload compliance */}
       <CaseloadComplianceList
-        clients={clientCompliance.slice(0, 6)}
-        totalCount={clientCompliance.length}
+        clients={finalCaseload}
+        totalCount={finalTotalCount}
       />
     </div>
   );
