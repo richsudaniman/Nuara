@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Activity, CheckCircle, Circle, Play, Info } from "lucide-react";
 import EmptyState from "../components/EmptyState";
+import AssignmentDetailDialog from "../components/exercises/AssignmentDetailDialog";
 
 export default function Exercises() {
   const queryClient = useQueryClient();
@@ -13,6 +14,7 @@ export default function Exercises() {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const [selectedDay, setSelectedDay] = useState(today);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [openExercise, setOpenExercise] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -201,7 +203,8 @@ export default function Exercises() {
                     return (
                       <div
                         key={idx}
-                        className={`p-4 rounded-xl border-2 transition-all ${
+                        onClick={() => setOpenExercise({ exercise, isCompleted })}
+                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer hover:shadow-md hover:border-purple-300 ${
                             isCompleted
                               ? 'bg-gradient-to-r from-green-50 to-teal-50 border-green-200'
                               : 'bg-white border-gray-200'
@@ -209,7 +212,10 @@ export default function Exercises() {
                       >
                         <div className="flex items-start gap-3">
                           <button
-                            onClick={() => !isCompleted && handleExerciseComplete(exercise)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              !isCompleted && handleExerciseComplete(exercise);
+                            }}
                             disabled={isCompleted || logExerciseMutation.isPending}
                             className="mt-1 flex-shrink-0"
                             >
@@ -238,7 +244,10 @@ export default function Exercises() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setSelectedVideo(exercise)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedVideo(exercise);
+                              }}
                               className="text-teal-600 hover:text-teal-700 hover:bg-teal-50"
                             >
                               <Play className="w-4 h-4" />
@@ -261,6 +270,15 @@ export default function Exercises() {
           )}
         </>
       )}
+
+      {/* Assignment Detail Dialog */}
+      <AssignmentDetailDialog
+        exercise={openExercise?.exercise}
+        isCompleted={openExercise?.isCompleted}
+        open={!!openExercise}
+        onOpenChange={(o) => !o && setOpenExercise(null)}
+        onComplete={() => openExercise && handleExerciseComplete(openExercise.exercise)}
+      />
 
       {/* Video Modal */}
       {selectedVideo && (
