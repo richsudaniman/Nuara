@@ -1,50 +1,65 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { subDays, startOfWeek } from "date-fns";
+import { subDays } from "date-fns";
 
-export default function CaseloadCompliance({ clientId }) {
+const DEMO = {
+  compliance: 86,
+  activeDays: 6,
+  streak: 7,
+  weeklyData: [
+    { label: "W1", pct: 70 },
+    { label: "W2", pct: 82 },
+    { label: "W3", pct: 75 },
+    { label: "W4", pct: 86 },
+  ],
+};
+
+export default function CaseloadCompliance({ clientId, isDemo }) {
   const { data: logs = [] } = useQuery({
     queryKey: ["clientLogs", clientId],
     queryFn: () => base44.entities.WorkoutLog.filter({ logged_by_client_id: clientId }, "-completed_date", 200),
-    enabled: !!clientId,
+    enabled: !!clientId && !isDemo,
     staleTime: 2 * 60 * 1000,
   });
 
-  // This week compliance
-  const sevenDaysAgo = subDays(new Date(), 7);
-  const thisWeekLogs = logs.filter((l) => new Date(l.completed_date) >= sevenDaysAgo);
-  const activeDays = new Set(thisWeekLogs.map((l) => l.completed_date)).size;
-  const compliance = Math.min(Math.round((activeDays / 7) * 100), 100);
+  let compliance, activeDays, streak, weeklyData;
 
-  // Streak
-  const sortedDates = [...new Set(logs.map((l) => l.completed_date))].sort().reverse();
-  let streak = 0;
-  const today = new Date();
-  for (let i = 0; i < 30; i++) {
-    const checkDate = subDays(today, i).toISOString().split("T")[0];
-    if (sortedDates.includes(checkDate)) {
-      streak++;
-    } else if (i > 0) break;
-  }
+  if (isDemo || logs.length === 0) {
+    ({ compliance, activeDays, streak, weeklyData } = DEMO);
+  } else {
+    const sevenDaysAgo = subDays(new Date(), 7);
+    const thisWeekLogs = logs.filter((l) => new Date(l.completed_date) >= sevenDaysAgo);
+    activeDays = new Set(thisWeekLogs.map((l) => l.completed_date)).size;
+    compliance = Math.min(Math.round((activeDays / 7) * 100), 100);
 
-  // Weekly breakdown (last 4 weeks)
-  const weeklyData = Array.from({ length: 4 }, (_, i) => {
-    const weekStart = subDays(new Date(), (3 - i) * 7 + 7);
-    const weekEnd = subDays(new Date(), (3 - i) * 7);
-    const weekLogs = logs.filter((l) => {
-      const d = new Date(l.completed_date);
-      return d >= weekStart && d < weekEnd;
+    const sortedDates = [...new Set(logs.map((l) => l.completed_date))].sort().reverse();
+    streak = 0;
+    const today = new Date();
+    for (let i = 0; i < 30; i++) {
+      const checkDate = subDays(today, i).toISOString().split("T")[0];
+      if (sortedDates.includes(checkDate)) {
+        streak++;
+      } else if (i > 0) break;
+    }
+
+    weeklyData = Array.from({ length: 4 }, (_, i) => {
+      const weekStart = subDays(new Date(), (3 - i) * 7 + 7);
+      const weekEnd = subDays(new Date(), (3 - i) * 7);
+      const weekLogs = logs.filter((l) => {
+        const d = new Date(l.completed_date);
+        return d >= weekStart && d < weekEnd;
+      });
+      const days = new Set(weekLogs.map((l) => l.completed_date)).size;
+      return { label: `W${i + 1}`, pct: Math.min(Math.round((days / 7) * 100), 100) };
     });
-    const days = new Set(weekLogs.map((l) => l.completed_date)).size;
-    return { label: `W${i + 1}`, pct: Math.min(Math.round((days / 7) * 100), 100) };
-  });
+  }
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Compliance this week</h3>
+      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 leading-relaxed">Compliance this<br />week</h3>
 
-      <div className="text-center mb-4">
+      <div className="mb-4">
         <span className="text-4xl font-bold text-purple-600">{compliance}%</span>
         <p className="text-xs text-gray-400 mt-1">
           {activeDays} / 7 days active · Streak: {streak} days

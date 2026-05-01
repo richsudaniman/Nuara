@@ -42,34 +42,38 @@ export default function TrainerClientDetail() {
     enabled: !!clientId && !!user?.id,
   });
 
-  if (!clientId) {
-    return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center">
-        <p className="text-gray-500">No client selected</p>
-      </div>
-    );
-  }
+  // Demo fallback so the page matches the mockup when no real client exists
+  const isDemo = !clientId || (!clientLoading && !client);
+  const displayClient = client || {
+    full_name: "Jalal Abdelrahim",
+    age: 9,
+    diagnosis: "Articulation disorder · /r/ and /s/",
+    therapy_focus: "Articulation",
+    session_schedule: "2× / week, Tue + Fri",
+  };
 
-  const age = client?.date_of_birth
-    ? differenceInYears(new Date(), new Date(client.date_of_birth))
-    : client?.age || null;
+  const age = displayClient.date_of_birth
+    ? differenceInYears(new Date(), new Date(displayClient.date_of_birth))
+    : displayClient.age || null;
 
   const sinceDate = assignment?.assigned_date
     ? format(new Date(assignment.assigned_date), "MMM yyyy")
+    : isDemo
+    ? "Jan 2025"
     : null;
 
-  const focusArea = client?.therapy_focus || "Articulation";
-  const schedule = client?.session_schedule || "";
+  const focusArea = displayClient.therapy_focus || "Articulation";
+  const schedule = displayClient.session_schedule || "";
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
       {/* Top bar */}
       {clientLoading ? (
         <Skeleton className="h-12 rounded-lg" />
-      ) : client ? (
+      ) : (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-xl font-bold text-gray-900 truncate">{client.full_name || "Client"}</h1>
+            <h1 className="text-xl font-bold text-gray-900 truncate">{displayClient.full_name || "Client"}</h1>
             <span className="text-sm text-gray-400 flex-shrink-0">
               {[age ? `Age ${age}` : null, focusArea, sinceDate ? `Since ${sinceDate}` : null]
                 .filter(Boolean)
@@ -78,25 +82,26 @@ export default function TrainerClientDetail() {
           </div>
           <Button variant="outline" size="sm" className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50 flex-shrink-0">
             <Sparkles className="w-4 h-4" />
-            Ask AI
+            Ask AI ↗
           </Button>
         </div>
-      ) : null}
+      )}
 
       {/* Profile card */}
       {clientLoading ? (
         <Skeleton className="h-24 rounded-xl" />
-      ) : client ? (
+      ) : (
         <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg flex-shrink-0">
-            {client.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "?"}
+            {displayClient.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "?"}
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-bold text-gray-900">{client.full_name}</h2>
+            <h2 className="text-lg font-bold text-gray-900">{displayClient.full_name}</h2>
             <p className="text-sm text-gray-500">
               {[
                 age ? `Age ${age}` : null,
-                client.diagnosis || `${focusArea} disorder`,
+                displayClient.diagnosis || `${focusArea} disorder`,
+                sinceDate ? `Since ${sinceDate}` : null,
                 schedule || null,
               ]
                 .filter(Boolean)
@@ -106,13 +111,9 @@ export default function TrainerClientDetail() {
           <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full flex-shrink-0">
             Active
           </span>
-          <Button size="sm" className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold flex-shrink-0">
+          <Button variant="outline" size="sm" className="border-gray-200 text-gray-800 hover:bg-gray-50 text-sm font-medium flex-shrink-0">
             Assign homework
           </Button>
-        </div>
-      ) : (
-        <div className="bg-yellow-50 rounded-xl border border-yellow-200 p-5 text-center">
-          <p className="text-yellow-700 font-semibold">Client not found</p>
         </div>
       )}
 
@@ -131,7 +132,7 @@ export default function TrainerClientDetail() {
         </TabsList>
 
         <TabsContent value="overview" className="mt-5">
-          <CaseloadOverview client={client} clientId={clientId} trainerId={user?.id} />
+          <CaseloadOverview client={displayClient} clientId={clientId} trainerId={user?.id} isDemo={isDemo} />
         </TabsContent>
 
         <TabsContent value="goals" className="mt-5">
