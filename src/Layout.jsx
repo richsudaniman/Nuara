@@ -130,25 +130,14 @@ export default function Layout({ children, currentPageName }) {
     return (
       <ErrorBoundary>
         <AuthGuard>
-          <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-48 relative overflow-x-hidden safe-area-inset">
+          <div className="min-h-screen bg-[#FAFAFB] pb-24 relative overflow-x-hidden safe-area-inset">
             <style>{`
-              :root {
-                --primary-teal: #14b8a6;
-                --primary-green: #10b981;
-                --accent-purple: #8b5cf6;
-                --accent-indigo: #6366f1;
-                --text-dark: #1e293b;
-                --text-light: #64748b;
-                --bg-soft: #f8fafc;
-                --border-subtle: #e2e8f0;
-              }
               .safe-area-inset {
                 padding-top: env(safe-area-inset-top);
                 padding-bottom: env(safe-area-inset-bottom);
               }
               * {
                 -webkit-tap-highlight-color: transparent;
-                -webkit-touch-callout: none;
               }
               html {
                 -webkit-overflow-scrolling: touch;
@@ -156,31 +145,29 @@ export default function Layout({ children, currentPageName }) {
               }
               body {
                 overscroll-behavior-y: contain;
-                background: linear-gradient(to bottom, #f0fdfa, #ffffff);
+                background: #FAFAFB;
               }
             `}</style>
 
             {/* Header */}
-            <header className="bg-white/90 backdrop-blur-xl px-6 py-4 sticky top-0 z-50 border-b border-teal-100 shadow-sm">
+            <header className="bg-white px-5 py-3.5 sticky top-0 z-50 border-b border-[#EFEFF2]">
               <div className="max-w-md mx-auto">
                 <div className="flex items-center justify-between">
                   <Link to={getHomePath()}>
-                    <div className="flex items-center gap-3 cursor-pointer">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-teal-200">
-                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-2.5 cursor-pointer">
+                      <div className="w-9 h-9 rounded-xl bg-[#A78BFA] flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
                       </div>
-                      <div>
-                        <h1 className="text-2xl font-bold text-[#1e293b] tracking-tight">
-                          SLP-tec
-                        </h1>
-                        <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider">Speech Therapy Portal</p>
+                      <div className="leading-none">
+                        <h1 className="text-[17px] font-bold text-[#0F0F12] tracking-tight">SLP-tec</h1>
+                        <p className="text-[8px] font-semibold text-[#9CA3AF] uppercase tracking-[0.12em] mt-1">Speech Therapy Portal</p>
                       </div>
                     </div>
                   </Link>
-                  <Button variant="ghost" size="icon" onClick={handleLogout} className="text-gray-400 hover:text-gray-600">
-                    <LogOut className="w-5 h-5" />
+                  <Button variant="ghost" size="icon" onClick={handleLogout} className="text-[#9CA3AF] hover:text-[#0F0F12]">
+                    <LogOut className="w-5 h-5" strokeWidth={2} />
                   </Button>
                 </div>
               </div>
@@ -192,8 +179,8 @@ export default function Layout({ children, currentPageName }) {
             </main>
 
             {/* Bottom Navigation */}
-            <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl z-50 border-t border-teal-100 shadow-lg" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-              <div className="flex justify-around items-center px-2 py-3 max-w-md mx-auto">
+            <nav className="fixed bottom-0 left-0 right-0 bg-white z-50 border-t border-[#EFEFF2]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+              <div className="flex justify-around items-center px-2 py-2.5 max-w-md mx-auto">
                 {navItems.map((item) => {
                   const isActive = isNavItemActive(item.path);
                   const Icon = item.icon;
@@ -201,20 +188,17 @@ export default function Layout({ children, currentPageName }) {
                     <Link
                       key={item.name}
                       to={item.path}
-                      className="flex flex-col items-center gap-1 transition-all duration-200 relative py-2 px-4"
+                      className="flex flex-col items-center gap-1 py-1.5 px-3 relative"
                     >
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-emerald-500/10 rounded-2xl"></div>
-                      )}
                       <div className="relative">
-                        <Icon className={`w-6 h-6 transition-colors ${isActive ? "text-teal-600" : "text-gray-400"}`} strokeWidth={isActive ? 2.5 : 2} />
+                        <Icon className={`w-[22px] h-[22px] ${isActive ? "text-[#0F0F12]" : "text-[#9CA3AF]"}`} strokeWidth={isActive ? 2.25 : 1.75} />
                         {item.badge > 0 && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-sm">
-                            <span className="text-white text-[8px] font-bold">{item.badge > 9 ? '9+' : item.badge}</span>
+                          <div className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] px-1 bg-[#A78BFA] rounded-full flex items-center justify-center">
+                            <span className="text-white text-[9px] font-bold">{item.badge > 9 ? '9+' : item.badge}</span>
                           </div>
                         )}
                       </div>
-                      <span className={`text-[10px] font-semibold ${isActive ? "text-teal-600" : "text-gray-400"}`}>{item.name}</span>
+                      <span className={`text-[10px] ${isActive ? "text-[#0F0F12] font-semibold" : "text-[#9CA3AF] font-medium"}`}>{item.name}</span>
                     </Link>
                   );
                 })}
