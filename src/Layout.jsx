@@ -130,7 +130,7 @@ export default function Layout({ children, currentPageName }) {
     return (
       <ErrorBoundary>
         <AuthGuard>
-          <div className="min-h-screen bg-[#FAFAFB] pb-24 relative overflow-x-hidden safe-area-inset">
+          <div className="min-h-screen bg-[#FAFAFB] pb-32 relative overflow-x-hidden safe-area-inset">
             <style>{`
               .safe-area-inset {
                 padding-top: env(safe-area-inset-top);
@@ -174,7 +174,7 @@ export default function Layout({ children, currentPageName }) {
             </header>
 
             {/* Main Content */}
-            <main className="relative z-10 max-w-md mx-auto">
+            <main className="relative z-10 max-w-md mx-auto pb-8">
               {children}
             </main>
 
