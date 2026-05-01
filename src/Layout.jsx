@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2 } from "lucide-react";
+import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, Mic, ClipboardList, BarChart2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -82,11 +82,22 @@ export default function Layout({ children, currentPageName }) {
     { name: "Messages", path: createPageUrl("MockMessages"), icon: MessageCircle, badge: 2 },
   ];
 
-  // Trainer navigation
+  // Get assignment count for caseload badge
+  const { data: trainerAssignments } = useQuery({
+    queryKey: ['trainerAssignments', user?.id],
+    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: user.id, is_active: true }),
+    enabled: !!user?.id && isTrainerView,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Trainer navigation — grouped
   const trainerNavItems = [
-    { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home },
-    { name: "Clients", path: createPageUrl("TrainerClients"), icon: Users },
-    { name: "Videos", path: createPageUrl("TrainerVideos"), icon: Video },
+    { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home, group: "CLINIC" },
+    { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 0 },
+    { name: "Recordings", path: createPageUrl("TrainerVideos"), icon: Mic, group: "CLINIC" },
+    { name: "Homework builder", path: createPageUrl("TrainerVideos"), icon: ClipboardList, group: "CLINIC" },
+    { name: "Progress & goals", path: createPageUrl("TrainerClients"), icon: BarChart2, group: "REPORTS" },
+    { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, group: "REPORTS", badge: unreadCount || 0 },
   ];
 
   // Admin navigation
@@ -218,7 +229,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <ErrorBoundary>
       <AuthGuard>
-        <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-[#f9fafb] flex flex-col lg:flex-row">
           <style>{`
             :root {
               --primary-teal: #14b8a6;
@@ -229,66 +240,68 @@ export default function Layout({ children, currentPageName }) {
           `}</style>
 
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:flex flex-col w-72 bg-gradient-to-b from-teal-50/50 to-white border-r border-teal-100 h-screen sticky top-0">
-            <div className="p-6 border-b border-teal-100">
-              <Link to={getHomePath()} className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-teal-200">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <aside className="hidden lg:flex flex-col w-56 bg-white border-r border-gray-200 h-screen sticky top-0">
+            <div className="px-5 py-5 border-b border-gray-100">
+              <Link to={getHomePath()} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-purple-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-[#1e293b] tracking-tight leading-none mb-1">SLP-tec</h1>
-                  <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider mb-1">Speech Therapy</p>
-                  <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{isAdminView ? 'Admin Portal' : 'Therapist Portal'}</p>
+                  <h1 className="text-base font-bold text-gray-900 leading-none mb-0.5">SLP-tec</h1>
+                  <p className="text-[11px] text-gray-400">{isAdminView ? 'Admin portal' : 'Practitioner portal'}</p>
                 </div>
               </Link>
             </div>
 
-            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-              {navItems.map((item) => {
-                const isActive = isNavItemActive(item.path);
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-                      isActive 
-                        ? "bg-gradient-to-r from-teal-500/10 to-emerald-500/10 text-teal-700 font-semibold shadow-sm" 
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
-                    >
-                    <Icon className={`w-5 h-5 ${isActive ? "text-teal-600" : "text-gray-400 group-hover:text-gray-600"}`} strokeWidth={isActive ? 2.5 : 2} />
-                    <span>{item.name}</span>
-                    {item.badge > 0 && (
-                      <span className="ml-auto bg-gradient-to-br from-purple-500 to-pink-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                        {item.badge > 9 ? '9+' : item.badge}
-                      </span>
-                    )}
-                    </Link>
-                );
-              })}
+            <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
+              {(() => {
+                let lastGroup = null;
+                return navItems.map((item) => {
+                  const isActive = isNavItemActive(item.path);
+                  const Icon = item.icon;
+                  const showGroupHeader = item.group && item.group !== lastGroup;
+                  lastGroup = item.group || lastGroup;
+                  return (
+                    <React.Fragment key={item.name}>
+                      {showGroupHeader && (
+                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider px-3 pt-5 pb-1.5">{item.group}</p>
+                      )}
+                      <Link
+                        to={item.path}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                          isActive 
+                            ? "bg-purple-50 text-purple-700 font-semibold" 
+                            : "text-gray-600 hover:bg-gray-50"
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 ${isActive ? "text-purple-600" : "text-gray-400"}`} strokeWidth={isActive ? 2.5 : 2} />
+                        <span>{item.name}</span>
+                        {item.badge > 0 && (
+                          <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                            isActive ? "bg-purple-200 text-purple-800" : "bg-purple-100 text-purple-600"
+                          }`}>
+                            {item.badge > 9 ? '9+' : item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    </React.Fragment>
+                  );
+                });
+              })()}
             </nav>
 
-            <div className="p-4 border-t border-teal-100 bg-gradient-to-b from-transparent to-teal-50/30">
-              <div className="flex items-center gap-3 px-3 py-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
-                  {user?.full_name?.charAt(0) || 'U'}
+            <div className="px-5 py-4 border-t border-gray-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">
+                  {user?.full_name?.split(' ').map(n => n[0]).join('').slice(0,2) || 'U'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate">{user?.full_name}</p>
-                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                  <p className="text-sm font-semibold text-gray-900 truncate">{user?.full_name}</p>
+                  <p className="text-[11px] text-gray-400 truncate">{isTrainerView ? 'SLP · CCC-SLP' : user?.email}</p>
                 </div>
               </div>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 border-teal-200"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
             </div>
           </aside>
 
@@ -327,8 +340,7 @@ export default function Layout({ children, currentPageName }) {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 leading-none mb-1">SLP-tec</h2>
-                      <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider mb-1">Speech Therapy</p>
-                      <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">{isAdminView ? 'Admin Portal' : 'Therapist Portal'}</p>
+                      <p className="text-[11px] text-gray-500 font-medium">{isAdminView ? 'Admin portal' : 'Practitioner portal'}</p>
                     </div>
                   </Link>
                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
@@ -337,30 +349,39 @@ export default function Layout({ children, currentPageName }) {
                 </div>
 
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-                  {navItems.map((item) => {
-                    const isActive = isNavItemActive(item.path);
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
-                          isActive 
-                            ? "bg-gradient-to-r from-teal-500/10 to-emerald-500/10 text-teal-700 font-bold shadow-sm" 
-                            : "text-gray-600 hover:bg-white/60"
-                        }`}
-                        >
-                        <Icon className={`w-5 h-5 ${isActive ? "text-teal-600" : "text-gray-400"}`} strokeWidth={isActive ? 2.5 : 2} />
-                        <span>{item.name}</span>
-                        {item.badge > 0 && (
-                          <span className="ml-auto bg-gradient-to-br from-purple-500 to-pink-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                            {item.badge > 9 ? '9+' : item.badge}
-                          </span>
-                        )}
-                        </Link>
-                    );
-                  })}
+                  {(() => {
+                    let lastGroup = null;
+                    return navItems.map((item) => {
+                      const isActive = isNavItemActive(item.path);
+                      const Icon = item.icon;
+                      const showGroupHeader = item.group && item.group !== lastGroup;
+                      lastGroup = item.group || lastGroup;
+                      return (
+                        <React.Fragment key={item.name}>
+                          {showGroupHeader && (
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-3 pt-4 pb-1">{item.group}</p>
+                          )}
+                          <Link
+                            to={item.path}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
+                              isActive 
+                                ? "bg-gradient-to-r from-teal-500/10 to-emerald-500/10 text-teal-700 font-bold shadow-sm" 
+                                : "text-gray-600 hover:bg-white/60"
+                            }`}
+                          >
+                            <Icon className={`w-5 h-5 ${isActive ? "text-teal-600" : "text-gray-400"}`} strokeWidth={isActive ? 2.5 : 2} />
+                            <span>{item.name}</span>
+                            {item.badge > 0 && (
+                              <span className="ml-auto bg-purple-100 text-purple-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                {item.badge > 9 ? '9+' : item.badge}
+                              </span>
+                            )}
+                          </Link>
+                        </React.Fragment>
+                      );
+                    });
+                  })()}
                 </nav>
 
                 <div className="p-4 border-t border-teal-100 bg-gradient-to-b from-transparent to-teal-50/30">
