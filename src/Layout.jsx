@@ -94,7 +94,7 @@ export default function Layout({ children, currentPageName }) {
   // Trainer navigation — grouped
   const trainerNavItems = [
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home, group: "CLINIC" },
-    { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 0 },
+    { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 14 },
     { name: "Recordings", path: createPageUrl("Recordings"), icon: Mic, group: "CLINIC", badge: 6 },
     { name: "Homework builder", path: createPageUrl("HomeworkBuilder"), icon: ClipboardList, group: "CLINIC" },
     { name: "Progress & goals", path: createPageUrl("ProgressGoals"), icon: BarChart2, group: "REPORTS" },
