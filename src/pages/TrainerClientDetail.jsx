@@ -1,154 +1,149 @@
-import React, { useState } from "react";
+import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, ArrowLeft, Dumbbell, UtensilsCrossed, Target, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link, useSearchParams, useLocation } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import ClientWorkoutPlans from "../components/trainer/ClientWorkoutPlans";
-import ClientNutritionPlans from "../components/trainer/ClientNutritionPlans";
-import ClientGoals from "../components/trainer/ClientGoals";
-import ClientProgress from "../components/trainer/ClientProgress";
-import ClientNotes from "../components/trainer/ClientNotes";
-import ClientMessages from "../components/trainer/ClientMessages"; // New import
+import { useSearchParams, useLocation } from "react-router-dom";
+import { Sparkles } from "lucide-react";
+import { format, differenceInYears } from "date-fns";
+
+import CaseloadOverview from "@/components/caseload/CaseloadOverview";
+import ClientGoals from "@/components/trainer/ClientGoals";
+import ClientWorkoutPlans from "@/components/trainer/ClientWorkoutPlans";
+import ClientNotes from "@/components/trainer/ClientNotes";
 
 export default function TrainerClientDetail() {
   const [searchParams] = useSearchParams();
   const { state } = useLocation();
-  const clientId = state?.clientId || searchParams.get('clientId');
+  const clientId = state?.clientId || searchParams.get("clientId");
 
   const { data: client, isLoading: clientLoading } = useQuery({
-    queryKey: ['client', clientId],
+    queryKey: ["client", clientId],
     queryFn: async () => {
       const allUsers = await base44.entities.User.list();
-      return allUsers.find(u => u.id === clientId) || null;
+      return allUsers.find((u) => u.id === clientId) || null;
     },
     enabled: !!clientId,
   });
 
-  const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ['currentUser'],
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const { data: assignment } = useQuery({
+    queryKey: ["clientAssignment", clientId, user?.id],
+    queryFn: async () => {
+      const all = await base44.entities.TrainerClientAssignment.filter({ trainer_id: user.id, client_id: clientId, is_active: true });
+      return all[0] || null;
+    },
+    enabled: !!clientId && !!user?.id,
   });
 
   if (!clientId) {
     return (
-      <div className="p-6">
-        <Card className="bg-red-50 border-red-200">
-          <CardContent className="p-6 text-center">
-            <p className="text-red-600 font-semibold">No client ID provided</p>
-          </CardContent>
-        </Card>
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+        <p className="text-gray-500">No client selected</p>
       </div>
     );
   }
 
+  const age = client?.date_of_birth
+    ? differenceInYears(new Date(), new Date(client.date_of_birth))
+    : client?.age || null;
+
+  const sinceDate = assignment?.assigned_date
+    ? format(new Date(assignment.assigned_date), "MMM yyyy")
+    : null;
+
+  const focusArea = client?.therapy_focus || "Articulation";
+  const schedule = client?.session_schedule || "";
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">
-      <div className="absolute top-5 right-5 w-16 h-16 border-2 border-gray-200" style={{clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'}}></div>
-
-      <Link to={createPageUrl("TrainerClients")}>
-        <Button variant="ghost" className="gap-2 text-gray-600 hover:text-[#0ea5e9]">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Clients
-        </Button>
-      </Link>
-
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      {/* Top bar */}
       {clientLoading ? (
-        <Skeleton className="h-32 rounded-lg bg-gray-100" />
+        <Skeleton className="h-12 rounded-lg" />
       ) : client ? (
-        <Card className="bg-gradient-to-r from-[#0ea5e9] to-[#0284c7] border-none glow-blue">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40">
-                {client.profile_photo_url ? (
-                  <img src={client.profile_photo_url} alt={client.full_name} className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  <User className="w-10 h-10 text-white" />
-                )}
-              </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-black italic text-white">{client.full_name || 'Client'}</h2>
-                <p className="text-sm text-white/80">{client.email}</p>
-                {client.phone && (
-                  <p className="text-xs text-white/70 mt-1">{client.phone}</p>
-                )}
-              </div>
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="text-xl font-bold text-gray-900 truncate">{client.full_name || "Client"}</h1>
+            <span className="text-sm text-gray-400 flex-shrink-0">
+              {[age ? `Age ${age}` : null, focusArea, sinceDate ? `Since ${sinceDate}` : null]
+                .filter(Boolean)
+                .join(" · ")}
+            </span>
+          </div>
+          <Button variant="outline" size="sm" className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50 flex-shrink-0">
+            <Sparkles className="w-4 h-4" />
+            Ask AI
+          </Button>
+        </div>
+      ) : null}
 
-            {client.bio && (
-              <p className="text-sm text-white/90 mt-4 italic">{client.bio}</p>
-            )}
-          </CardContent>
-        </Card>
+      {/* Profile card */}
+      {clientLoading ? (
+        <Skeleton className="h-24 rounded-xl" />
+      ) : client ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg flex-shrink-0">
+            {client.full_name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "?"}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-bold text-gray-900">{client.full_name}</h2>
+            <p className="text-sm text-gray-500">
+              {[
+                age ? `Age ${age}` : null,
+                client.diagnosis || `${focusArea} disorder`,
+                schedule || null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full flex-shrink-0">
+            Active
+          </span>
+          <Button size="sm" className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold flex-shrink-0">
+            Assign homework
+          </Button>
+        </div>
       ) : (
-        <Card className="bg-yellow-50 border-yellow-200">
-          <CardContent className="p-6 text-center">
-            <p className="text-yellow-700 font-semibold">Client not found in database</p>
-            <p className="text-sm text-yellow-600 mt-2">Client ID: {clientId}</p>
-          </CardContent>
-        </Card>
+        <div className="bg-yellow-50 rounded-xl border border-yellow-200 p-5 text-center">
+          <p className="text-yellow-700 font-semibold">Client not found</p>
+        </div>
       )}
 
-      <Tabs defaultValue="workouts" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-gray-100"> {/* Changed grid-cols-5 to grid-cols-6 */}
-          <TabsTrigger value="workouts" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
-            <Dumbbell className="w-4 h-4 mr-1" />
-            Workouts
-          </TabsTrigger>
-          <TabsTrigger value="nutrition" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
-            <UtensilsCrossed className="w-4 h-4 mr-1" />
-            Nutrition
-          </TabsTrigger>
-          <TabsTrigger value="goals" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
-            <Target className="w-4 h-4 mr-1" />
-            Goals
-          </TabsTrigger>
-          <TabsTrigger value="progress" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
-            Progress
-          </TabsTrigger>
-          <TabsTrigger value="messages" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs"> {/* New TabsTrigger for Messages */}
-            Messages
-          </TabsTrigger>
-          <TabsTrigger value="notes" className="data-[state=active]:bg-[#0ea5e9] data-[state=active]:text-white font-bold italic text-xs">
-            <FileText className="w-4 h-4 mr-1" />
-            Notes
-          </TabsTrigger>
+      {/* Tabs */}
+      <Tabs defaultValue="overview">
+        <TabsList className="bg-transparent border-b border-gray-200 rounded-none p-0 h-auto gap-0">
+          {["Overview", "Goals", "Homework history", "Notes"].map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab.toLowerCase().replace(" ", "-")}
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:text-purple-700 data-[state=active]:shadow-none text-gray-500 font-medium text-sm px-4 py-2.5 hover:text-gray-700"
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="workouts" className="mt-4">
-          <ClientWorkoutPlans clientId={clientId} />
+        <TabsContent value="overview" className="mt-5">
+          <CaseloadOverview client={client} clientId={clientId} trainerId={user?.id} />
         </TabsContent>
 
-        <TabsContent value="nutrition" className="mt-4">
-          <ClientNutritionPlans clientId={clientId} />
-        </TabsContent>
-
-        <TabsContent value="goals" className="mt-4">
+        <TabsContent value="goals" className="mt-5">
           <ClientGoals clientId={clientId} />
         </TabsContent>
 
-        <TabsContent value="progress" className="mt-4">
-          <ClientProgress clientId={clientId} />
+        <TabsContent value="homework-history" className="mt-5">
+          <ClientWorkoutPlans clientId={clientId} />
         </TabsContent>
 
-        <TabsContent value="messages" className="mt-4"> {/* New TabsContent for Messages */}
-          {userLoading ? (
-            <Skeleton className="h-96 rounded-lg bg-gray-100" />
-          ) : (
-            <ClientMessages clientId={clientId} trainerId={user?.id} />
-          )}
-        </TabsContent>
-
-        <TabsContent value="notes" className="mt-4">
-          {userLoading ? (
-            <Skeleton className="h-40 rounded-lg bg-gray-100" />
-          ) : (
-            <ClientNotes clientId={clientId} trainerId={user?.id} />
-          )}
+        <TabsContent value="notes" className="mt-5">
+          <ClientNotes clientId={clientId} trainerId={user?.id} />
         </TabsContent>
       </Tabs>
     </div>
