@@ -48,7 +48,7 @@ export default function Layout({ children, currentPageName }) {
     if (!user) return 'client';
     
     // Check current page name to determine context
-    const trainerPages = ['HomeworkBuilder', 'Recordings'];
+    const trainerPages = ['HomeworkBuilder', 'Recordings', 'ProgressGoals'];
     if (currentPageName?.startsWith('Trainer') || trainerPages.includes(currentPageName)) {
       return 'trainer';
     }
@@ -97,7 +97,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 0 },
     { name: "Recordings", path: createPageUrl("Recordings"), icon: Mic, group: "CLINIC", badge: 6 },
     { name: "Homework builder", path: createPageUrl("HomeworkBuilder"), icon: ClipboardList, group: "CLINIC" },
-    { name: "Progress & goals", path: createPageUrl("TrainerClients"), icon: BarChart2, group: "REPORTS" },
+    { name: "Progress & goals", path: createPageUrl("ProgressGoals"), icon: BarChart2, group: "REPORTS" },
     { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, group: "REPORTS", badge: unreadCount || 0 },
   ];
 

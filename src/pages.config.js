@@ -25,6 +25,7 @@ import MockMessages from './pages/MockMessages';
 import TrainerClientsList from './pages/TrainerClientsList';
 import HomeworkBuilder from './pages/HomeworkBuilder';
 import Recordings from './pages/Recordings';
+import ProgressGoals from './pages/ProgressGoals';
 import __Layout from './Layout.jsx';
 
 
@@ -56,6 +57,7 @@ export const PAGES = {
     "TrainerClientsList": TrainerClientsList,
     "HomeworkBuilder": HomeworkBuilder,
     "Recordings": Recordings,
+    "ProgressGoals": ProgressGoals,
 }
 
 export const pagesConfig = {
