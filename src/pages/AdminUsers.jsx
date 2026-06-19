@@ -49,9 +49,9 @@ export default function AdminUsers() {
   };
 
   const getRoleColor = (role) => {
-    if (role === 'admin') return "text-indigo-600 bg-indigo-50";
-    if (role === 'trainer') return "text-teal-600 bg-teal-50";
-    return "text-sky-600 bg-sky-50";
+    if (role === 'admin') return "text-purple-700 bg-purple-100";
+    if (role === 'trainer') return "text-teal-700 bg-teal-100";
+    return "text-emerald-700 bg-emerald-100";
   };
 
   const trainersCount = allUsers.filter(u => u.role === 'trainer').length;
@@ -71,7 +71,7 @@ export default function AdminUsers() {
           <p className="text-sm text-gray-500 mt-1">Manage users, roles, and permissions</p>
         </div>
         <Link to={createPageUrl("AdminInviteUser")}>
-          <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white shadow-sm rounded-lg font-bold">
+          <Button className="bg-[#14b8a6] hover:bg-[#0f766e] text-white shadow-sm rounded-xl font-bold h-10 px-5">
             <UserPlus className="w-4 h-4 mr-2" />
             Invite User
           </Button>
@@ -80,46 +80,46 @@ export default function AdminUsers() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
-            <CardContent className="p-6 relative">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden group">
+            <CardContent className="p-5 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Users className="w-16 h-16 text-[#0ea5e9]" />
+                    <Users className="w-16 h-16 text-emerald-500" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Users</span>
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Users</span>
                     <div className="flex items-baseline gap-2 mt-2">
-                        <span className="text-4xl font-black text-[#0ea5e9]">{allUsers.length}</span>
-                        <span className="text-xs text-sky-600/70 font-bold bg-sky-50 px-2 py-0.5 rounded-full">ACTIVE</span>
+                        <span className="text-3xl font-black text-gray-900">{allUsers.length}</span>
+                        <span className="text-[11px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-md">ACTIVE</span>
                     </div>
                 </div>
             </CardContent>
         </Card>
 
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
-            <CardContent className="p-6 relative">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden group">
+            <CardContent className="p-5 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Award className="w-16 h-16 text-teal-600" />
+                    <Award className="w-16 h-16 text-teal-500" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Trainers & Admins</span>
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Trainers & Admins</span>
                     <div className="flex items-baseline gap-2 mt-2">
-                        <span className="text-4xl font-black text-teal-600">{trainersCount + adminsCount}</span>
-                        <span className="text-xs text-teal-600/70 font-bold bg-teal-50 px-2 py-0.5 rounded-full">STAFF</span>
+                        <span className="text-3xl font-black text-gray-900">{trainersCount + adminsCount}</span>
+                        <span className="text-[11px] text-teal-700 font-bold bg-teal-100 px-1.5 py-0.5 rounded-md">STAFF</span>
                     </div>
                 </div>
             </CardContent>
         </Card>
 
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
-            <CardContent className="p-6 relative">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden group">
+            <CardContent className="p-5 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <UserPlus className="w-16 h-16 text-indigo-600" />
+                    <UserPlus className="w-16 h-16 text-purple-500" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">New This Month</span>
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">New This Month</span>
                     <div className="flex items-baseline gap-2 mt-2">
-                        <span className="text-4xl font-black text-indigo-600">{newThisMonth}</span>
-                        <span className="text-xs text-indigo-600/70 font-bold bg-indigo-50 px-2 py-0.5 rounded-full">GROWTH</span>
+                        <span className="text-3xl font-black text-gray-900">{newThisMonth}</span>
+                        <span className="text-[11px] text-purple-700 font-bold bg-purple-100 px-1.5 py-0.5 rounded-md">GROWTH</span>
                     </div>
                 </div>
             </CardContent>
@@ -135,11 +135,11 @@ export default function AdminUsers() {
                 placeholder="Search users by name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] rounded-xl h-11"
+                className="pl-10 bg-white border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl h-11"
             />
             </div>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full sm:w-48 bg-white border-gray-200 rounded-xl h-11">
+            <SelectTrigger className="w-full sm:w-48 bg-white border-gray-200 focus:ring-teal-500 focus:border-teal-500 rounded-xl h-11">
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -154,7 +154,7 @@ export default function AdminUsers() {
         {/* Users Grid */}
         {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-40 rounded-xl bg-gray-100" />)}
+            {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-40 rounded-2xl bg-gray-100" />)}
             </div>
         ) : filteredUsers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -164,7 +164,7 @@ export default function AdminUsers() {
                 const roleColor = getRoleColor(user.role);
                 
                 return (
-                <Card key={user.id} className="bg-white border-none shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden group">
+                <Card key={user.id} className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all rounded-2xl overflow-hidden group">
                     <CardContent className="p-5">
                     <div className="flex items-start justify-between mb-4">
                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
@@ -214,7 +214,7 @@ export default function AdminUsers() {
                                 size="sm"
                                 onClick={() => handleRoleChange(user.id, editingUser.role)}
                                 disabled={updateUserMutation.isPending}
-                                className="flex-1 h-8 bg-[#0ea5e9] hover:bg-[#0284c7] text-white"
+                                className="flex-1 h-8 bg-[#14b8a6] hover:bg-[#0f766e] text-white"
                                 >
                                 Save
                                 </Button>
@@ -225,7 +225,7 @@ export default function AdminUsers() {
                             size="sm"
                             variant="ghost"
                             onClick={() => setEditingUser(user)}
-                            className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#0ea5e9]/5 group-hover:text-[#0ea5e9] transition-colors"
+                            className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#14b8a6]/5 group-hover:text-teal-500 transition-colors"
                             >
                                 <span className="text-xs font-medium">Manage Role</span>
                                 <Edit className="w-3.5 h-3.5" />

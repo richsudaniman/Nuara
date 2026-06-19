@@ -159,7 +159,7 @@ export default function AdminVideos() {
         <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-50 rounded-lg text-[#0ea5e9]">
+              <div className="p-2 bg-teal-50 rounded-lg text-teal-500">
                 <Video className="w-5 h-5" />
               </div>
               <div>
@@ -169,7 +169,7 @@ export default function AdminVideos() {
             </div>
             <Button
               onClick={() => setShowForm(!showForm)}
-              className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm rounded-lg h-10"
+              className="bg-[#14b8a6] hover:bg-[#0f766e] text-white font-bold shadow-sm rounded-lg h-10"
             >
               <Plus className="w-4 h-4 mr-2" />
               Upload
@@ -248,11 +248,11 @@ export default function AdminVideos() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 font-semibold">Uploading...</span>
-                    <span className="text-[#0ea5e9] font-black">{uploadProgress}%</span>
+                    <span className="text-teal-500 font-black">{uploadProgress}%</span>
                   </div>
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-[#0ea5e9] transition-all duration-300"
+                      className="h-full bg-[#14b8a6] transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     ></div>
                   </div>
@@ -275,7 +275,7 @@ export default function AdminVideos() {
                   <p className="text-xs text-gray-400">
                     Max size: 100MB • Formats: MP4, MOV, AVI, etc.
                   </p>
-                  <p className="text-xs text-[#0ea5e9] mt-2">
+                  <p className="text-xs text-teal-500 mt-2">
                     💡 Tip: Compress large videos before uploading
                   </p>
                   {!formData.title.trim() && (
@@ -297,7 +297,7 @@ export default function AdminVideos() {
               placeholder="Search by title, description, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-gray-50 border-transparent focus:bg-white focus:border-[#0ea5e9] h-11 rounded-lg text-base transition-all"
+              className="pl-10 bg-gray-50 border-transparent focus:bg-white focus:border-teal-500 h-11 rounded-lg text-base transition-all"
             />
           </div>
         </CardContent>
@@ -330,7 +330,7 @@ export default function AdminVideos() {
                 )}
                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
-                    <Play className="w-5 h-5 text-[#0ea5e9] ml-1" />
+                    <Play className="w-5 h-5 text-teal-500 ml-1" />
                   </div>
                 </div>
                 {video.duration_minutes > 0 && (
@@ -353,7 +353,7 @@ export default function AdminVideos() {
               <CardContent className="p-4 flex-1 flex flex-col">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-bold text-gray-900 line-clamp-1 flex-1 pr-2">{video.title}</h3>
-                  <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#0ea5e9] rounded-md flex-shrink-0">
+                  <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-teal-50 text-teal-500 rounded-md flex-shrink-0">
                     {video.category}
                   </span>
                 </div>
@@ -388,7 +388,7 @@ export default function AdminVideos() {
           {!searchQuery && (
             <Button 
               onClick={() => setShowForm(true)}
-              className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold shadow-sm"
+              className="bg-[#14b8a6] hover:bg-[#0f766e] text-white font-bold shadow-sm"
             >
               <Plus className="w-4 h-4 mr-2" />
               Upload Video
@@ -427,7 +427,7 @@ export default function AdminVideos() {
                 {/* Header */}
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0ea5e9]/10 text-[#0ea5e9]">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#14b8a6]/10 text-teal-500">
                       {selectedVideo.category}
                     </span>
                     {selectedVideo.duration_minutes > 0 && (
@@ -471,10 +471,10 @@ export default function AdminVideos() {
                 <div className="group relative bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all mt-auto">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9]"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]"></div>
                       Admin/Trainer Notes
                     </span>
-                    <span className="text-[10px] text-[#0ea5e9] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <span className="text-[10px] text-teal-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       <div className="w-1 h-1 rounded-full bg-current animate-pulse"></div>
                       Auto-saving
                     </span>

@@ -123,7 +123,7 @@ export default function AdminTrainers() {
         </div>
         <div className="flex gap-2">
           <Link to={createPageUrl("AdminInviteUser")}>
-            <Button className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white shadow-sm rounded-lg font-bold">
+            <Button className="bg-[#14b8a6] hover:bg-[#0f766e] text-white shadow-sm rounded-lg font-bold">
               <UserPlus className="w-4 h-4 mr-2" />
               Invite Trainer
             </Button>
@@ -148,7 +148,7 @@ export default function AdminTrainers() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Trainers */}
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-shadow rounded-2xl overflow-hidden group">
             <CardContent className="p-6 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <Award className="w-16 h-16 text-teal-600" />
@@ -164,7 +164,7 @@ export default function AdminTrainers() {
         </Card>
 
         {/* Total Clients */}
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-shadow rounded-2xl overflow-hidden group">
             <CardContent className="p-6 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <Users className="w-16 h-16 text-indigo-600" />
@@ -180,7 +180,7 @@ export default function AdminTrainers() {
         </Card>
 
         {/* Avg per Trainer */}
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden group">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-shadow rounded-2xl overflow-hidden group">
             <CardContent className="p-6 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <UserCheck className="w-16 h-16 text-purple-600" />
@@ -200,7 +200,7 @@ export default function AdminTrainers() {
 
       {/* Edit Trainer Form */}
       {showCreateForm && (
-        <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden mb-6">
+        <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden mb-6">
           <CardContent className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-bold text-gray-900 text-lg">Edit Trainer Details</h3>
@@ -217,8 +217,8 @@ export default function AdminTrainers() {
               </Button>
             </div>
 
-            <div className="mb-6 p-4 bg-blue-50 border-l-4 border-[#0ea5e9] rounded-r-lg">
-              <p className="text-sm text-blue-800">
+            <div className="mb-6 p-4 bg-teal-50 border-l-4 border-teal-500 rounded-r-lg">
+              <p className="text-sm text-teal-800">
                 <strong>Tip:</strong> To create a new trainer, use the "Invite Trainer" button above. Use this form to edit existing trainer details.
               </p>
             </div>
@@ -289,7 +289,7 @@ export default function AdminTrainers() {
               <Button
                 onClick={handleSubmit}
                 disabled={updateTrainerMutation.isPending || !editingTrainer}
-                className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold px-8"
+                className="bg-[#14b8a6] hover:bg-[#0f766e] text-white font-bold px-8"
               >
                 {updateTrainerMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -307,13 +307,13 @@ export default function AdminTrainers() {
               placeholder="Search trainers by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white border-gray-200 focus:border-[#0ea5e9] rounded-xl h-11"
+              className="pl-10 bg-white border-gray-200 focus:border-teal-500 rounded-xl h-11"
             />
           </div>
 
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl bg-gray-100" />)}
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-2xl bg-gray-100" />)}
             </div>
           ) : filteredTrainers.length > 0 ? (
             <div className="space-y-4">
@@ -322,7 +322,7 @@ export default function AdminTrainers() {
                 const isExpanded = expandedTrainer === trainer.id;
                 
                 return (
-                  <Card key={trainer.id} className="bg-white border-none shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden group">
+                  <Card key={trainer.id} className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all rounded-2xl overflow-hidden group">
                     <CardContent className="p-0">
                       <div 
                         className="p-5 flex items-start gap-4 cursor-pointer"
@@ -351,7 +351,7 @@ export default function AdminTrainers() {
                           
                           <div className="flex items-center gap-4 mt-3">
                             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 rounded-full">
-                              <Users className="w-3.5 h-3.5 text-[#0ea5e9]" />
+                              <Users className="w-3.5 h-3.5 text-teal-500" />
                               <span className="text-xs font-bold text-gray-700">{clients.length} clients</span>
                             </div>
                             {trainer.specialties && (
@@ -441,7 +441,7 @@ export default function AdminTrainers() {
               })}
             </div>
           ) : (
-             <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+             <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-gray-400">
                     <Search className="w-6 h-6" />
                 </div>
@@ -452,7 +452,7 @@ export default function AdminTrainers() {
 
         {/* Right Column: Promote Users */}
         <div className="space-y-6">
-            <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden sticky top-8">
+            <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden sticky top-8">
                 <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
                     <h3 className="font-bold text-white text-lg flex items-center gap-2">
                         <UserCheck className="w-5 h-5" />
