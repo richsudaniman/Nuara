@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
-import { Search, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Users, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { subDays } from "date-fns";
+import AddClientDialog from "@/components/caseload/AddClientDialog";
 
 export default function TrainerClients() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAddClient, setShowAddClient] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -62,10 +65,18 @@ export default function TrainerClients() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Caseload</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{assignments.length} active clients</p>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Caseload</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{assignments.length} active clients</p>
+        </div>
+        <Button onClick={() => setShowAddClient(true)} className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
+          <Plus className="w-4 h-4" />
+          Add client
+        </Button>
       </div>
+
+      <AddClientDialog open={showAddClient} onOpenChange={setShowAddClient} trainerId={user?.id} />
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

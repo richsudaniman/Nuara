@@ -4,7 +4,7 @@
   "properties": {
     "assigned_trainer_id": {
       "type": "string",
-      "description": "ID of the trainer assigned to this client"
+      "description": "ID of the practitioner assigned to this patient"
     },
     "user_type": {
       "type": "string",
@@ -31,6 +31,31 @@
       "type": "string",
       "description": "URL to profile photo"
     },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "description": "Patient date of birth"
+    },
+    "age": {
+      "type": "number",
+      "description": "Patient age"
+    },
+    "diagnosis": {
+      "type": "string",
+      "description": "Clinical diagnosis (e.g. Articulation disorder \u00b7 /r/ and /s/)"
+    },
+    "therapy_focus": {
+      "type": "string",
+      "description": "Primary area of therapy focus (e.g. Articulation, Fluency, Language)"
+    },
+    "session_schedule": {
+      "type": "string",
+      "description": "Session schedule description (e.g. 2\u00d7 / week, Tue + Fri)"
+    },
+    "parent_guardian_name": {
+      "type": "string",
+      "description": "Name of parent or guardian"
+    },
     "daily_calorie_target": {
       "type": "number",
       "description": "Daily calorie target"
@@ -40,13 +65,5 @@
       "description": "Daily protein target in grams"
     }
   },
-  "required": [
-    "assigned_trainer_id",
-    "phone",
-    "bio",
-    "specialties",
-    "profile_photo_url",
-    "daily_calorie_target",
-    "daily_protein_target"
-  ]
+  "required": []
 }

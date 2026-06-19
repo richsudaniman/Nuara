@@ -5,10 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams, useLocation, Link } from "react-router-dom";
-import { Sparkles, Download } from "lucide-react";
+import { Sparkles, Download, Pencil } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
 import { createPageUrl } from "@/utils";
 
+import AddClientDialog from "@/components/caseload/AddClientDialog";
 import CaseloadOverview from "@/components/caseload/CaseloadOverview";
 import ClientGoals from "@/components/trainer/ClientGoals";
 import ClientWorkoutPlans from "@/components/trainer/ClientWorkoutPlans";
@@ -66,6 +67,7 @@ export default function TrainerClientDetail() {
   const focusArea = displayClient.therapy_focus || "Articulation";
   const schedule = displayClient.session_schedule || "";
 
+  const [showEdit, setShowEdit] = React.useState(false);
   const [downloading, setDownloading] = React.useState(false);
   const handleDownloadReport = async () => {
     if (!clientId) return;
@@ -87,6 +89,14 @@ export default function TrainerClientDetail() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      {client && (
+        <AddClientDialog
+          open={showEdit}
+          onOpenChange={setShowEdit}
+          trainerId={user?.id}
+          existingClient={client}
+        />
+      )}
       {/* Top bar */}
       {clientLoading ? (
         <Skeleton className="h-12 rounded-lg" />
@@ -101,6 +111,17 @@ export default function TrainerClientDetail() {
             </span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            {clientId && client && (
+              <Button
+                onClick={() => setShowEdit(true)}
+                variant="outline"
+                size="sm"
+                className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </Button>
+            )}
             {clientId && (
               <Button
                 onClick={handleDownloadReport}
