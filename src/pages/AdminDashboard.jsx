@@ -1,26 +1,60 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Users, Stethoscope, Activity, TrendingUp, UserPlus, Megaphone, ListChecks, GraduationCap, ChevronRight, Settings } from "lucide-react";
-import StatTile from "@/components/admin/StatTile";
-import ComplianceTrendCard from "@/components/admin/ComplianceTrendCard";
-import ClinicianUtilizationTable from "@/components/admin/ClinicianUtilizationTable";
-import CaseloadDistribution from "@/components/admin/CaseloadDistribution";
-import CaseloadStatusBar from "@/components/admin/CaseloadStatusBar";
+import { Sparkles, UserPlus, Megaphone, ListChecks, GraduationCap, ChevronRight, Settings, Users, Activity, TrendingUp } from "lucide-react";
+import { 
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  ComposedChart, Legend, Cell, PieChart, Pie, Sector 
+} from "recharts";
 import WaitlistPanel from "@/components/admin/WaitlistPanel";
 import OutcomesPanel from "@/components/admin/OutcomesPanel";
 import FamilyEngagementPanel from "@/components/admin/FamilyEngagementPanel";
 
 const QUICK_ACTIONS = [
-  { label: "Invite user", desc: "Add clinicians or staff", icon: UserPlus, page: "AdminInviteUser", color: "#A78BFA" },
-  { label: "Waitlist", desc: "Manage waitlisted families", icon: ListChecks, page: "AdminClientAssignments", color: "#60A5FA" },
-  { label: "Announce", desc: "Send practice alerts", icon: Megaphone, page: "AdminAnnouncements", color: "#34D399" },
-  { label: "Education", desc: "Manage learning materials", icon: GraduationCap, page: "AdminEducationalContent", color: "#FBBF24" },
-  { label: "Settings", desc: "Practice configuration", icon: Settings, page: "AdminSettings", color: "#F472B6" },
+  { label: "Invite user", desc: "Add clinicians or staff", icon: UserPlus, page: "AdminInviteUser" },
+  { label: "Waitlist", desc: "Manage waitlisted families", icon: ListChecks, page: "AdminClientAssignments" },
+  { label: "Announce", desc: "Send practice alerts", icon: Megaphone, page: "AdminAnnouncements" },
+  { label: "Education", desc: "Manage learning materials", icon: GraduationCap, page: "AdminEducationalContent" },
+  { label: "Settings", desc: "Practice configuration", icon: Settings, page: "AdminSettings" },
 ];
+
+const COLORS = {
+  primary: "#14b8a6", // teal-500
+  secondary: "#10b981", // emerald-500
+  accent: "#8b5cf6", // purple-500
+  muted: "#94a3b8", // slate-400
+  background: "#f8fafc",
+  orange: "#f97316",
+  pink: "#ec4899",
+  blue: "#3b82f6"
+};
+
+const CHART_PALETTE = [COLORS.primary, COLORS.accent, COLORS.secondary, COLORS.orange, COLORS.pink, COLORS.blue];
+
+function StatCard({ title, value, subValue, trend, trendLabel }) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{title}</h3>
+      <div className="flex items-baseline gap-2">
+        <span className="text-3xl font-black text-gray-900">{value}</span>
+        {subValue && <span className="text-sm font-semibold text-gray-400">{subValue}</span>}
+      </div>
+      {(trend !== undefined || trendLabel) && (
+        <div className="mt-2 flex items-center gap-1.5">
+          {trend !== undefined && (
+            <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${trend > 0 ? "bg-emerald-100 text-emerald-700" : trend < 0 ? "bg-rose-100 text-rose-700" : "bg-gray-100 text-gray-600"}`}>
+              {trend > 0 ? "+" : ""}{trend}%
+            </span>
+          )}
+          {trendLabel && <span className="text-[11px] text-gray-400 font-medium">{trendLabel}</span>}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const { data, isLoading } = useQuery({
@@ -33,92 +67,246 @@ export default function AdminDashboard() {
     refetchOnMount: true,
   });
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
   if (isLoading || !data) {
     return (
-      <div className="w-full max-w-[1500px] mx-auto px-6 py-8 space-y-6">
-        <Skeleton className="h-10 w-64" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <Skeleton className="h-10 w-72" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
         </div>
-        <Skeleton className="h-80 rounded-2xl" />
-        <Skeleton className="h-72 rounded-2xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
+        </div>
+        <Skeleton className="h-96 rounded-xl" />
       </div>
     );
   }
 
   const { overview, weeklyTrend, clinicianUtilization, caseload, waitlist, outcomes, family } = data;
+  
   const complianceTrend = overview.weeklyCompliance - overview.prevWeeklyCompliance;
-  const completionsTrend = overview.completionsPrevWeek > 0
-    ? Math.round(((overview.completionsThisWeek - overview.completionsPrevWeek) / overview.completionsPrevWeek) * 100)
-    : null;
+
+  // Process data for charts
+  const ageData = caseload.byAge.filter(d => d.value > 0).sort((a,b) => b.value - a.value);
+  const categoryData = caseload.byCategory.filter(d => d.value > 0).sort((a,b) => b.value - a.value);
+  
+  // Custom tooltip for charts
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white border border-gray-100 shadow-lg rounded-xl p-3 text-sm">
+          <p className="font-bold text-gray-900 mb-2">{label}</p>
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center gap-2 mb-1 last:mb-0">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+              <span className="text-gray-600">{entry.name}:</span>
+              <span className="font-bold text-gray-900">{entry.value}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
-    <div className="w-full max-w-[1500px] mx-auto px-6 py-8 space-y-8">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      {/* Header matching Practitioner dashboard */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Practice overview</h1>
-          <p className="text-sm text-gray-500 mt-1">Practice-wide engagement, clinician utilization, and caseload health</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {greeting}, Administrator
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Practice-wide engagement, utilization, and caseload health
+          </p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
-          <span className="px-3 py-1.5 bg-[#A78BFA]/10 text-[#7c5cd6] rounded-full">{overview.activeClinicians} clinicians</span>
-          <span className="px-3 py-1.5 bg-green-50 text-green-600 rounded-full">{overview.activeClients} active clients</span>
+        <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors self-start shadow-sm">
+          <Sparkles className="w-4 h-4 text-teal-500" />
+          Ask AI
+        </button>
+      </div>
+
+      {/* Top Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard 
+          title="Active Clients" 
+          value={overview.activeClients} 
+          subValue={`/ ${overview.totalClients}`}
+          trendLabel={`${caseload.waitlist} on waitlist`}
+        />
+        <StatCard 
+          title="Avg Compliance" 
+          value={`${overview.weeklyCompliance}%`} 
+          trend={complianceTrend}
+          trendLabel="vs last week"
+        />
+        <StatCard 
+          title="Clinicians" 
+          value={overview.activeClinicians}
+          trendLabel={`Avg caseload: ${Math.round(overview.activeClients / Math.max(1, overview.activeClinicians))}`}
+        />
+        <StatCard 
+          title="Goal Attainment" 
+          value={`${outcomes.goalAttainmentRate}%`}
+          trendLabel={`${outcomes.metGoals} goals met`}
+        />
+      </div>
+
+      {/* Main Charts Row 1 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Weekly Engagement Trend */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+          <div className="flex justify-between items-end mb-6">
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">Weekly Engagement Trend</h3>
+              <p className="text-[11px] text-gray-400 mt-1">Active clients engaged vs activities completed</p>
+            </div>
+            <div className="text-right">
+              <span className="text-2xl font-black text-gray-900">{overview.completionsThisWeek}</span>
+              <p className="text-[11px] text-teal-600 font-bold uppercase">Completions</p>
+            </div>
+          </div>
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={weeklyTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorEngaged" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} dy={10} />
+                <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                <Bar yAxisId="left" dataKey="completions" name="Activities Completed" fill={COLORS.accent} radius={[4, 4, 0, 0]} barSize={20} />
+                <Area yAxisId="right" type="monotone" dataKey="engaged" name="Clients Engaged" stroke={COLORS.primary} strokeWidth={3} fill="url(#colorEngaged)" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </div>
+
+        {/* Clinician Utilization */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+          <div className="flex justify-between items-end mb-6">
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">Clinician Utilization</h3>
+              <p className="text-[11px] text-gray-400 mt-1">Caseload size and compliance per clinician</p>
+            </div>
+          </div>
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={clinicianUtilization.slice(0, 5)} layout="vertical" margin={{ top: 0, right: 20, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <XAxis type="number" yAxisId="bottom" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                <XAxis type="number" yAxisId="top" orientation="top" hide />
+                <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#475569", fontSize: 11, fontWeight: 600 }} width={90} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
+                <Bar yAxisId="bottom" dataKey="caseloadSize" name="Caseload" fill={COLORS.primary} radius={[0, 4, 4, 0]} barSize={16} />
+                <Bar yAxisId="top" dataKey="complianceAvg" name="Compliance %" fill={COLORS.muted} fillOpacity={0.3} radius={[0, 4, 4, 0]} barSize={8} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
       </div>
 
-      {/* Section 1: Practice-wide overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <StatTile label="Active clients" value={overview.activeClients} icon={Users} accent="#34D399" hint={`${overview.totalClients} total`} />
-        <StatTile label="Active clinicians" value={overview.activeClinicians} icon={Stethoscope} accent="#A78BFA" />
-        <StatTile label="Weekly compliance" value={overview.weeklyCompliance} suffix="%" icon={Activity} accent="#60A5FA" trend={complianceTrend} />
-        <StatTile label="Engagement rate" value={overview.engagementRate} suffix="%" icon={TrendingUp} accent="#FBBF24" hint="activities completed" />
+      {/* Main Charts Row 2: Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Caseload by Category */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm lg:col-span-2">
+          <h3 className="text-sm font-bold text-gray-900 mb-1">Caseload by Category</h3>
+          <p className="text-[11px] text-gray-400 mb-6">Distribution across clinical focus areas</p>
+          <div className="h-[220px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={categoryData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#475569", fontSize: 11, fontWeight: 600 }} dy={8} tickFormatter={(v) => v.charAt(0).toUpperCase() + v.slice(1)} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" name="Clients" radius={[6, 6, 0, 0]} barSize={32}>
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_PALETTE[index % CHART_PALETTE.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Caseload by Age (Donut) */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col">
+          <h3 className="text-sm font-bold text-gray-900 mb-1">Age Distribution</h3>
+          <p className="text-[11px] text-gray-400 mb-2">Active clients grouped by age</p>
+          <div className="flex-1 min-h-[220px] relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={ageData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {ageData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_PALETTE[index % CHART_PALETTE.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend 
+                  layout="vertical" 
+                  verticalAlign="middle" 
+                  align="right"
+                  iconType="circle"
+                  wrapperStyle={{ fontSize: '11px', fontWeight: 600, color: '#475569' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* Center text for donut */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pr-[80px]">
+              <span className="text-2xl font-black text-gray-900">{overview.activeClients}</span>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Total</span>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <StatTile label="Monthly compliance" value={overview.monthlyCompliance} suffix="%" accent="#60A5FA" />
-        <StatTile label="Completions this week" value={overview.completionsThisWeek} accent="#34D399" trend={completionsTrend} />
-        <StatTile label="On waitlist" value={caseload.waitlist} accent="#A78BFA" hint="awaiting assignment" />
-        <StatTile label="Avg tenure" value={caseload.avgTenureDays >= 30 ? Math.round(caseload.avgTenureDays / 30) : caseload.avgTenureDays} suffix={caseload.avgTenureDays >= 30 ? "mo" : "days"} accent="#F472B6" />
-      </div>
-
-      {/* Compliance trend */}
-      <ComplianceTrendCard data={weeklyTrend} />
-
-      {/* Section 2: Clinician utilization */}
-      <ClinicianUtilizationTable clinicians={clinicianUtilization} />
-
-      {/* Section 3: Caseload distribution */}
-      <div className="space-y-5">
-        <CaseloadStatusBar caseload={caseload} />
-        <CaseloadDistribution byClinician={caseload.byClinician} byCategory={caseload.byCategory} byAge={caseload.byAge} />
-      </div>
-
-      {/* Section 4 & 6: Waitlist + Family engagement */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* Bottom Panels from original layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <WaitlistPanel waitlist={waitlist} />
         <FamilyEngagementPanel family={family} />
       </div>
-
-      {/* Section 5: Outcomes & clinical reporting */}
       <OutcomesPanel outcomes={outcomes} />
 
-      {/* Quick actions */}
+      {/* Quick actions styled like Trainer layout */}
       <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Quick actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {QUICK_ACTIONS.map((a) => {
+        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Quick actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {QUICK_ACTIONS.map((a, idx) => {
             const Icon = a.icon;
+            const color = CHART_PALETTE[idx % CHART_PALETTE.length];
             return (
               <Link key={a.label} to={createPageUrl(a.page)}>
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer h-full group">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${a.color}1A` }}>
-                      <Icon className="w-5 h-5" style={{ color: a.color }} />
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-teal-200 transition-all cursor-pointer h-full group">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-gray-50 group-hover:bg-teal-50 transition-colors">
+                    <Icon className="w-5 h-5 text-gray-500 group-hover:text-teal-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mt-3">{a.label}</h4>
-                  <p className="text-xs text-gray-400 mt-0.5">{a.desc}</p>
+                  <h4 className="font-bold text-gray-900 text-sm leading-tight">{a.label}</h4>
+                  <p className="text-[11px] text-gray-400 mt-1 line-clamp-2">{a.desc}</p>
                 </div>
               </Link>
             );
