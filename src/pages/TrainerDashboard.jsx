@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
 import { format, subDays, startOfWeek } from "date-fns";
@@ -13,6 +13,8 @@ import CaseloadComplianceList from "@/components/slp/CaseloadComplianceList";
 import { createPageUrl } from "@/utils";
 
 export default function TrainerDashboard() {
+  const queryClient = useQueryClient();
+
   const { data: therapist } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
@@ -46,6 +48,14 @@ export default function TrainerDashboard() {
     enabled: !!therapist?.id,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Real-time: refresh logs the moment a patient completes homework
+  useEffect(() => {
+    const unsubscribe = base44.entities.TherapyLog.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["allWorkoutLogs"] });
+    });
+    return unsubscribe;
+  }, [queryClient]);
 
   const isLoading = assignmentsLoading || usersLoading || logsLoading;
 
@@ -159,6 +169,8 @@ export default function TrainerDashboard() {
       description: `0% this week · Check in needed`,
       linkLabel: "View client →",
       linkTo: `${createPageUrl("TrainerClientDetail")}?clientId=${c.id}`,
+      clientId: c.id,
+      clientEmail: allUsers.find((u) => u.id === c.id)?.email,
     });
   });
   // Low compliance clients (below 50% but not 0)
@@ -169,6 +181,8 @@ export default function TrainerDashboard() {
       description: `Consider checking in or updating plan`,
       linkLabel: "View client →",
       linkTo: `${createPageUrl("TrainerClientDetail")}?clientId=${c.id}`,
+      clientId: c.id,
+      clientEmail: allUsers.find((u) => u.id === c.id)?.email,
     });
   });
 
@@ -287,7 +301,7 @@ export default function TrainerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Left: Alerts */}
         <div className="lg:col-span-3 space-y-4">
-          <AlertsPanel alerts={finalAlerts} />
+          <AlertsPanel alerts={finalAlerts} trainerId={therapist?.id} />
         </div>
 
         {/* Right: Sessions + Trend */}

@@ -4,9 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSearchParams, useLocation } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import { useSearchParams, useLocation, Link } from "react-router-dom";
+import { Sparkles, Download } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
+import { createPageUrl } from "@/utils";
 
 import CaseloadOverview from "@/components/caseload/CaseloadOverview";
 import ClientGoals from "@/components/trainer/ClientGoals";
@@ -65,6 +66,25 @@ export default function TrainerClientDetail() {
   const focusArea = displayClient.therapy_focus || "Articulation";
   const schedule = displayClient.session_schedule || "";
 
+  const [downloading, setDownloading] = React.useState(false);
+  const handleDownloadReport = async () => {
+    if (!clientId) return;
+    setDownloading(true);
+    try {
+      const res = await base44.functions.invoke("generateProgressReport", { patientId: clientId }, { responseType: "blob" });
+      const url = window.URL.createObjectURL(res.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `progress_report_${(displayClient.full_name || "patient").replace(/[^a-z0-9]+/gi, "_")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
       {/* Top bar */}
@@ -80,10 +100,24 @@ export default function TrainerClientDetail() {
                 .join(" · ")}
             </span>
           </div>
-          <Button variant="outline" size="sm" className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50 flex-shrink-0">
-            <Sparkles className="w-4 h-4" />
-            Ask AI ↗
-          </Button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {clientId && (
+              <Button
+                onClick={handleDownloadReport}
+                disabled={downloading}
+                variant="outline"
+                size="sm"
+                className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50"
+              >
+                <Download className="w-4 h-4" />
+                {downloading ? "Preparing..." : "Download report"}
+              </Button>
+            )}
+            <Button variant="outline" size="sm" className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50">
+              <Sparkles className="w-4 h-4" />
+              Ask AI ↗
+            </Button>
+          </div>
         </div>
       )}
 
@@ -111,9 +145,17 @@ export default function TrainerClientDetail() {
           <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full flex-shrink-0">
             Active
           </span>
-          <Button variant="outline" size="sm" className="border-gray-200 text-gray-800 hover:bg-gray-50 text-sm font-medium flex-shrink-0">
-            Assign homework
-          </Button>
+          {clientId ? (
+            <Link to={`${createPageUrl("HomeworkBuilder")}?patientId=${clientId}`} className="flex-shrink-0">
+              <Button variant="outline" size="sm" className="border-gray-200 text-gray-800 hover:bg-gray-50 text-sm font-medium">
+                Assign homework
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled className="border-gray-200 text-gray-800 text-sm font-medium flex-shrink-0">
+              Assign homework
+            </Button>
+          )}
         </div>
       )}
 

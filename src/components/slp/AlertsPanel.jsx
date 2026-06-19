@@ -18,7 +18,7 @@ function extractClientName(title) {
   return title.slice(0, idx).trim();
 }
 
-export default function AlertsPanel({ alerts }) {
+export default function AlertsPanel({ alerts, trainerId }) {
   const [nudgeFor, setNudgeFor] = useState(null);
 
   if (!alerts || alerts.length === 0) {
@@ -54,7 +54,7 @@ export default function AlertsPanel({ alerts }) {
                       )}
                       {showNudge && (
                         <button
-                          onClick={() => setNudgeFor(clientName)}
+                          onClick={() => setNudgeFor({ name: clientName, clientId: alert.clientId, clientEmail: alert.clientEmail })}
                           className={`text-xs font-semibold inline-flex items-center gap-1 px-2 py-1 rounded-md border bg-white/60 transition-colors ${style.nudge}`}
                         >
                           <Zap className="w-3 h-3" />
@@ -73,7 +73,10 @@ export default function AlertsPanel({ alerts }) {
       <NudgeDialog
         open={!!nudgeFor}
         onOpenChange={(open) => !open && setNudgeFor(null)}
-        clientName={nudgeFor}
+        clientName={nudgeFor?.name}
+        clientId={nudgeFor?.clientId}
+        clientEmail={nudgeFor?.clientEmail}
+        trainerId={trainerId}
       />
     </>
   );

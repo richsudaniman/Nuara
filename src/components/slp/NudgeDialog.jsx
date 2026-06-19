@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Send, MessageCircle, Mail, Bell, CheckCircle2 } from "lucide-react";
@@ -43,18 +44,43 @@ const CHANNEL_ICONS = {
   push: Bell,
 };
 
-export default function NudgeDialog({ open, onOpenChange, clientName }) {
+export default function NudgeDialog({ open, onOpenChange, clientName, clientId, trainerId, clientEmail }) {
   const [selectedId, setSelectedId] = useState("reengage");
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const selected = SEQUENCES.find((s) => s.id === selectedId);
 
-  const handleSend = () => {
-    setSent(true);
-    setTimeout(() => {
-      onOpenChange(false);
-      setSent(false);
-    }, 1600);
+  const handleSend = async () => {
+    setSending(true);
+    try {
+      // If we have a real patient, send the first in-app step now and email if available.
+      if (clientId && trainerId) {
+        const firstInApp = selected.steps.find((s) => s.channel === "in-app") || selected.steps[0];
+        await base44.entities.ChatMessage.create({
+          sender_id: trainerId,
+          receiver_id: clientId,
+          message: firstInApp.text,
+          message_type: "notification",
+          is_read: false,
+        });
+
+        if (clientEmail) {
+          await base44.integrations.Core.SendEmail({
+            to: clientEmail,
+            subject: "A note from your speech therapist",
+            body: `Hi ${clientName || "there"},\n\n${firstInApp.text}\n\nLog in to your portal to keep your practice streak going.\n\n— Your SLP-tec care team`,
+          });
+        }
+      }
+      setSent(true);
+      setTimeout(() => {
+        onOpenChange(false);
+        setSent(false);
+      }, 1600);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -65,7 +91,7 @@ export default function NudgeDialog({ open, onOpenChange, clientName }) {
             <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
               <CheckCircle2 className="w-6 h-6 text-emerald-600" />
             </div>
-            <h3 className="text-base font-semibold text-gray-900">Nudge sequence scheduled</h3>
+            <h3 className="text-base font-semibold text-gray-900">Nudge sent</h3>
             <p className="text-sm text-gray-500 mt-1">
               {selected.name} for {clientName}
             </p>
@@ -130,9 +156,9 @@ export default function NudgeDialog({ open, onOpenChange, clientName }) {
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSend} className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
+              <Button onClick={handleSend} disabled={sending} className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
                 <Send className="w-4 h-4" />
-                Send sequence
+                {sending ? "Sending..." : "Send sequence"}
               </Button>
             </DialogFooter>
           </>
