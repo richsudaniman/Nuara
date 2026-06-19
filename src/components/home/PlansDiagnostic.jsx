@@ -28,7 +28,7 @@ export default function PlansDiagnostic() {
       // Test WorkoutPlan access
       try {
         console.log('Testing WorkoutPlan.filter()...');
-        const workoutPlans = await base44.entities.WorkoutPlan.filter({
+        const workoutPlans = await base44.entities.TherapyPlan.filter({
           assigned_to_client_id: diagnostics.user.id
         });
         diagnostics.workoutPlans.success = true;
@@ -44,7 +44,7 @@ export default function PlansDiagnostic() {
       // Test NutritionPlan access
       try {
         console.log('Testing NutritionPlan.filter()...');
-        const nutritionPlans = await base44.entities.NutritionPlan.filter({
+        const nutritionPlans = await base44.entities.TherapyGoal.filter({
           assigned_to_client_id: diagnostics.user.id
         });
         diagnostics.nutritionPlans.success = true;
@@ -61,7 +61,7 @@ export default function PlansDiagnostic() {
       if (!diagnostics.workoutPlans.success) {
         try {
           console.log('Attempting WorkoutPlan.list() without filter...');
-          const allWorkoutPlans = await base44.entities.WorkoutPlan.list();
+          const allWorkoutPlans = await base44.entities.TherapyPlan.list();
           diagnostics.workoutPlans.alternativeSuccess = true;
           diagnostics.workoutPlans.alternativeData = allWorkoutPlans.filter(
             p => p.assigned_to_client_id === diagnostics.user.id
@@ -74,7 +74,7 @@ export default function PlansDiagnostic() {
       if (!diagnostics.nutritionPlans.success) {
         try {
           console.log('Attempting NutritionPlan.list() without filter...');
-          const allNutritionPlans = await base44.entities.NutritionPlan.list();
+          const allNutritionPlans = await base44.entities.TherapyGoal.list();
           diagnostics.nutritionPlans.alternativeSuccess = true;
           diagnostics.nutritionPlans.alternativeData = allNutritionPlans.filter(
             p => p.assigned_to_client_id === diagnostics.user.id

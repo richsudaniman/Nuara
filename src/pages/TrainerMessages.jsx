@@ -28,7 +28,7 @@ export default function TrainerMessages() {
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['trainerAssignments', trainer?.id],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: trainer.id, is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ trainer_id: trainer.id, is_active: true }),
     initialData: [],
     enabled: !!trainer?.id,
     staleTime: 15 * 60 * 1000,
