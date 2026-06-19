@@ -206,13 +206,13 @@ export default function AdminDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={clinicianUtilization.slice(0, 5)} layout="vertical" margin={{ top: 0, right: 20, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                <XAxis type="number" yAxisId="bottom" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
-                <XAxis type="number" yAxisId="top" orientation="top" hide />
+                <XAxis type="number" xAxisId="bottom" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                <XAxis type="number" xAxisId="top" orientation="top" hide />
                 <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#475569", fontSize: 11, fontWeight: 600 }} width={90} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
-                <Bar yAxisId="bottom" dataKey="caseloadSize" name="Caseload" fill={COLORS.primary} radius={[0, 4, 4, 0]} barSize={16} />
-                <Bar yAxisId="top" dataKey="complianceAvg" name="Compliance %" fill={COLORS.muted} fillOpacity={0.3} radius={[0, 4, 4, 0]} barSize={8} />
+                <Bar xAxisId="bottom" dataKey="caseloadSize" name="Caseload" fill={COLORS.primary} radius={[0, 4, 4, 0]} barSize={16} />
+                <Bar xAxisId="top" dataKey="complianceAvg" name="Compliance %" fill={COLORS.muted} fillOpacity={0.3} radius={[0, 4, 4, 0]} barSize={8} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
