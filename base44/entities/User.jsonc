@@ -15,6 +15,50 @@
       "default": "client",
       "description": "Type of user - client or trainer"
     },
+    "client_status": {
+      "type": "string",
+      "enum": [
+        "waitlist",
+        "active",
+        "on_hold",
+        "discharged"
+      ],
+      "default": "active",
+      "description": "Lifecycle status of the client. Admin-added clients start as 'waitlist'; assigning a practitioner moves them to 'active'."
+    },
+    "waitlist_joined_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the client was added to the waitlist"
+    },
+    "activated_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the client was converted from waitlist to active treatment"
+    },
+    "discharged_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the client was discharged"
+    },
+    "discharge_reason": {
+      "type": "string",
+      "description": "Reason for discharge (e.g. goals met, moved, transferred)"
+    },
+    "clinical_category": {
+      "type": "string",
+      "enum": [
+        "articulation",
+        "language",
+        "fluency",
+        "voice",
+        "listening",
+        "social",
+        "cognitive",
+        "other"
+      ],
+      "description": "Primary clinical category for caseload distribution"
+    },
     "phone": {
       "type": "string",
       "description": "Phone number"
