@@ -18,11 +18,13 @@ Deno.serve(async (req) => {
 
     const svc = base44.asServiceRole;
 
-    const [allUsers, assignments, logs, plans] = await Promise.all([
+    const [allUsers, assignments, logs, plans, goals, messages] = await Promise.all([
       svc.entities.User.list('-created_date', 2000),
       svc.entities.PractitionerPatientAssignment.filter({ is_active: true }),
       svc.entities.TherapyLog.list('-completed_date', 5000),
       svc.entities.TherapyPlan.list('-created_date', 5000),
+      svc.entities.TherapyGoal.list('-created_date', 5000),
+      svc.entities.ChatMessage.list('-created_date', 5000),
     ]);
 
     const trainers = allUsers.filter((u) => u.role === 'trainer' || u.user_type === 'trainer');
@@ -163,6 +165,92 @@ Deno.serve(async (req) => {
         ? Math.min(100, Math.round((logsThisWeek.length / assignedActivityCount) * 100))
         : 0;
 
+    // ===== Phase 2: Waitlist =====
+    const waitlistActiveIds = new Set(
+      logs.filter((l) => waitlistClients.some((w) => w.id === l.logged_by_client_id)).map((l) => l.logged_by_client_id)
+    );
+    const waitlistActive = waitlistClients.filter((w) => waitlistActiveIds.has(w.id)).length;
+
+    // Conversion: clients who joined a waitlist and later activated
+    const everWaitlisted = clients.filter((c) => c.waitlist_joined_date);
+    const converted = clients.filter((c) => c.waitlist_joined_date && c.activated_date);
+    const conversionRate =
+      everWaitlisted.length > 0 ? Math.round((converted.length / everWaitlisted.length) * 100) : 0;
+
+    const convTimes = converted
+      .map((c) => Math.round((new Date(c.activated_date) - new Date(c.waitlist_joined_date)) / (1000 * 60 * 60 * 24)))
+      .filter((v) => !Number.isNaN(v) && v >= 0);
+    const avgWaitlistDays =
+      convTimes.length > 0 ? Math.round(convTimes.reduce((a, b) => a + b, 0) / convTimes.length) : 0;
+
+    const waitlistEngagementRate =
+      waitlistClients.length > 0 ? Math.round((waitlistActive / waitlistClients.length) * 100) : 0;
+
+    // ===== Phase 2: Outcomes & clinical reporting =====
+    const activeGoals = goals.filter((g) => g.is_active !== false);
+    const onTrackGoals = activeGoals.filter((g) => Number(g.progress_percentage) >= 50).length;
+    const flaggedGoals = activeGoals.filter((g) => Number(g.progress_percentage) < 50).length;
+    const metGoals = goals.filter((g) => Number(g.progress_percentage) >= 100).length;
+    const goalAttainmentRate =
+      goals.length > 0 ? Math.round((metGoals / goals.length) * 100) : 0;
+
+    // Avg treatment duration for discharged clients
+    const treatmentDurations = dischargedClients
+      .map((c) => {
+        const start = c.activated_date || c.created_date;
+        const end = c.discharged_date;
+        if (!start || !end) return null;
+        return Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+      })
+      .filter((v) => v !== null && v >= 0);
+    const avgTreatmentDays =
+      treatmentDurations.length > 0
+        ? Math.round(treatmentDurations.reduce((a, b) => a + b, 0) / treatmentDurations.length)
+        : 0;
+
+    const dischargeReasonCounts = {};
+    dischargedClients.forEach((c) => {
+      const reason = c.discharge_reason || 'Unspecified';
+      dischargeReasonCounts[reason] = (dischargeReasonCounts[reason] || 0) + 1;
+    });
+    const dischargeReasons = Object.entries(dischargeReasonCounts).map(([name, value]) => ({ name, value }));
+
+    // Most common clinical targets (from goal metric types / categories)
+    const targetCounts = {};
+    activeClients.forEach((c) => {
+      const t = c.clinical_category || c.therapy_focus?.toLowerCase() || 'other';
+      targetCounts[t] = (targetCounts[t] || 0) + 1;
+    });
+    const commonTargets = Object.entries(targetCounts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 6);
+
+    // ===== Phase 2: Family engagement =====
+    const activeFamilyIds = new Set(logsThisWeek.map((l) => l.logged_by_client_id));
+    const activeFamilies = activeClients.filter((c) => activeFamilyIds.has(c.id)).length;
+    const inactiveFamilies = activeClients.length - activeFamilies;
+
+    // Parent message response rate: inbound parent messages that got a reply
+    const parentMsgs = messages.filter((m) => clients.some((c) => c.id === m.sender_id));
+    const repliedThreads = new Set();
+    parentMsgs.forEach((pm) => {
+      const replied = messages.some(
+        (m) => m.receiver_id === pm.sender_id && new Date(m.created_date) > new Date(pm.created_date)
+      );
+      if (replied) repliedThreads.add(pm.sender_id);
+    });
+    const parentSenders = new Set(parentMsgs.map((m) => m.sender_id));
+    const parentResponseRate =
+      parentSenders.size > 0 ? Math.round((repliedThreads.size / parentSenders.size) * 100) : 0;
+
+    // Net engagement score: blend of active families + weekly compliance + parent response
+    const netEngagementScore = Math.round(
+      ((activeClients.length > 0 ? (activeFamilies / activeClients.length) * 100 : 0) * 0.5) +
+        weeklyCompliance * 0.3 +
+        parentResponseRate * 0.2
+    );
+
     return Response.json({
       overview: {
         activeClients: activeClients.length,
@@ -174,6 +262,33 @@ Deno.serve(async (req) => {
         engagementRate,
         completionsThisWeek: logsThisWeek.length,
         completionsPrevWeek: logsPrevWeek.length,
+      },
+      waitlist: {
+        total: waitlistClients.length,
+        active: waitlistActive,
+        inactive: waitlistClients.length - waitlistActive,
+        conversionRate,
+        avgWaitlistDays,
+        engagementRate: waitlistEngagementRate,
+        convertedCount: converted.length,
+      },
+      outcomes: {
+        goalAttainmentRate,
+        onTrackGoals,
+        flaggedGoals,
+        metGoals,
+        totalGoals: goals.length,
+        avgTreatmentDays,
+        dischargeCount: dischargedClients.length,
+        dischargeReasons,
+        commonTargets,
+      },
+      family: {
+        activeFamilies,
+        inactiveFamilies,
+        totalFamilies: activeClients.length,
+        parentResponseRate,
+        netEngagementScore,
       },
       weeklyTrend,
       clinicianUtilization,

@@ -10,6 +10,9 @@ import ComplianceTrendCard from "@/components/admin/ComplianceTrendCard";
 import ClinicianUtilizationTable from "@/components/admin/ClinicianUtilizationTable";
 import CaseloadDistribution from "@/components/admin/CaseloadDistribution";
 import CaseloadStatusBar from "@/components/admin/CaseloadStatusBar";
+import WaitlistPanel from "@/components/admin/WaitlistPanel";
+import OutcomesPanel from "@/components/admin/OutcomesPanel";
+import FamilyEngagementPanel from "@/components/admin/FamilyEngagementPanel";
 
 const QUICK_ACTIONS = [
   { label: "Invite user", desc: "Add clinicians or staff", icon: UserPlus, page: "AdminInviteUser", color: "#A78BFA" },
@@ -42,7 +45,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const { overview, weeklyTrend, clinicianUtilization, caseload } = data;
+  const { overview, weeklyTrend, clinicianUtilization, caseload, waitlist, outcomes, family } = data;
   const complianceTrend = overview.weeklyCompliance - overview.prevWeeklyCompliance;
   const completionsTrend = overview.completionsPrevWeek > 0
     ? Math.round(((overview.completionsThisWeek - overview.completionsPrevWeek) / overview.completionsPrevWeek) * 100)
@@ -88,6 +91,15 @@ export default function AdminDashboard() {
         <CaseloadStatusBar caseload={caseload} />
         <CaseloadDistribution byClinician={caseload.byClinician} byCategory={caseload.byCategory} byAge={caseload.byAge} />
       </div>
+
+      {/* Section 4 & 6: Waitlist + Family engagement */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <WaitlistPanel waitlist={waitlist} />
+        <FamilyEngagementPanel family={family} />
+      </div>
+
+      {/* Section 5: Outcomes & clinical reporting */}
+      <OutcomesPanel outcomes={outcomes} />
 
       {/* Quick actions */}
       <div>
