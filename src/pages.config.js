@@ -12,7 +12,6 @@ import Exercises from './pages/Exercises';
 import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Messages from './pages/Messages';
-import PainTracking from './pages/PainTracking';
 import Progress from './pages/Progress';
 import SwitchRole from './pages/SwitchRole';
 import TrainerAssignClients from './pages/TrainerAssignClients';
@@ -44,7 +43,6 @@ export const PAGES = {
     "Home": Home,
     "Learn": Learn,
     "Messages": Messages,
-    "PainTracking": PainTracking,
     "Progress": Progress,
     "SwitchRole": SwitchRole,
     "TrainerAssignClients": TrainerAssignClients,

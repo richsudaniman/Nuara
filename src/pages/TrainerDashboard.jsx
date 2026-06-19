@@ -21,7 +21,7 @@ export default function TrainerDashboard() {
 
   const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
     queryKey: ["trainerAssignments", therapist?.id],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: therapist.id, is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ trainer_id: therapist.id, is_active: true }),
     enabled: !!therapist?.id,
     staleTime: 5 * 60 * 1000,
   });
@@ -35,7 +35,7 @@ export default function TrainerDashboard() {
 
   const { data: workoutLogs = [], isLoading: logsLoading } = useQuery({
     queryKey: ["allWorkoutLogs"],
-    queryFn: () => base44.entities.WorkoutLog.list("-completed_date", 500),
+    queryFn: () => base44.entities.TherapyLog.list("-completed_date", 500),
     enabled: !!therapist?.id,
     staleTime: 2 * 60 * 1000,
   });

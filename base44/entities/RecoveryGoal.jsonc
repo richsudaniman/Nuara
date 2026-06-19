@@ -1,0 +1,56 @@
+{
+  "name": "RecoveryGoal",
+  "type": "object",
+  "properties": {
+    "assigned_to_patient_id": {
+      "type": "string",
+      "description": "ID of the patient this goal is assigned to"
+    },
+    "created_by_chiropractor_id": {
+      "type": "string",
+      "description": "ID of the chiropractor who created this goal"
+    },
+    "goal_title": {
+      "type": "string",
+      "description": "Goal title"
+    },
+    "target_value": {
+      "type": "string",
+      "description": "Target value (e.g., Pain level below 3, 90 degrees rotation)"
+    },
+    "current_value": {
+      "type": "string",
+      "description": "Current value"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target completion date"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "description": "Progress percentage (0-100)"
+    },
+    "linked_metric_type": {
+      "type": "string",
+      "enum": [
+        "range_of_motion",
+        "flexibility_score",
+        "strength_test",
+        "balance_score",
+        "pain_score",
+        "functional_capacity"
+      ],
+      "description": "The specific metric type this goal tracks"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether goal is active"
+    }
+  },
+  "required": [
+    "goal_title",
+    "target_value"
+  ]
+}

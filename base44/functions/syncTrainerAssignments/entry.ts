@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
     }
 
     // Get all active assignments
-    const assignments = await base44.asServiceRole.entities.TrainerClientAssignment.list();
+    const assignments = await base44.asServiceRole.entities.PractitionerPatientAssignment.list();
     const activeAssignments = assignments.filter(a => a.is_active);
 
     // Update each client's User record with their trainer ID

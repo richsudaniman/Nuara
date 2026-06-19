@@ -1,0 +1,32 @@
+{
+  "name": "PractitionerPatientAssignment",
+  "type": "object",
+  "properties": {
+    "trainer_id": {
+      "type": "string",
+      "description": "ID of the practitioner"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID of the patient"
+    },
+    "assigned_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when patient was assigned to practitioner"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this assignment is currently active"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about the patient"
+    }
+  },
+  "required": [
+    "trainer_id",
+    "client_id"
+  ]
+}

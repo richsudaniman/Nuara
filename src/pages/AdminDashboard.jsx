@@ -21,7 +21,7 @@ export default function AdminDashboard() {
 
   const { data: videos, isLoading: videosLoading } = useQuery({
     queryKey: ['allVideos'],
-    queryFn: () => base44.entities.ExerciseVideo.list('-created_date'),
+    queryFn: () => base44.entities.TherapyActivity.list('-created_date'),
     initialData: [],
     staleTime: 0,
     refetchOnMount: true,
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
 
   const { data: workoutPlans, isLoading: plansLoading } = useQuery({
     queryKey: ['allWorkoutPlans'],
-    queryFn: () => base44.entities.WorkoutPlan.list('-created_date'),
+    queryFn: () => base44.entities.TherapyPlan.list('-created_date'),
     initialData: [],
     staleTime: 0,
     refetchOnMount: true,
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['allWorkoutLogs'],
-    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 100),
+    queryFn: () => base44.entities.TherapyLog.list('-completed_date', 100),
     initialData: [],
     staleTime: 0,
     refetchOnMount: true,
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['allAssignments'],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ is_active: true }),
     initialData: [],
     enabled: !usersLoading,
     staleTime: 0,

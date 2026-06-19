@@ -22,7 +22,7 @@ export default function AssignmentBuilder({ assignedActivities, onRemove, onUpda
 
   const { data: assignments = [] } = useQuery({
     queryKey: ["trainerAssignments", user?.id],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: user.id, is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ trainer_id: user.id, is_active: true }),
     enabled: !!user?.id,
   });
 

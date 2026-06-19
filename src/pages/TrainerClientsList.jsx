@@ -28,7 +28,7 @@ export default function TrainerClientsList() {
   const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
     queryKey: ["trainerAssignments", trainer?.id],
     queryFn: () =>
-      base44.entities.TrainerClientAssignment.filter({
+      base44.entities.PractitionerPatientAssignment.filter({
         trainer_id: trainer.id,
         is_active: true,
       }),
@@ -39,7 +39,7 @@ export default function TrainerClientsList() {
   const { data: allAssignments = [] } = useQuery({
     queryKey: ["allActiveAssignments"],
     queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.list();
+      const all = await base44.entities.PractitionerPatientAssignment.list();
       return all.filter((a) => a.is_active);
     },
     enabled: !!trainer?.id,
@@ -65,7 +65,7 @@ export default function TrainerClientsList() {
       const existing = assignments.find((a) => a.client_id === clientId && a.is_active);
       if (existing) return existing;
 
-      return base44.entities.TrainerClientAssignment.create({
+      return base44.entities.PractitionerPatientAssignment.create({
         trainer_id: trainer.id,
         client_id: clientId,
         assigned_date: new Date().toISOString().split("T")[0],
@@ -83,7 +83,7 @@ export default function TrainerClientsList() {
     mutationFn: async (clientId) => {
       await base44.entities.User.update(clientId, { assigned_trainer_id: null });
       const assignment = assignments.find((a) => a.client_id === clientId && a.is_active);
-      if (assignment) await base44.entities.TrainerClientAssignment.delete(assignment.id);
+      if (assignment) await base44.entities.PractitionerPatientAssignment.delete(assignment.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trainerAssignments"] });

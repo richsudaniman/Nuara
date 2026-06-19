@@ -25,7 +25,7 @@ export default function TrainerAssignClients() {
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['allAssignments', trainer?.id],
     queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.list();
+      const all = await base44.entities.PractitionerPatientAssignment.list();
       return all.filter(a => a.trainer_id === trainer.id);
     },
     initialData: [],
@@ -35,7 +35,7 @@ export default function TrainerAssignClients() {
   const { data: allAssignments, isLoading: allAssignmentsLoading } = useQuery({
     queryKey: ['allTrainerAssignments'],
     queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.list();
+      const all = await base44.entities.PractitionerPatientAssignment.list();
       return all.filter(a => a.is_active);
     },
     initialData: [],
@@ -64,7 +64,7 @@ export default function TrainerAssignClients() {
       }
       
       // Create new assignment
-      return base44.entities.TrainerClientAssignment.create({
+      return base44.entities.PractitionerPatientAssignment.create({
         trainer_id: trainer.id,
         client_id: clientId,
         assigned_date: new Date().toISOString().split('T')[0],
@@ -87,7 +87,7 @@ export default function TrainerAssignClients() {
         assigned_trainer_id: null
       });
       
-      return base44.entities.TrainerClientAssignment.delete(assignmentId);
+      return base44.entities.PractitionerPatientAssignment.delete(assignmentId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });

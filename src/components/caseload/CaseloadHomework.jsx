@@ -36,10 +36,10 @@ export default function CaseloadHomework({ clientId, isDemo }) {
     queryKey: ["clientWorkoutPlans", clientId],
     queryFn: async () => {
       try {
-        const rehab = await base44.entities.RehabilitationProgram.filter({ assigned_to_patient_id: clientId });
+        const rehab = await base44.entities.CareProgram.filter({ assigned_to_patient_id: clientId });
         if (rehab.length > 0) return rehab;
       } catch {}
-      return base44.entities.WorkoutPlan.filter({ assigned_to_client_id: clientId });
+      return base44.entities.TherapyPlan.filter({ assigned_to_client_id: clientId });
     },
     enabled: !!clientId && !isDemo,
     staleTime: 5 * 60 * 1000,
@@ -47,7 +47,7 @@ export default function CaseloadHomework({ clientId, isDemo }) {
 
   const { data: logs = [] } = useQuery({
     queryKey: ["clientLogs", clientId],
-    queryFn: () => base44.entities.WorkoutLog.filter({ logged_by_client_id: clientId }, "-completed_date", 100),
+    queryFn: () => base44.entities.TherapyLog.filter({ logged_by_client_id: clientId }, "-completed_date", 100),
     enabled: !!clientId && !isDemo,
     staleTime: 2 * 60 * 1000,
   });

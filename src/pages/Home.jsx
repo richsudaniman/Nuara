@@ -36,14 +36,14 @@ export default function Home() {
 
   const { data: workoutPlans } = useQuery({
     queryKey: ['workoutPlans', user?.id],
-    queryFn: () => base44.entities.WorkoutPlan.filter({ assigned_to_client_id: user.id }),
+    queryFn: () => base44.entities.TherapyPlan.filter({ assigned_to_client_id: user.id }),
     initialData: [],
     enabled: !!user?.id,
   });
 
   const { data: workoutLogs } = useQuery({
     queryKey: ['workoutLogs', user?.id],
-    queryFn: () => base44.entities.WorkoutLog.filter({ logged_by_client_id: user.id }, '-completed_date'),
+    queryFn: () => base44.entities.TherapyLog.filter({ logged_by_client_id: user.id }, '-completed_date'),
     initialData: [],
     enabled: !!user?.id,
   });

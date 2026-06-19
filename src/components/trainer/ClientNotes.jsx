@@ -20,7 +20,7 @@ export default function ClientNotes({ clientId, trainerId }) {
 
   const { data: notes, isLoading } = useQuery({
     queryKey: ['clientNotes', clientId],
-    queryFn: () => base44.entities.TrainerNote.filter({ client_id: clientId }, '-created_date'),
+    queryFn: () => base44.entities.ClinicalNote.filter({ client_id: clientId }, '-created_date'),
     initialData: [],
     enabled: !!clientId,
   });
@@ -34,9 +34,9 @@ export default function ClientNotes({ clientId, trainerId }) {
       };
 
       if (editingNote?.id) {
-        return base44.entities.TrainerNote.update(editingNote.id, noteData);
+        return base44.entities.ClinicalNote.update(editingNote.id, noteData);
       } else {
-        return base44.entities.TrainerNote.create(noteData);
+        return base44.entities.ClinicalNote.create(noteData);
       }
     },
     onSuccess: () => {
@@ -48,7 +48,7 @@ export default function ClientNotes({ clientId, trainerId }) {
   });
 
   const deleteNoteMutation = useMutation({
-    mutationFn: (noteId) => base44.entities.TrainerNote.delete(noteId),
+    mutationFn: (noteId) => base44.entities.ClinicalNote.delete(noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientNotes'] });
     },

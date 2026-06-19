@@ -32,17 +32,13 @@ export default function DiagnosticTool() {
       }
 
       // Find assignment
-      const allAssignments = await base44.entities.TrainerClientAssignment.list();
+      const allAssignments = await base44.entities.PractitionerPatientAssignment.list();
       const assignment = allAssignments.find(a => 
         a.client_id === client.id && a.is_active
       );
 
       // Find plans
-      const workoutPlans = await base44.entities.WorkoutPlan.filter({
-        assigned_to_client_id: client.id
-      });
-
-      const nutritionPlans = await base44.entities.NutritionPlan.filter({
+      const workoutPlans = await base44.entities.TherapyPlan.filter({
         assigned_to_client_id: client.id
       });
 
@@ -102,7 +98,6 @@ export default function DiagnosticTool() {
           full_name: trainer.full_name
         },
         workoutPlans: workoutPlans.length,
-        nutritionPlans: nutritionPlans.length,
         issues
       });
 
@@ -129,14 +124,14 @@ export default function DiagnosticTool() {
       });
 
       // Check if assignment exists
-      const allAssignments = await base44.entities.TrainerClientAssignment.list();
+      const allAssignments = await base44.entities.PractitionerPatientAssignment.list();
       const existingAssignment = allAssignments.find(a => 
         a.client_id === results.client.id && a.is_active
       );
 
       if (!existingAssignment) {
         // Create assignment
-        await base44.entities.TrainerClientAssignment.create({
+        await base44.entities.PractitionerPatientAssignment.create({
           trainer_id: trainer.id,
           client_id: results.client.id,
           assigned_date: new Date().toISOString().split('T')[0],
@@ -281,7 +276,7 @@ export default function DiagnosticTool() {
               {/* Assignment Details */}
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4">TrainerClientAssignment Record</h3>
+                  <h3 className="font-bold text-lg mb-4">PractitionerPatientAssignment Record</h3>
                   {results.assignment ? (
                     <div className="space-y-2 font-mono text-sm">
                       <div className="grid grid-cols-2 gap-2">
@@ -321,15 +316,9 @@ export default function DiagnosticTool() {
                   <h3 className="font-bold text-lg mb-4">Assigned Plans</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-                      <span className="font-semibold">Workout Plans:</span>
+                      <span className="font-semibold">Therapy Plans:</span>
                       <span className={`font-bold ${results.workoutPlans > 0 ? 'text-green-600' : 'text-gray-400'}`}>
                         {results.workoutPlans}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-                      <span className="font-semibold">Nutrition Plans:</span>
-                      <span className={`font-bold ${results.nutritionPlans > 0 ? 'text-green-600' : 'text-gray-400'}`}>
-                        {results.nutritionPlans}
                       </span>
                     </div>
                   </div>

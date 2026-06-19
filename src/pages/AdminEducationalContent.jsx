@@ -35,7 +35,7 @@ export default function AdminEducationalContent() {
   const { data: educationalVideos, isLoading } = useQuery({
     queryKey: ['educationalVideos'],
     queryFn: async () => {
-      const allVideos = await base44.entities.ExerciseVideo.list('-created_date');
+      const allVideos = await base44.entities.TherapyActivity.list('-created_date');
       return allVideos.filter(v => v.category === 'education' || v.category === 'tutorial');
     },
     initialData: [],
@@ -43,7 +43,7 @@ export default function AdminEducationalContent() {
 
   const uploadVideoMutation = useMutation({
     mutationFn: async (data) => {
-      return base44.entities.ExerciseVideo.create({
+      return base44.entities.TherapyActivity.create({
         ...data,
         uploaded_by_trainer_id: user.id,
       });
@@ -63,7 +63,7 @@ export default function AdminEducationalContent() {
   });
 
   const deleteVideoMutation = useMutation({
-    mutationFn: (videoId) => base44.entities.ExerciseVideo.delete(videoId),
+    mutationFn: (videoId) => base44.entities.TherapyActivity.delete(videoId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['educationalVideos'] });
       setSelectedVideo(null);

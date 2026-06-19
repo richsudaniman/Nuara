@@ -1,0 +1,74 @@
+{
+  "name": "CareProgram",
+  "type": "object",
+  "properties": {
+    "assigned_to_patient_id": {
+      "type": "string",
+      "description": "ID of the patient this program is assigned to"
+    },
+    "created_by_chiropractor_id": {
+      "type": "string",
+      "description": "ID of the practitioner who created this program"
+    },
+    "day_of_week": {
+      "type": "string",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "description": "Day of the week"
+    },
+    "program_type": {
+      "type": "string",
+      "description": "Type of care program (e.g., Articulation Program, Fluency Program)"
+    },
+    "exercises": {
+      "type": "array",
+      "description": "List of exercises for the day",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Exercise name"
+          },
+          "reps": {
+            "type": "integer",
+            "description": "Number of repetitions"
+          },
+          "sets": {
+            "type": "integer",
+            "description": "Number of sets"
+          },
+          "hold_duration": {
+            "type": "integer",
+            "description": "Hold duration in seconds"
+          },
+          "video_url": {
+            "type": "string",
+            "description": "URL to demonstration video"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional instructions"
+          }
+        }
+      }
+    },
+    "order": {
+      "type": "integer",
+      "description": "Order in the week (1-7)"
+    }
+  },
+  "required": [
+    "day_of_week",
+    "program_type",
+    "exercises",
+    "order"
+  ]
+}

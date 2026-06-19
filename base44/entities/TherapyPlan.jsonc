@@ -1,0 +1,70 @@
+{
+  "name": "TherapyPlan",
+  "type": "object",
+  "properties": {
+    "assigned_to_client_id": {
+      "type": "string",
+      "description": "ID of the patient this plan is assigned to"
+    },
+    "created_by_trainer_id": {
+      "type": "string",
+      "description": "ID of the practitioner who created this plan"
+    },
+    "day_of_week": {
+      "type": "string",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "description": "Day of the week"
+    },
+    "workout_type": {
+      "type": "string",
+      "description": "Type of therapy session (e.g., Articulation, Fluency, Language)"
+    },
+    "exercises": {
+      "type": "array",
+      "description": "List of therapy exercises for the day",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Exercise name"
+          },
+          "reps": {
+            "type": "integer",
+            "description": "Number of repetitions"
+          },
+          "sets": {
+            "type": "integer",
+            "description": "Number of sets"
+          },
+          "video_url": {
+            "type": "string",
+            "description": "URL to demonstration video"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional instructions"
+          }
+        }
+      }
+    },
+    "order": {
+      "type": "integer",
+      "description": "Order in the week (1-7)"
+    }
+  },
+  "required": [
+    "day_of_week",
+    "workout_type",
+    "exercises",
+    "order"
+  ]
+}

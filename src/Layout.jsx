@@ -57,7 +57,7 @@ export default function Layout({ children, currentPageName }) {
     }
     
     // Client pages - always show client view
-    const clientPages = ['Home', 'Exercises', 'Progress', 'Learn', 'Messages', 'PainTracking', 'MockMessages'];
+    const clientPages = ['Home', 'Exercises', 'Progress', 'Learn', 'Messages', 'MockMessages'];
     if (clientPages.includes(currentPageName)) {
       return 'client';
     }
@@ -86,7 +86,7 @@ export default function Layout({ children, currentPageName }) {
   // Get assignment count for caseload badge
   const { data: trainerAssignments } = useQuery({
     queryKey: ['trainerAssignments', user?.id],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ trainer_id: user.id, is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ trainer_id: user.id, is_active: true }),
     enabled: !!user?.id && isTrainerView,
     staleTime: 5 * 60 * 1000,
   });

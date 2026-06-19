@@ -20,7 +20,7 @@ export default function AdminVideos() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "chest",
+    category: "articulation",
     duration_minutes: 0,
   });
 
@@ -31,7 +31,7 @@ export default function AdminVideos() {
 
   const { data: videos, isLoading: videosLoading } = useQuery({
     queryKey: ['allVideos'],
-    queryFn: () => base44.entities.ExerciseVideo.list('-created_date'),
+    queryFn: () => base44.entities.TherapyActivity.list('-created_date'),
     initialData: [],
   });
 
@@ -43,7 +43,7 @@ export default function AdminVideos() {
 
   const uploadVideoMutation = useMutation({
     mutationFn: async (data) => {
-      return base44.entities.ExerciseVideo.create({
+      return base44.entities.TherapyActivity.create({
         ...data,
         uploaded_by_trainer_id: user.id,
       });
@@ -54,7 +54,7 @@ export default function AdminVideos() {
       setFormData({
         title: "",
         description: "",
-        category: "chest",
+        category: "articulation",
         duration_minutes: 0,
       });
       setUploadProgress(0);
@@ -63,7 +63,7 @@ export default function AdminVideos() {
 
   const updateVideoMutation = useMutation({
     mutationFn: async ({ id, data }) => {
-      return base44.entities.ExerciseVideo.update(id, data);
+      return base44.entities.TherapyActivity.update(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allVideos'] });
@@ -71,7 +71,7 @@ export default function AdminVideos() {
   });
 
   const deleteVideoMutation = useMutation({
-    mutationFn: (videoId) => base44.entities.ExerciseVideo.delete(videoId),
+    mutationFn: (videoId) => base44.entities.TherapyActivity.delete(videoId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allVideos'] });
       setSelectedVideo(null);
@@ -143,7 +143,7 @@ export default function AdminVideos() {
     video.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const categories = ["chest", "back", "legs", "shoulders", "arms", "core", "cardio", "mobility", "tutorial", "education"];
+  const categories = ["articulation", "language", "fluency", "voice", "listening", "social", "cognitive", "mobility", "tutorial", "education"];
   const isLoading = videosLoading || usersLoading;
 
   return (

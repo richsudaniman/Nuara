@@ -30,9 +30,9 @@ export default function WorkoutPlanForm({ clientId, trainerId, existingPlan, onC
       console.log('PLAN DATA TO SAVE:', planData);
 
       if (existingPlan?.id) {
-        return base44.entities.WorkoutPlan.update(existingPlan.id, planData);
+        return base44.entities.TherapyPlan.update(existingPlan.id, planData);
       } else {
-        const result = await base44.entities.WorkoutPlan.create(planData);
+        const result = await base44.entities.TherapyPlan.create(planData);
         console.log('WORKOUT PLAN CREATED:', result);
         return result;
       }

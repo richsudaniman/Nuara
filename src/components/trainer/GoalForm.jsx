@@ -42,9 +42,9 @@ export default function GoalForm({ clientId, trainerId, existingGoal, onClose })
       };
 
       if (existingGoal?.id) {
-        return base44.entities.FitnessGoal.update(existingGoal.id, goalData);
+        return base44.entities.TherapyGoal.update(existingGoal.id, goalData);
       } else {
-        return base44.entities.FitnessGoal.create(goalData);
+        return base44.entities.TherapyGoal.create(goalData);
       }
     },
     onSuccess: () => {

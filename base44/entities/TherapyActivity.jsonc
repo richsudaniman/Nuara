@@ -1,0 +1,71 @@
+{
+  "name": "TherapyActivity",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the activity or lesson"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the activity or what the video teaches"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "URL to the video"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "URL to video thumbnail image"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "articulation",
+        "language",
+        "fluency",
+        "voice",
+        "listening",
+        "social",
+        "cognitive",
+        "mobility",
+        "tutorial",
+        "education"
+      ],
+      "description": "Category of the activity"
+    },
+    "duration_minutes": {
+      "type": "integer",
+      "description": "Duration of video in minutes"
+    },
+    "difficulty_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "description": "Difficulty level"
+    },
+    "uploaded_by_trainer_id": {
+      "type": "string",
+      "description": "ID of practitioner who uploaded this"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for searching and filtering"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Practitioner notes or cues"
+    }
+  },
+  "required": [
+    "title",
+    "video_url",
+    "category"
+  ]
+}

@@ -36,7 +36,7 @@ export default function TrainerClientDetail() {
   const { data: assignment } = useQuery({
     queryKey: ["clientAssignment", clientId, user?.id],
     queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.filter({ trainer_id: user.id, client_id: clientId, is_active: true });
+      const all = await base44.entities.PractitionerPatientAssignment.filter({ trainer_id: user.id, client_id: clientId, is_active: true });
       return all[0] || null;
     },
     enabled: !!clientId && !!user?.id,

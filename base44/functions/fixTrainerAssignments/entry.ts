@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
     }
 
     // Get all active trainer assignments
-    const assignments = await base44.asServiceRole.entities.TrainerClientAssignment.filter({ is_active: true });
+    const assignments = await base44.asServiceRole.entities.PractitionerPatientAssignment.filter({ is_active: true });
     
     const results = [];
     

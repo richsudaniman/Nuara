@@ -1,0 +1,43 @@
+{
+  "name": "TherapyLog",
+  "type": "object",
+  "properties": {
+    "logged_by_client_id": {
+      "type": "string",
+      "description": "ID of the patient who logged this"
+    },
+    "workout_plan_id": {
+      "type": "string",
+      "description": "Reference to TherapyPlan"
+    },
+    "exercise_name": {
+      "type": "string",
+      "description": "Name of the exercise"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when completed"
+    },
+    "sets_completed": {
+      "type": "integer",
+      "description": "Number of sets completed"
+    },
+    "weight_used": {
+      "type": "number",
+      "description": "Legacy numeric field (unused for speech therapy)"
+    },
+    "reps_completed": {
+      "type": "integer",
+      "description": "Reps completed per set"
+    },
+    "notes": {
+      "type": "string",
+      "description": "User notes"
+    }
+  },
+  "required": [
+    "exercise_name",
+    "completed_date"
+  ]
+}

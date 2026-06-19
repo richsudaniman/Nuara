@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,13 +19,13 @@ export default function ClientWorkoutPlans({ clientId }) {
 
   const { data: workoutPlans, isLoading } = useQuery({
     queryKey: ['clientWorkoutPlans', clientId],
-    queryFn: () => base44.entities.WorkoutPlan.filter({ assigned_to_client_id: clientId }, 'order'),
+    queryFn: () => base44.entities.TherapyPlan.filter({ assigned_to_client_id: clientId }, 'order'),
     initialData: [],
     enabled: !!clientId,
   });
 
   const deletePlanMutation = useMutation({
-    mutationFn: (planId) => base44.entities.WorkoutPlan.delete(planId),
+    mutationFn: (planId) => base44.entities.TherapyPlan.delete(planId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientWorkoutPlans'] });
     },

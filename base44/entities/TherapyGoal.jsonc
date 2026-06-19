@@ -1,0 +1,48 @@
+{
+  "name": "TherapyGoal",
+  "type": "object",
+  "properties": {
+    "assigned_to_client_id": {
+      "type": "string",
+      "description": "ID of the patient this goal is assigned to"
+    },
+    "created_by_trainer_id": {
+      "type": "string",
+      "description": "ID of the practitioner who created this goal"
+    },
+    "goal_title": {
+      "type": "string",
+      "description": "Goal title"
+    },
+    "target_value": {
+      "type": "string",
+      "description": "Target value (e.g., 90% /r/ accuracy, 7-word sentences)"
+    },
+    "current_value": {
+      "type": "string",
+      "description": "Current value"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target completion date"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "description": "Progress percentage (0-100)"
+    },
+    "linked_metric_type": {
+      "type": "string",
+      "description": "The specific metric type this goal tracks (e.g., articulation_accuracy, sentence_length, fluency_rate)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether goal is active"
+    }
+  },
+  "required": [
+    "goal_title",
+    "target_value"
+  ]
+}

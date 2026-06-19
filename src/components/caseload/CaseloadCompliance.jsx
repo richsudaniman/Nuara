@@ -18,7 +18,7 @@ const DEMO = {
 export default function CaseloadCompliance({ clientId, isDemo }) {
   const { data: logs = [] } = useQuery({
     queryKey: ["clientLogs", clientId],
-    queryFn: () => base44.entities.WorkoutLog.filter({ logged_by_client_id: clientId }, "-completed_date", 200),
+    queryFn: () => base44.entities.TherapyLog.filter({ logged_by_client_id: clientId }, "-completed_date", 200),
     enabled: !!clientId && !isDemo,
     staleTime: 2 * 60 * 1000,
   });

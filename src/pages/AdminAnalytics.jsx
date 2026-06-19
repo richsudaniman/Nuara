@@ -20,7 +20,7 @@ export default function AdminAnalytics() {
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['allWorkoutLogs'],
-    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 100),
+    queryFn: () => base44.entities.TherapyLog.list('-completed_date', 100),
     initialData: [],
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -28,7 +28,7 @@ export default function AdminAnalytics() {
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['allAssignments'],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ is_active: true }),
     initialData: [],
     staleTime: 15 * 60 * 1000,
     refetchOnWindowFocus: false,

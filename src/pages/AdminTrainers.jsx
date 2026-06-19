@@ -33,7 +33,7 @@ export default function AdminTrainers() {
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['allAssignments'],
-    queryFn: () => base44.entities.TrainerClientAssignment.filter({ is_active: true }),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ is_active: true }),
     initialData: [],
   });
 

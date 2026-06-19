@@ -21,13 +21,13 @@ export default function ClientGoals({ clientId }) {
 
   const { data: goals, isLoading } = useQuery({
     queryKey: ['clientGoals', clientId],
-    queryFn: () => base44.entities.FitnessGoal.filter({ assigned_to_client_id: clientId }),
+    queryFn: () => base44.entities.TherapyGoal.filter({ assigned_to_client_id: clientId }),
     initialData: [],
     enabled: !!clientId,
   });
 
   const deleteGoalMutation = useMutation({
-    mutationFn: (goalId) => base44.entities.FitnessGoal.delete(goalId),
+    mutationFn: (goalId) => base44.entities.TherapyGoal.delete(goalId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientGoals'] });
     },
@@ -55,7 +55,7 @@ export default function ClientGoals({ clientId }) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="font-black italic text-[#1a1a1a] text-lg">FITNESS GOALS</h3>
+        <h3 className="font-black italic text-[#1a1a1a] text-lg">THERAPY GOALS</h3>
         <Button
           onClick={() => setShowForm(true)}
           className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold italic glow-blue"

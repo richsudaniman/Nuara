@@ -20,7 +20,7 @@ export default function TrainerVideos() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "chest",
+    category: "articulation",
     duration_minutes: 0,
   });
 
@@ -31,14 +31,14 @@ export default function TrainerVideos() {
 
   const { data: videos, isLoading } = useQuery({
     queryKey: ['trainerVideos', user?.id],
-    queryFn: () => base44.entities.ExerciseVideo.list('-created_date'),
+    queryFn: () => base44.entities.TherapyActivity.list('-created_date'),
     initialData: [],
     enabled: !!user?.id,
   });
 
   const uploadVideoMutation = useMutation({
     mutationFn: async (data) => {
-      return base44.entities.ExerciseVideo.create({
+      return base44.entities.TherapyActivity.create({
         ...data,
         uploaded_by_trainer_id: user.id,
       });
@@ -49,7 +49,7 @@ export default function TrainerVideos() {
       setFormData({
         title: "",
         description: "",
-        category: "chest",
+        category: "articulation",
         duration_minutes: 0,
       });
       setUploadProgress(0);
@@ -58,7 +58,7 @@ export default function TrainerVideos() {
 
   const updateVideoMutation = useMutation({
     mutationFn: async ({ id, data }) => {
-      return base44.entities.ExerciseVideo.update(id, data);
+      return base44.entities.TherapyActivity.update(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trainerVideos'] });
@@ -121,7 +121,7 @@ export default function TrainerVideos() {
     video.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const categories = ["chest", "back", "legs", "shoulders", "arms", "core", "cardio", "mobility", "tutorial", "education"];
+  const categories = ["articulation", "language", "fluency", "voice", "listening", "social", "cognitive", "mobility", "tutorial", "education"];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overscroll-contain touch-pan-y">

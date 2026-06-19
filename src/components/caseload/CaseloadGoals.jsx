@@ -27,10 +27,10 @@ export default function CaseloadGoals({ clientId, isDemo }) {
     queryKey: ["clientGoals", clientId],
     queryFn: async () => {
       try {
-        const recovery = await base44.entities.RecoveryGoal.filter({ assigned_to_patient_id: clientId, is_active: true });
+        const recovery = await base44.entities.ClinicalGoal.filter({ assigned_to_patient_id: clientId, is_active: true });
         if (recovery.length > 0) return recovery;
       } catch {}
-      return base44.entities.FitnessGoal.filter({ assigned_to_client_id: clientId, is_active: true });
+      return base44.entities.TherapyGoal.filter({ assigned_to_client_id: clientId, is_active: true });
     },
     enabled: !!clientId && !isDemo,
     staleTime: 5 * 60 * 1000,

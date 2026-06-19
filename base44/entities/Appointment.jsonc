@@ -1,0 +1,59 @@
+{
+  "name": "Appointment",
+  "type": "object",
+  "properties": {
+    "chiropractor_id": {
+      "type": "string",
+      "description": "ID of the chiropractor"
+    },
+    "patient_id": {
+      "type": "string",
+      "description": "ID of the patient"
+    },
+    "appointment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of the appointment"
+    },
+    "duration_minutes": {
+      "type": "integer",
+      "default": 30,
+      "description": "Duration in minutes"
+    },
+    "appointment_type": {
+      "type": "string",
+      "enum": [
+        "initial_consultation",
+        "adjustment",
+        "follow_up",
+        "therapy_session",
+        "reassessment"
+      ],
+      "description": "Type of appointment"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "default": "scheduled",
+      "description": "Status of the appointment"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Appointment notes or preparation instructions"
+    },
+    "chief_complaint": {
+      "type": "string",
+      "description": "Main reason for visit"
+    }
+  },
+  "required": [
+    "chiropractor_id",
+    "patient_id",
+    "appointment_date"
+  ]
+}

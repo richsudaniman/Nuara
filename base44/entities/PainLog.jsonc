@@ -1,0 +1,68 @@
+{
+  "name": "PainLog",
+  "type": "object",
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "description": "ID of the patient logging pain"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of pain log entry"
+    },
+    "pain_level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Pain intensity on a scale of 0-10"
+    },
+    "affected_areas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "neck",
+          "upper_back",
+          "mid_back",
+          "lower_back",
+          "shoulders",
+          "hips",
+          "knees",
+          "ankles",
+          "wrists",
+          "elbows",
+          "head",
+          "other"
+        ]
+      },
+      "description": "Body areas experiencing pain"
+    },
+    "pain_type": {
+      "type": "string",
+      "enum": [
+        "sharp",
+        "dull",
+        "throbbing",
+        "burning",
+        "tingling",
+        "numbness",
+        "stiffness"
+      ],
+      "description": "Type or quality of pain"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional details about the pain"
+    },
+    "triggers": {
+      "type": "string",
+      "description": "Activities or situations that triggered or worsened the pain"
+    }
+  },
+  "required": [
+    "patient_id",
+    "date",
+    "pain_level"
+  ]
+}

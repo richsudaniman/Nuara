@@ -26,7 +26,7 @@ export default function AdminClientAssignments() {
 
   const { data: assignments, isLoading: assignmentsLoading } = useQuery({
     queryKey: ['allAssignments'],
-    queryFn: () => base44.entities.TrainerClientAssignment.list('-created_date'),
+    queryFn: () => base44.entities.PractitionerPatientAssignment.list('-created_date'),
     initialData: [],
   });
 
@@ -38,11 +38,11 @@ export default function AdminClientAssignments() {
       // First, deactivate any existing assignments for this client
       const existingAssignments = assignments.filter(a => a.client_id === clientId && a.is_active);
       for (const assignment of existingAssignments) {
-        await base44.entities.TrainerClientAssignment.update(assignment.id, { is_active: false });
+        await base44.entities.PractitionerPatientAssignment.update(assignment.id, { is_active: false });
       }
 
       // Create new assignment
-      return base44.entities.TrainerClientAssignment.create({
+      return base44.entities.PractitionerPatientAssignment.create({
         trainer_id: trainerId,
         client_id: clientId,
         assigned_date: new Date().toISOString().split('T')[0],
@@ -66,11 +66,11 @@ export default function AdminClientAssignments() {
         a.is_active
       );
       if (oldAssignment) {
-        await base44.entities.TrainerClientAssignment.update(oldAssignment.id, { is_active: false });
+        await base44.entities.PractitionerPatientAssignment.update(oldAssignment.id, { is_active: false });
       }
 
       // Create new assignment
-      const newAssignment = await base44.entities.TrainerClientAssignment.create({
+      const newAssignment = await base44.entities.PractitionerPatientAssignment.create({
         trainer_id: newTrainerId,
         client_id: clientId,
         assigned_date: new Date().toISOString().split('T')[0],

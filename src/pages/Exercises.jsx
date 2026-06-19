@@ -111,13 +111,13 @@ export default function Exercises() {
 
   const { data: logs } = useQuery({
     queryKey: ['exerciseLogs', user?.id],
-    queryFn: () => base44.entities.WorkoutLog.filter({ logged_by_client_id: user.id }, '-completed_date'),
+    queryFn: () => base44.entities.TherapyLog.filter({ logged_by_client_id: user.id }, '-completed_date'),
     initialData: [],
     enabled: !!user?.id,
   });
 
   const logExerciseMutation = useMutation({
-    mutationFn: (exerciseData) => base44.entities.WorkoutLog.create(exerciseData),
+    mutationFn: (exerciseData) => base44.entities.TherapyLog.create(exerciseData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exerciseLogs'] });
     },
