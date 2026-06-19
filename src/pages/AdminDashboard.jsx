@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Users, Stethoscope, Activity, TrendingUp, UserPlus, Megaphone, ListChecks, GraduationCap, ChevronRight } from "lucide-react";
+import { Users, Stethoscope, Activity, TrendingUp, UserPlus, Megaphone, ListChecks, GraduationCap, ChevronRight, Settings } from "lucide-react";
 import StatTile from "@/components/admin/StatTile";
 import ComplianceTrendCard from "@/components/admin/ComplianceTrendCard";
 import ClinicianUtilizationTable from "@/components/admin/ClinicianUtilizationTable";
@@ -19,6 +19,7 @@ const QUICK_ACTIONS = [
   { label: "Waitlist", desc: "Manage waitlisted families", icon: ListChecks, page: "AdminClientAssignments", color: "#60A5FA" },
   { label: "Announce", desc: "Send practice alerts", icon: Megaphone, page: "AdminAnnouncements", color: "#34D399" },
   { label: "Education", desc: "Manage learning materials", icon: GraduationCap, page: "AdminEducationalContent", color: "#FBBF24" },
+  { label: "Settings", desc: "Practice configuration", icon: Settings, page: "AdminSettings", color: "#F472B6" },
 ];
 
 export default function AdminDashboard() {

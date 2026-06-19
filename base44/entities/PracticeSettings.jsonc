@@ -1,0 +1,74 @@
+{
+  "name": "PracticeSettings",
+  "type": "object",
+  "properties": {
+    "practice_name": {
+      "type": "string",
+      "description": "Name of the clinic / practice"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Primary contact email for the practice"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Primary contact phone"
+    },
+    "address": {
+      "type": "string",
+      "description": "Practice address"
+    },
+    "timezone": {
+      "type": "string",
+      "default": "America/Toronto",
+      "description": "Practice timezone"
+    },
+    "default_session_duration": {
+      "type": "integer",
+      "default": 30,
+      "description": "Default session length in minutes"
+    },
+    "default_sessions_per_week": {
+      "type": "integer",
+      "default": 2,
+      "description": "Default sessions per week for new clients"
+    },
+    "compliance_target": {
+      "type": "integer",
+      "default": 80,
+      "description": "Practice-wide weekly compliance target percentage"
+    },
+    "waitlist_auto_reminders": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send automatic engagement reminders to waitlisted families"
+    },
+    "parent_progress_emails": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send weekly progress summary emails to parents/guardians"
+    },
+    "low_compliance_alerts": {
+      "type": "boolean",
+      "default": true,
+      "description": "Alert clinicians when a client falls below the compliance target"
+    },
+    "clinical_categories": {
+      "type": "array",
+      "description": "Active clinical categories offered by the practice",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "articulation",
+        "language",
+        "fluency",
+        "voice",
+        "listening",
+        "social",
+        "cognitive"
+      ]
+    }
+  },
+  "required": []
+}

@@ -4,6 +4,7 @@ import AdminClientAssignments from './pages/AdminClientAssignments';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminEducationalContent from './pages/AdminEducationalContent';
 import AdminInviteUser from './pages/AdminInviteUser';
+import AdminSettings from './pages/AdminSettings';
 import AdminTrainers from './pages/AdminTrainers';
 import AdminUsers from './pages/AdminUsers';
 import AdminVideos from './pages/AdminVideos';
@@ -35,6 +36,7 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AdminEducationalContent": AdminEducationalContent,
     "AdminInviteUser": AdminInviteUser,
+    "AdminSettings": AdminSettings,
     "AdminTrainers": AdminTrainers,
     "AdminUsers": AdminUsers,
     "AdminVideos": AdminVideos,
