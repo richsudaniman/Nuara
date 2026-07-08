@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Building2, CalendarClock, Bell, Stethoscope, Save, Loader2, Check } from "lucide-react";
+import { Building2, CalendarClock, Bell, Stethoscope, Save, Loader2, Check, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -153,6 +153,39 @@ export default function AdminSettings() {
       {/* Clinical categories */}
       <SettingsSection icon={Stethoscope} title="Clinical categories" description="Areas of focus offered by your practice" color="#F472B6">
         <CategoryChips selected={form.clinical_categories} onChange={(v) => set("clinical_categories", v)} />
+      </SettingsSection>
+
+      {/* Export */}
+      <SettingsSection icon={Download} title="Data Export" description="Export all application data as SQL statements compatible with PostgreSQL" color="#6366F1">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+          <div>
+            <h3 className="font-semibold text-gray-900">PostgreSQL Export</h3>
+            <p className="text-sm text-gray-500">Download a full SQL dump with CREATE and INSERT statements</p>
+          </div>
+          <Button 
+            onClick={async () => {
+              try {
+                toast({ title: "Starting export", description: "Your SQL export is being generated." });
+                const res = await base44.functions.invoke('exportToSql');
+                const blob = new Blob([res.data], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'base44_export.sql';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                toast({ title: "Export complete", description: "Your SQL file has been downloaded." });
+              } catch (err) {
+                toast({ title: "Export failed", description: err.message, variant: "destructive" });
+              }
+            }}
+            variant="outline" 
+            className="gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Export SQL
+          </Button>
+        </div>
       </SettingsSection>
 
       {/* Bottom save */}
