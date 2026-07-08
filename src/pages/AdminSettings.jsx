@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Building2, CalendarClock, Bell, Stethoscope, Save, Loader2, Check, Database, Download } from "lucide-react";
+import { Building2, CalendarClock, Bell, Stethoscope, Save, Loader2, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,6 @@ export default function AdminSettings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [form, setForm] = useState(DEFAULTS);
-  const [isExporting, setIsExporting] = useState(false);
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["practiceSettings"],
@@ -62,28 +61,6 @@ export default function AdminSettings() {
   const handleSave = () => {
     const { id, created_date, updated_date, created_by_id, ...payload } = form;
     saveMutation.mutate(payload);
-  };
-
-  const handleExport = async () => {
-    setIsExporting(true);
-    try {
-      const res = await base44.functions.invoke('exportToSupabase', {});
-      const blob = new Blob([res.data], { type: 'application/sql' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'supabase_export.sql';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      toast({ title: "Export complete", description: "Your SQL export has been downloaded." });
-    } catch (error) {
-      console.error("Export error:", error);
-      toast({ title: "Export failed", description: "There was an error generating the export.", variant: "destructive" });
-    } finally {
-      setIsExporting(false);
-    }
   };
 
   if (isLoading) {
@@ -176,17 +153,6 @@ export default function AdminSettings() {
       {/* Clinical categories */}
       <SettingsSection icon={Stethoscope} title="Clinical categories" description="Areas of focus offered by your practice" color="#F472B6">
         <CategoryChips selected={form.clinical_categories} onChange={(v) => set("clinical_categories", v)} />
-      </SettingsSection>
-
-      {/* Data Export */}
-      <SettingsSection icon={Database} title="Data Export" description="Export all application data to PostgreSQL compatible format (e.g. Supabase)" color="#0EA5E9">
-        <div className="flex flex-col items-start gap-4">
-          <p className="text-sm text-gray-500">Download a full `.sql` dump of your database including proper UUIDs, ISO 8601 timestamps, and escaped fields.</p>
-          <Button onClick={handleExport} disabled={isExporting} variant="outline" className="gap-2 font-semibold">
-            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            {isExporting ? "Generating Export..." : "Export to Supabase (SQL)"}
-          </Button>
-        </div>
       </SettingsSection>
 
       {/* Bottom save */}
