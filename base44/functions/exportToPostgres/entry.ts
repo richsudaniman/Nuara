@@ -1,7 +1,14 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 const SCHEMAS = {
-  User: { email: 'TEXT', full_name: 'TEXT', role: 'TEXT', client_status: 'TEXT', user_type: 'TEXT' },
+  User: { 
+    email: 'TEXT', full_name: 'TEXT', role: 'TEXT', client_status: 'TEXT', user_type: 'TEXT',
+    assigned_trainer_id: 'TEXT', waitlist_joined_date: 'DATE', activated_date: 'DATE', discharged_date: 'DATE',
+    discharge_reason: 'TEXT', clinical_category: 'TEXT', phone: 'TEXT', bio: 'TEXT', specialties: 'TEXT',
+    profile_photo_url: 'TEXT', date_of_birth: 'DATE', age: 'DOUBLE PRECISION', diagnosis: 'TEXT',
+    therapy_focus: 'TEXT', session_schedule: 'TEXT', parent_guardian_name: 'TEXT',
+    daily_calorie_target: 'DOUBLE PRECISION', daily_protein_target: 'DOUBLE PRECISION'
+  },
   TrainerClientAssignment: { trainer_id: 'TEXT', client_id: 'TEXT', assigned_date: 'DATE', is_active: 'BOOLEAN', notes: 'TEXT' },
   RecoveryGoal: { assigned_to_patient_id: 'TEXT', created_by_chiropractor_id: 'TEXT', goal_title: 'TEXT', target_value: 'TEXT', current_value: 'TEXT', target_date: 'DATE', progress_percentage: 'DOUBLE PRECISION', linked_metric_type: 'TEXT', is_active: 'BOOLEAN' },
   RehabilitationProgram: { assigned_to_patient_id: 'TEXT', created_by_chiropractor_id: 'TEXT', day_of_week: 'TEXT', program_type: 'TEXT', exercises: 'JSONB', order: 'INTEGER' },
@@ -60,10 +67,10 @@ Deno.serve(async (req) => {
     // We fetch and export data for each schema
     for (const [entityName, columns] of Object.entries(SCHEMAS)) {
       sql += `CREATE TABLE IF NOT EXISTS "${entityName}" (\n`;
-      sql += `  "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n`;
+      sql += `  "id" TEXT PRIMARY KEY,\n`;
       sql += `  "created_date" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n`;
       sql += `  "updated_date" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n`;
-      sql += `  "created_by_id" UUID,\n`;
+      sql += `  "created_by_id" TEXT,\n`;
       
       const colNames = Object.keys(columns);
       for (const col of colNames) {
