@@ -134,8 +134,15 @@ export default function TrainerClients() {
           <Users className="w-8 h-8 text-gray-300 mx-auto mb-3" />
           <p className="font-medium text-gray-700">{searchQuery ? "No results" : "No clients in caseload"}</p>
           <p className="text-sm text-gray-400 mt-1">
-            {searchQuery ? "Try different search terms" : "Assign clients from the Clients page"}
+            {searchQuery ? "Try different search terms" : "Add a client, or preview the dashboard with sample data"}
           </p>
+          {!searchQuery && (
+            <Link to={createPageUrl("TrainerClientDetail")}>
+              <Button variant="outline" size="sm" className="mt-4 border-gray-200 text-gray-700 hover:bg-gray-50">
+                Preview demo client
+              </Button>
+            </Link>
+          )}
         </div>
       )}
     </div>

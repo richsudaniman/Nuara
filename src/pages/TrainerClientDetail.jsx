@@ -14,6 +14,7 @@ import ClientGoalProgress from "@/components/client-detail/ClientGoalProgress";
 import SubmittedWorkFeed from "@/components/progress/SubmittedWorkFeed";
 import ClientNotes from "@/components/trainer/ClientNotes";
 import { downloadReportPdf } from "@/lib/progressReport";
+import { DEMO_CLIENT, DEMO_GOALS, DEMO_SESSIONS } from "@/lib/demoClientData";
 
 export default function TrainerClientDetail() {
   const [searchParams] = useSearchParams();
@@ -49,7 +50,7 @@ export default function TrainerClientDetail() {
     enabled: !!clientId && !!user?.id,
   });
 
-  const { data: goals = [] } = useQuery({
+  const { data: realGoals = [] } = useQuery({
     queryKey: ["clientGoals", clientId],
     queryFn: async () => {
       const all = await base44.entities.TherapyGoal.filter({ assigned_to_client_id: clientId });
@@ -58,23 +59,18 @@ export default function TrainerClientDetail() {
     enabled: !!clientId,
   });
 
-  const { data: sessions = [] } = useQuery({
+  const { data: realSessions = [] } = useQuery({
     queryKey: ["clientLogs", clientId],
     queryFn: () =>
       base44.entities.TherapyLog.filter({ logged_by_client_id: clientId }, "-completed_date", 300),
     enabled: !!clientId,
   });
 
-  // Demo fallback so the page still reads well when no client is selected
+  // Demo fallback so the whole dashboard reads well when no client is selected
   const isDemo = !clientId || (!clientLoading && !client);
-  const displayClient =
-    client || {
-      full_name: "Jalal Abdelrahim",
-      age: 9,
-      diagnosis: "Articulation disorder · /r/ and /s/",
-      therapy_focus: "Articulation",
-      session_schedule: "2× / week, Tue + Fri",
-    };
+  const displayClient = client || DEMO_CLIENT;
+  const goals = isDemo ? DEMO_GOALS : realGoals;
+  const sessions = isDemo ? DEMO_SESSIONS : realSessions;
 
   const age = displayClient.date_of_birth
     ? differenceInYears(new Date(), new Date(displayClient.date_of_birth))
@@ -104,6 +100,15 @@ export default function TrainerClientDetail() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      {isDemo && (
+        <div className="bg-purple-50 border border-purple-200 rounded-xl px-4 py-3">
+          <p className="text-sm font-semibold text-purple-900">Demo client preview</p>
+          <p className="text-xs text-purple-700 mt-0.5">
+            Sample goals, sessions and submissions — open a real client from your caseload to see live data.
+          </p>
+        </div>
+      )}
+
       {client && (
         <AddClientDialog
           open={showEdit}
