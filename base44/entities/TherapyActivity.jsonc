@@ -61,6 +61,21 @@
     "notes": {
       "type": "string",
       "description": "Practitioner notes or cues"
+    },
+    "default_modality": {
+      "type": "string",
+      "enum": [
+        "audio",
+        "photo",
+        "video",
+        "caregiver_note"
+      ],
+      "default": "audio",
+      "description": "Suggested submission modality when this activity is assigned as homework"
+    },
+    "default_metric_type": {
+      "type": "string",
+      "description": "Suggested metric this activity produces (e.g. articulation_accuracy, sentence_length, fluency_rate)"
     }
   },
   "required": [

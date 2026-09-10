@@ -44,7 +44,7 @@ export default function HomeworkBuilder() {
     setSaved(false);
     setAssigned((prev) => {
       if (prev.find((a) => a.id === activity.id)) return prev;
-      return [...prev, { ...activity, reps: 10, modality: "audio", goal_id: null, metric_type: null, activity_id: activity.id }];
+      return [...prev, { ...activity, reps: 10, modality: activity.modality || "audio", goal_id: null, metric_type: activity.metric_type || null, activity_id: activity.id || activity.activity_id }];
     });
   };
 

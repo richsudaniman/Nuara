@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, Mic, ClipboardList, BarChart2, UserCheck } from "lucide-react";
+import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, Mic, ClipboardList, BarChart2, UserCheck, Library } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -48,7 +48,7 @@ export default function Layout({ children, currentPageName }) {
     if (!user) return 'client';
     
     // Check current page name to determine context
-    const trainerPages = ['HomeworkBuilder', 'Recordings', 'ProgressGoals'];
+    const trainerPages = ['HomeworkBuilder', 'Recordings', 'ProgressGoals', 'ResourceLibrary'];
     if (currentPageName?.startsWith('Trainer') || trainerPages.includes(currentPageName)) {
       return 'trainer';
     }
@@ -97,6 +97,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 14 },
     { name: "Recordings", path: createPageUrl("Recordings"), icon: Mic, group: "CLINIC", badge: 6 },
     { name: "Homework builder", path: createPageUrl("HomeworkBuilder"), icon: ClipboardList, group: "CLINIC" },
+    { name: "Resource library", path: createPageUrl("ResourceLibrary"), icon: Library, group: "CLINIC" },
     { name: "Progress & goals", path: createPageUrl("ProgressGoals"), icon: BarChart2, group: "REPORTS" },
     { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, group: "REPORTS", badge: unreadCount || 0 },
   ];
