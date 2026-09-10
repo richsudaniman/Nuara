@@ -1,8 +1,9 @@
 import React from "react";
-import { Volume2, Waves, BookOpen } from "lucide-react";
+import { Volume2, Waves, BookOpen, GitCompareArrows } from "lucide-react";
 
 export const HOMEWORK_TYPES = [
   { id: "articulation", label: "Articulation", description: "Word cards by target sound and position", icon: Volume2, metric: "articulation_accuracy" },
+  { id: "minimal_pairs", label: "Minimal Pairs", description: "Contrast two sounds with paired words", icon: GitCompareArrows, metric: "contrast_accuracy" },
   { id: "fluency", label: "Fluency", description: "Passage practice with a strategy target", icon: Waves, metric: "fluency_rate" },
   { id: "reading", label: "Reading", description: "Read-aloud passage, one sentence at a time", icon: BookOpen, metric: "reading_accuracy" },
 ];
@@ -14,7 +15,7 @@ export default function HomeworkTypeStep({ value, onChange }) {
         <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-purple-500 text-white">START</span>
         <span className="text-lg font-bold text-gray-900">What are you assigning?</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {HOMEWORK_TYPES.map((t) => {
           const Icon = t.icon;
           const active = value === t.id;

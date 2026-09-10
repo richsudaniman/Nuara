@@ -8,12 +8,16 @@ import TargetSoundsPanel from "@/components/homework/TargetSoundsPanel";
 import PhonemeSelectorDialog from "@/components/homework/PhonemeSelectorDialog";
 import WordCardGrid from "@/components/homework/WordCardGrid";
 import PassageBuilder, { STRATEGIES, splitSentences } from "@/components/homework/PassageBuilder";
+import MinimalPairsPanel from "@/components/homework/MinimalPairsPanel";
+import MinimalPairsGrid from "@/components/homework/MinimalPairsGrid";
+import { getMinimalPairs, soundIpa, ERROR_PATTERNS } from "@/lib/minimalPairsBank";
 import PublishPanel from "@/components/homework/PublishPanel";
 
 const DAY_NAMES = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
 const DAY_ORDER = Object.keys(DAY_NAMES);
 const DEFAULT_NOTES = {
   articulation: "Practice each word card the number of times shown. Go slowly and listen for the target sound.",
+  minimal_pairs: "Say both words in each pair clearly so they sound different. Listen carefully to the contrast.",
   fluency: "Read each sentence using the strategy we practiced. Take your time and breathe before each one.",
   reading: "Read each sentence aloud clearly. It's okay to pause and try again.",
 };
@@ -30,6 +34,13 @@ export default function HomeworkBuilder() {
   const [cards, setCards] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cardReps, setCardReps] = useState({});
+  // minimal pairs
+  const [sound1, setSound1] = useState("");
+  const [sound2, setSound2] = useState("");
+  const [pattern, setPattern] = useState("");
+  const [positions, setPositions] = useState(["initial"]);
+  const [excluded, setExcluded] = useState([]);
+  const [pairs, setPairs] = useState(null);
   // fluency / reading
   const [passage, setPassage] = useState("");
   const [sentences, setSentences] = useState([]);
@@ -89,6 +100,23 @@ export default function HomeworkBuilder() {
     setCardReps({});
   };
 
+  const handleClearPairs = () => {
+    setFilters({ syllables: [], structures: [], maxPerSound: null });
+    setPositions([]);
+    setExcluded([]);
+    setPairs(null);
+    setSelectedIds([]);
+    setCardReps({});
+  };
+
+  const handleCreatePairs = () => {
+    const found = getMinimalPairs(sound1, sound2, { positions, excluded, ...filters });
+    setPairs(found);
+    setSelectedIds(found.map((p) => p.id));
+    setCardReps({});
+    setSaved(false);
+  };
+
   const toggleCard = (id) => {
     setSaved(false);
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -118,6 +146,21 @@ export default function HomeworkBuilder() {
           notes: note,
         }));
     }
+    if (type === "minimal_pairs") {
+      return pairs
+        .filter((p) => selectedIds.includes(p.id))
+        .map((p) => ({
+          name: `${p.word1} / ${p.word2}`,
+          reps: cardReps[p.id] ?? 5,
+          sets: 1,
+          modality: "audio",
+          metric_type: typeMeta.metric,
+          phoneme: `${soundIpa(sound1)} vs ${soundIpa(sound2)}`,
+          position: p.position,
+          ipa: `${p.ipa1.replace(/[{}]/g, "")} / ${p.ipa2.replace(/[{}]/g, "")}`,
+          notes: note,
+        }));
+    }
     return sentences.map((s) => ({
       name: s.text,
       reps: s.reps,
@@ -128,10 +171,17 @@ export default function HomeworkBuilder() {
     }));
   };
 
-  const strategyTarget = isPassage ? [strategy, targetRate ? `${targetRate} wpm` : null].filter(Boolean).join(" · ") : undefined;
+  const patternLabel = ERROR_PATTERNS.find((p) => p.id === pattern)?.label;
+  const strategyTarget = isPassage
+    ? [strategy, targetRate ? `${targetRate} wpm` : null].filter(Boolean).join(" · ")
+    : type === "minimal_pairs"
+    ? [`/${soundIpa(sound1)}/ vs /${soundIpa(sound2)}/`, patternLabel].filter(Boolean).join(" · ")
+    : undefined;
   const workoutType =
     type === "articulation"
       ? `Target sounds: ${selections.map((s) => `/${ALL_PHONEMES.find((p) => p.id === s.phonemeId)?.ipa}/ ${s.position[0].toUpperCase()}`).join(", ")}`
+      : type === "minimal_pairs"
+      ? `Minimal pairs: /${soundIpa(sound1)}/ vs /${soundIpa(sound2)}/`
       : `${typeMeta?.label}: ${strategy}`;
 
   const handlePublish = async () => {
@@ -156,8 +206,14 @@ export default function HomeworkBuilder() {
     }
   };
 
-  const exerciseCount = type === "articulation" ? selectedIds.length : sentences.length;
-  const showPublish = type === "articulation" ? cards && cards.length > 0 : isPassage && sentences.length > 0;
+  const exerciseCount = type === "articulation" || type === "minimal_pairs" ? selectedIds.length : sentences.length;
+  const showPublish =
+    type === "articulation"
+      ? cards && cards.length > 0
+      : type === "minimal_pairs"
+      ? pairs && pairs.length > 0
+      : isPassage && sentences.length > 0;
+  const itemLabel = type === "articulation" ? "word cards" : type === "minimal_pairs" ? "pairs" : "sentences";
 
   return (
     <div className="min-h-full bg-orange-50/30">
@@ -201,6 +257,43 @@ export default function HomeworkBuilder() {
           </>
         )}
 
+        {type === "minimal_pairs" && (
+          <>
+            <MinimalPairsPanel
+              sound1={sound1}
+              sound2={sound2}
+              onSoundChange={(a, b) => {
+                setSound1(a);
+                setSound2(b);
+                setPairs(null);
+              }}
+              pattern={pattern}
+              onPatternChange={setPattern}
+              positions={positions}
+              onTogglePosition={(p) => setPositions((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]))}
+              excluded={excluded}
+              onToggleExcluded={(p) => setExcluded((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]))}
+              filters={filters}
+              onFiltersChange={setFilters}
+              onClear={handleClearPairs}
+              onCreate={handleCreatePairs}
+            />
+            {pairs && (
+              <MinimalPairsGrid
+                pairs={pairs}
+                sound1={sound1}
+                sound2={sound2}
+                selectedIds={selectedIds}
+                onToggle={toggleCard}
+                onSelectAll={() => setSelectedIds(pairs.map((p) => p.id))}
+                onClearSelection={() => setSelectedIds([])}
+                reps={cardReps}
+                onRepsChange={(id, n) => setCardReps((prev) => ({ ...prev, [id]: n }))}
+              />
+            )}
+          </>
+        )}
+
         {isPassage && (
           <PassageBuilder
             type={type}
@@ -227,7 +320,7 @@ export default function HomeworkBuilder() {
             note={note}
             onNoteChange={setNote}
             selectedCount={exerciseCount}
-            itemLabel={type === "articulation" ? "word cards" : "sentences"}
+            itemLabel={itemLabel}
             saving={saving}
             saved={saved}
             onPublish={handlePublish}

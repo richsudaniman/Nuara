@@ -31,6 +31,7 @@
       "type": "string",
       "enum": [
         "articulation",
+        "minimal_pairs",
         "fluency",
         "reading"
       ],
@@ -39,7 +40,7 @@
     },
     "strategy_target": {
       "type": "string",
-      "description": "Fluency/reading strategy focus (e.g., Easy onsets, Slow rate) and optional target rate"
+      "description": "Fluency/reading strategy focus, or the minimal-pairs contrast and error pattern"
     },
     "exercises": {
       "type": "array",
@@ -49,7 +50,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Task name, target word, or sentence to read"
+            "description": "Task name, target word, minimal pair, or sentence to read"
           },
           "reps": {
             "type": "integer",
@@ -80,11 +81,11 @@
           },
           "metric_type": {
             "type": "string",
-            "description": "Metric this task produces (e.g., articulation_accuracy, fluency_rate, reading_accuracy)"
+            "description": "Metric this task produces (e.g., articulation_accuracy, contrast_accuracy, fluency_rate)"
           },
           "phoneme": {
             "type": "string",
-            "description": "Target phoneme in IPA (e.g., p, \u0283, sp) for word-card homework"
+            "description": "Target phoneme(s) in IPA (e.g., p, \u0283, sp, or p vs b for minimal pairs)"
           },
           "position": {
             "type": "string",
@@ -97,7 +98,7 @@
           },
           "ipa": {
             "type": "string",
-            "description": "IPA transcription of the target word"
+            "description": "IPA transcription of the target word or pair"
           },
           "video_url": {
             "type": "string",

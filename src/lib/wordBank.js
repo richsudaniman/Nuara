@@ -133,7 +133,7 @@ export const cvPattern = (ipa) =>
     .join("")
     .replace(/V+/g, "V");
 
-const matchesStructure = (ipa, token) => {
+export const matchesStructure = (ipa, token) => {
   const p = cvPattern(ipa);
   switch (token) {
     case "vowel_initial":
