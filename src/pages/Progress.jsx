@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProgressHero from "@/components/progress/ProgressHero";
-import AchievementBadges from "@/components/progress/AchievementBadges";
 import GoalMetricTrend from "@/components/progress/GoalMetricTrend";
 import SubmittedWorkFeed from "@/components/progress/SubmittedWorkFeed";
 import { demoGoals, demoLogs } from "@/lib/demoProgressData";
@@ -75,11 +74,6 @@ export default function Progress() {
         avgAccuracy={avgAccuracy}
       />
 
-      <AchievementBadges
-        practiceDays={practiceDays}
-        totalSubmissions={logs.length}
-        goalsCount={goals.length}
-      />
 
       {isLoading ? (
         <div className="space-y-3">
