@@ -1,45 +1,79 @@
-import React, { useState } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState, useMemo } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
-import SummaryStats from "@/components/progress-goals/SummaryStats";
-import TrendCard from "@/components/progress-goals/TrendCard";
-import SessionDataLog from "@/components/progress-goals/SessionDataLog";
-import GoalStatus from "@/components/progress-goals/GoalStatus";
+import { Sparkles, FileText } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import WeeklySummaryCard from "@/components/shared/WeeklySummaryCard";
+import GoalMetricTrend from "@/components/progress/GoalMetricTrend";
+import SubmittedWorkFeed from "@/components/progress/SubmittedWorkFeed";
+import GoalReportDialog from "@/components/progress/GoalReportDialog";
 
 export default function ProgressGoals() {
-  const [client, setClient] = useState("Jalal Abdelrahim");
-  const [timeframe, setTimeframe] = useState("Last 4 weeks");
+  const [selectedClientId, setSelectedClientId] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
 
-  const stats = [
-    { value: "78%", label: "/r/ accuracy now" },
-    { value: "+14%", label: "Gain in 4 weeks" },
-    { value: "83%", label: "Avg. compliance" },
-  ];
+  const { data: therapist } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+    staleTime: 30 * 60 * 1000,
+  });
 
-  const rSoundWeeks = [
-    { label: "Wk 1", value: 64 },
-    { label: "Wk 2", value: 70 },
-    { label: "Wk 3", value: 74 },
-    { label: "Wk 4", value: 78 },
-  ];
+  const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
+    queryKey: ["trainerAssignments", therapist?.id],
+    queryFn: () =>
+      base44.entities.PractitionerPatientAssignment.filter({ trainer_id: therapist.id, is_active: true }),
+    enabled: !!therapist?.id,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const sentenceWeeks = [
-    { label: "Wk 1", value: 50 },
-    { label: "Wk 2", value: 55 },
-    { label: "Wk 3", value: 60 },
-    { label: "Wk 4", value: 65 },
-  ];
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["allUsers"],
+    queryFn: () => base44.entities.User.list(),
+    enabled: !!therapist?.id,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const goals = [
-    { name: "/r/ sound production", status: "On track" },
-    { name: "Sentence complexity", status: "Monitor" },
-    { name: "Speech fluency rate", status: "On track" },
-  ];
+  const clients = useMemo(
+    () => allUsers.filter((u) => assignments.map((a) => a.client_id).includes(u.id)),
+    [allUsers, assignments]
+  );
+
+  const activeClientId = selectedClientId || clients[0]?.id || null;
+  const activeClient = clients.find((c) => c.id === activeClientId);
+
+  const { data: goals = [], isLoading: goalsLoading } = useQuery({
+    queryKey: ["clientGoals", activeClientId],
+    queryFn: () =>
+      base44.entities.TherapyGoal.filter({ assigned_to_client_id: activeClientId, is_active: true }),
+    enabled: !!activeClientId,
+    staleTime: 60 * 1000,
+  });
+
+  const { data: logs = [], isLoading: logsLoading } = useQuery({
+    queryKey: ["clientLogs", activeClientId],
+    queryFn: () =>
+      base44.entities.TherapyLog.filter({ logged_by_client_id: activeClientId }, "-completed_date", 300),
+    enabled: !!activeClientId,
+    staleTime: 60 * 1000,
+  });
+
+  const isLoading = assignmentsLoading || goalsLoading || logsLoading;
+
+  const sessionsForGoal = (g) =>
+    logs.filter(
+      (s) =>
+        s.metric_value != null &&
+        (s.goal_id === g.id || s.metric_type === g.metric_type || s.metric_type === g.linked_metric_type)
+    );
+  const workForGoal = (g) =>
+    logs.filter(
+      (s) => s.goal_id === g.id || s.metric_type === g.metric_type || s.metric_type === g.linked_metric_type
+    );
+  const workForSelectedGoal = goals.length ? workForGoal(goals[0]) : [];
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-bold text-gray-900">Progress & goals</h1>
@@ -51,66 +85,108 @@ export default function ProgressGoals() {
         </Button>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="goals">
-        <TabsList className="bg-transparent border-b border-gray-200 rounded-none p-0 h-auto gap-0 w-full justify-start">
-          {["Goals", "Sounds", "Compliance"].map((tab) => (
-            <TabsTrigger
-              key={tab}
-              value={tab.toLowerCase()}
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:text-purple-700 data-[state=active]:shadow-none text-gray-500 font-medium text-sm px-4 py-2.5 hover:text-gray-700"
-            >
-              {tab}
-            </TabsTrigger>
+      {/* Client + action row */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <select
+          value={activeClientId || ""}
+          onChange={(e) => setSelectedClientId(e.target.value)}
+          className="flex-1 h-10 px-3 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:border-purple-400"
+        >
+          {clients.length === 0 && <option value="">No clients assigned</option>}
+          {clients.map((c) => (
+            <option key={c.id} value={c.id}>{c.full_name}</option>
           ))}
-        </TabsList>
-      </Tabs>
-
-      {/* Filters row */}
-      <div className="flex items-center gap-3">
-        <select
-          value={client}
-          onChange={(e) => setClient(e.target.value)}
-          className="flex-1 h-10 px-3 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:border-purple-400"
-        >
-          <option>Jalal Abdelrahim</option>
-          <option>Priya S.</option>
-          <option>Amir K.</option>
-          <option>Ella C.</option>
         </select>
-        <select
-          value={timeframe}
-          onChange={(e) => setTimeframe(e.target.value)}
-          className="flex-1 h-10 px-3 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:border-purple-400"
+        <Button
+          onClick={() => setReportOpen(true)}
+          disabled={!activeClientId || goals.length === 0}
+          className="gap-2 border-gray-200 text-sm h-10"
+          variant="outline"
         >
-          <option>Last 4 weeks</option>
-          <option>Last 8 weeks</option>
-          <option>Last 12 weeks</option>
-          <option>All time</option>
-        </select>
-        <Button variant="outline" className="border-gray-200 text-sm h-10 px-4 leading-tight">
-          Export<br />report ↗
+          <FileText className="w-4 h-4" />
+          Generate report
         </Button>
       </div>
 
-      {/* Summary stats */}
-      <SummaryStats stats={stats} />
+      {isLoading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-28 rounded-xl" />
+          <Skeleton className="h-32 rounded-xl" />
+          <Skeleton className="h-40 rounded-xl" />
+        </div>
+      ) : !activeClientId ? (
+        <div className="bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center">
+          <p className="text-sm font-semibold text-gray-700">No clients in your caseload yet</p>
+          <p className="text-sm text-gray-400 mt-1">Assign clients to see their goal progress.</p>
+        </div>
+      ) : (
+        <>
+          <WeeklySummaryCard clientId={activeClientId} title="Patient weekly summary" />
 
-      {/* Two-column content */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        <div className="lg:col-span-3 space-y-5">
-          <TrendCard
-            title="/r/ sound accuracy — 4 week trend"
-            weeks={rSoundWeeks}
-            footer="Target: 90% by Mar 14, 2026 · Projected on track at current rate"
-          />
-          <TrendCard title="Sentence complexity — 4 week trend" weeks={sentenceWeeks} />
-        </div>
-        <div className="lg:col-span-2 space-y-5">
-          <SessionDataLog />
-          <GoalStatus goals={goals} />
-        </div>
-      </div>
+          {/* Practice analytics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatTile label="Active goals" value={goals.length} />
+            <StatTile
+              label="Avg accuracy"
+              value={
+                logs.filter((l) => l.metric_value != null).length
+                  ? `${Math.round(
+                      logs.filter((l) => l.metric_value != null).reduce((s, l) => s + l.metric_value, 0) /
+                        logs.filter((l) => l.metric_value != null).length
+                    )}%`
+                  : "—"
+              }
+            />
+            <StatTile
+              label="Days practiced (wk)"
+              value={`${new Set(
+                logs
+                  .filter((l) => new Date(l.completed_date) >= new Date(Date.now() - 7 * 86400000))
+                  .map((l) => l.completed_date)
+              ).size}/5`}
+            />
+            <StatTile label="Submissions" value={logs.length} />
+          </div>
+
+          {/* Per-goal metric trends */}
+          {goals.length === 0 ? (
+            <div className="bg-white border border-dashed border-gray-200 rounded-xl p-8 text-center">
+              <p className="text-sm font-semibold text-gray-700">No goals set for this patient</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Create goals to track specific metrics (e.g., /r/ accuracy) over time.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {goals.map((g) => (
+                <GoalMetricTrend key={g.id} goal={g} sessions={sessionsForGoal(g)} />
+              ))}
+            </div>
+          )}
+
+          {/* Submitted work feeding the first/selected goal */}
+          {goals.length > 0 && (
+            <SubmittedWorkFeed entries={workForSelectedGoal} />
+          )}
+        </>
+      )}
+
+      <GoalReportDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        clientName={activeClient?.full_name}
+        goals={goals}
+        sessions={logs}
+      />
+    </div>
+  );
+}
+
+function StatTile({ label, value }) {
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-4">
+      <p className="text-2xl font-bold text-gray-900 leading-none">{value}</p>
+      <p className="text-xs text-gray-500 mt-1.5">{label}</p>
     </div>
   );
 }

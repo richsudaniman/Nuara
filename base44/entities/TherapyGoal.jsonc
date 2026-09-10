@@ -22,6 +22,26 @@
       "type": "string",
       "description": "Current value"
     },
+    "metric_label": {
+      "type": "string",
+      "description": "Display label for the tracked metric (e.g., '/r/ \u2014 word-level accuracy')"
+    },
+    "metric_type": {
+      "type": "string",
+      "description": "Metric key tracked by this goal (e.g., articulation_accuracy, sentence_length, fluency_rate)"
+    },
+    "target_metric_value": {
+      "type": "number",
+      "description": "Numeric target for the tracked metric (e.g., 90)"
+    },
+    "baseline_value": {
+      "type": "number",
+      "description": "Starting metric value when the goal was set"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unit for metric values (e.g., '%', 'words', 'wpm')"
+    },
     "target_date": {
       "type": "string",
       "format": "date",

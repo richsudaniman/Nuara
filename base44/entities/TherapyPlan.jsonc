@@ -29,13 +29,13 @@
     },
     "exercises": {
       "type": "array",
-      "description": "List of therapy exercises for the day",
+      "description": "List of therapy tasks for the day",
       "items": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": "Exercise name"
+            "description": "Task name"
           },
           "reps": {
             "type": "integer",
@@ -44,6 +44,29 @@
           "sets": {
             "type": "integer",
             "description": "Number of sets"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "audio",
+              "photo",
+              "video",
+              "caregiver_note"
+            ],
+            "default": "audio",
+            "description": "Submission modality the patient must complete"
+          },
+          "activity_id": {
+            "type": "string",
+            "description": "Reference to a TherapyActivity library resource used as a template"
+          },
+          "goal_id": {
+            "type": "string",
+            "description": "Reference to the TherapyGoal this task is meant to advance"
+          },
+          "metric_type": {
+            "type": "string",
+            "description": "Metric this task produces (e.g., articulation_accuracy, sentence_length)"
           },
           "video_url": {
             "type": "string",

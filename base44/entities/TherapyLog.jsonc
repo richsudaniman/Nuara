@@ -12,7 +12,7 @@
     },
     "exercise_name": {
       "type": "string",
-      "description": "Name of the exercise"
+      "description": "Name of the task"
     },
     "completed_date": {
       "type": "string",
@@ -31,9 +31,39 @@
       "type": "integer",
       "description": "Reps completed per set"
     },
+    "modality": {
+      "type": "string",
+      "enum": [
+        "audio",
+        "photo",
+        "video",
+        "caregiver_note"
+      ],
+      "description": "Submission modality used"
+    },
+    "submission_url": {
+      "type": "string",
+      "description": "URL to the uploaded photo/video/audio submission (if any)"
+    },
+    "goal_id": {
+      "type": "string",
+      "description": "Reference to the TherapyGoal this submission advances (if linked)"
+    },
+    "metric_type": {
+      "type": "string",
+      "description": "Metric captured by this submission (e.g., articulation_accuracy, sentence_length, fluency_rate)"
+    },
+    "metric_value": {
+      "type": "number",
+      "description": "Measured metric value for this session (e.g., 85 for 85% accuracy)"
+    },
+    "session_label": {
+      "type": "string",
+      "description": "Optional human label for the session (e.g., Session 3)"
+    },
     "notes": {
       "type": "string",
-      "description": "User notes"
+      "description": "Caregiver note text or user notes"
     }
   },
   "required": [
