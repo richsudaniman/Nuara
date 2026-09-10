@@ -8,6 +8,8 @@ import { format, differenceInYears } from "date-fns";
 import AddClientDialog from "@/components/caseload/AddClientDialog";
 import ClientInfoHeader from "@/components/client-detail/ClientInfoHeader";
 import ClientPracticeFrequency from "@/components/client-detail/ClientPracticeFrequency";
+import ClientPracticeTrend from "@/components/client-detail/ClientPracticeTrend";
+import ClientPracticeHabits from "@/components/client-detail/ClientPracticeHabits";
 import ClientStatsGrid from "@/components/client-detail/ClientStatsGrid";
 import ClientMetricChart from "@/components/client-detail/ClientMetricChart";
 import ClientGoalProgress from "@/components/client-detail/ClientGoalProgress";
@@ -130,6 +132,8 @@ export default function TrainerClientDetail() {
       />
 
       <ClientPracticeFrequency sessions={sessions} />
+      <ClientPracticeTrend sessions={sessions} />
+      <ClientPracticeHabits sessions={sessions} />
 
       <div className="space-y-4">
         <div>
