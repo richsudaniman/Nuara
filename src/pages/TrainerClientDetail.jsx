@@ -10,6 +10,7 @@ import ClientInfoHeader from "@/components/client-detail/ClientInfoHeader";
 import ClientPracticeFrequency from "@/components/client-detail/ClientPracticeFrequency";
 import ClientPracticeTrend from "@/components/client-detail/ClientPracticeTrend";
 import ClientPracticeHabits from "@/components/client-detail/ClientPracticeHabits";
+import ClientGameAnalytics from "@/components/client-detail/ClientGameAnalytics";
 import ClientStatsGrid from "@/components/client-detail/ClientStatsGrid";
 import ClientMetricChart from "@/components/client-detail/ClientMetricChart";
 import ClientGoalProgress from "@/components/client-detail/ClientGoalProgress";
@@ -136,6 +137,9 @@ export default function TrainerClientDetail() {
         <ClientPracticeTrend sessions={sessions} />
         <div className="lg:col-span-2">
           <ClientPracticeHabits sessions={sessions} />
+        </div>
+        <div className="lg:col-span-2">
+          <ClientGameAnalytics />
         </div>
       </div>
 
