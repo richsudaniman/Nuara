@@ -101,7 +101,7 @@ export default function TrainerClientDetail() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       {isDemo && (
         <div className="bg-purple-50 border border-purple-200 rounded-xl px-4 py-3">
           <p className="text-sm font-semibold text-purple-900">Demo client preview</p>
@@ -131,9 +131,13 @@ export default function TrainerClientDetail() {
         onDownload={handleDownload}
       />
 
-      <ClientPracticeFrequency sessions={sessions} />
-      <ClientPracticeTrend sessions={sessions} />
-      <ClientPracticeHabits sessions={sessions} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <ClientPracticeFrequency sessions={sessions} />
+        <ClientPracticeTrend sessions={sessions} />
+        <div className="lg:col-span-2">
+          <ClientPracticeHabits sessions={sessions} />
+        </div>
+      </div>
 
       <div className="space-y-4">
         <div>
@@ -146,20 +150,22 @@ export default function TrainerClientDetail() {
 
       <ClientGoalProgress goals={goals} sessions={sessions} />
 
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-base font-bold text-gray-900">Recent activity</h2>
-          <p className="text-sm text-gray-500 mt-0.5">Latest submissions across all goals</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">Recent activity</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Latest submissions across all goals</p>
+          </div>
+          <SubmittedWorkFeed entries={sessions} />
         </div>
-        <SubmittedWorkFeed entries={sessions} />
-      </div>
 
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-base font-bold text-gray-900">Clinical notes</h2>
-          <p className="text-sm text-gray-500 mt-0.5">Your private notes on this client</p>
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">Clinical notes</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Your private notes on this client</p>
+          </div>
+          <ClientNotes clientId={clientId} trainerId={user?.id} />
         </div>
-        <ClientNotes clientId={clientId} trainerId={user?.id} />
       </div>
     </div>
   );
