@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export default function AssignmentBuilder({ assignedActivities, onRemove, onUpdateReps }) {
+export default function AssignmentBuilder({ assignedActivities, onRemove, onUpdateReps, onUpdateModality, onUpdateGoal, goals = [] }) {
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedDays, setSelectedDays] = useState(["Tue", "Wed", "Fri"]);
   const [note, setNote] = useState("Focus on the /r/ sound at the start of words this week. Go slowly");
@@ -113,6 +113,30 @@ export default function AssignmentBuilder({ assignedActivities, onRemove, onUpda
                         onChange={(e) => onUpdateReps(act.id, parseInt(e.target.value) || 0)}
                         className="h-7 w-20 text-xs"
                       />
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <select
+                        value={act.modality || "audio"}
+                        onChange={(e) => onUpdateModality && onUpdateModality(act.id, e.target.value)}
+                        className="h-7 text-[11px] border border-gray-200 rounded-md px-1.5 bg-white focus:outline-none focus:border-purple-400"
+                      >
+                        <option value="audio">🎤 Audio</option>
+                        <option value="photo">📷 Photo</option>
+                        <option value="video">🎬 Video</option>
+                        <option value="caregiver_note">📝 Caregiver note</option>
+                      </select>
+                      {goals.length > 0 && (
+                        <select
+                          value={act.goal_id || ""}
+                          onChange={(e) => onUpdateGoal && onUpdateGoal(act.id, e.target.value)}
+                          className="h-7 text-[11px] border border-gray-200 rounded-md px-1.5 bg-white flex-1 min-w-0 focus:outline-none focus:border-purple-400"
+                        >
+                          <option value="">No goal link</option>
+                          {goals.map((g) => (
+                            <option key={g.id} value={g.id}>{g.goal_title}</option>
+                          ))}
+                        </select>
+                      )}
                     </div>
                   </div>
                   <button

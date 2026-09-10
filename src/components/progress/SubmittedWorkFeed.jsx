@@ -1,5 +1,5 @@
 import React from "react";
-import { Mic, Image as ImageIcon, Video, StickyNote, CheckCircle2 } from "lucide-react";
+import { Mic, Image as ImageIcon, Video, StickyNote } from "lucide-react";
 
 const MODALITY_META = {
   audio: { icon: Mic, label: "Voice memo", color: "text-purple-600 bg-purple-50" },

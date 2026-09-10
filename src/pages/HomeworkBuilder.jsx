@@ -32,11 +32,19 @@ export default function HomeworkBuilder() {
     enabled: !!patientId,
   });
 
+  const { data: patientGoals = [] } = useQuery({
+    queryKey: ["patientGoals", patientId],
+    queryFn: () =>
+      base44.entities.TherapyGoal.filter({ assigned_to_client_id: patientId, is_active: true }),
+    enabled: !!patientId,
+    staleTime: 60 * 1000,
+  });
+
   const handleSelect = (activity) => {
     setSaved(false);
     setAssigned((prev) => {
       if (prev.find((a) => a.id === activity.id)) return prev;
-      return [...prev, { ...activity, reps: 10 }];
+      return [...prev, { ...activity, reps: 10, modality: "audio", goal_id: null, metric_type: null, activity_id: activity.id }];
     });
   };
 
@@ -47,6 +55,26 @@ export default function HomeworkBuilder() {
 
   const handleUpdateReps = (id, reps) => {
     setAssigned((prev) => prev.map((a) => (a.id === id ? { ...a, reps } : a)));
+  };
+
+  const handleUpdateModality = (id, modality) => {
+    setSaved(false);
+    setAssigned((prev) => prev.map((a) => (a.id === id ? { ...a, modality } : a)));
+  };
+
+  const handleUpdateGoal = (id, goalId) => {
+    setSaved(false);
+    setAssigned((prev) =>
+      prev.map((a) => {
+        if (a.id !== id) return a;
+        const goal = patientGoals.find((g) => g.id === goalId);
+        return {
+          ...a,
+          goal_id: goalId || null,
+          metric_type: goal?.metric_type || goal?.linked_metric_type || a.metric_type || null,
+        };
+      })
+    );
   };
 
   const handleAssign = async () => {
@@ -63,6 +91,10 @@ export default function HomeworkBuilder() {
           name: a.name,
           reps: a.reps,
           sets: 1,
+          modality: a.modality || "audio",
+          activity_id: a.activity_id || undefined,
+          goal_id: a.goal_id || undefined,
+          metric_type: a.metric_type || undefined,
         })),
       });
       setSaved(true);
@@ -99,6 +131,9 @@ export default function HomeworkBuilder() {
           assignedActivities={assigned}
           onRemove={handleRemove}
           onUpdateReps={handleUpdateReps}
+          onUpdateModality={handleUpdateModality}
+          onUpdateGoal={handleUpdateGoal}
+          goals={patientGoals}
         />
       </div>
 

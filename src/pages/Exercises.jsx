@@ -27,10 +27,10 @@ export default function Exercises() {
       color: "bg-[#FEF3C7]",
       iconColor: "text-[#F59E0B]",
       exercises: [
-        { name: "Say snake words!", emoji: "🌞", reps: 10, notes: "Record yourself saying: 'sun', 'sit', 'sand', 'soap', 'sock' clearly. Listen back and compare." },
-        { name: "Hidden /s/ sounds", emoji: "🎒", reps: 10, notes: "Record: 'basket', 'listen', 'castle', 'pencil'. Focus on clarity." },
-        { name: "Listen and repeat", emoji: "👂", reps: 8, notes: "Listen and repeat: 'sink/think', 'sum/thumb', 'sank/thank'" },
-        { name: "Sentence superstar", emoji: "⭐", reps: 5, notes: "Record: 'I saw the sun.' Repeat 5 times, improving each time." }
+        { name: "Say snake words!", emoji: "🌞", reps: 10, modality: "audio", metric_type: "articulation_accuracy", notes: "Record yourself saying: 'sun', 'sit', 'sand', 'soap', 'sock' clearly. Listen back and compare." },
+        { name: "Hidden /s/ sounds", emoji: "🎒", reps: 10, modality: "audio", metric_type: "articulation_accuracy", notes: "Record: 'basket', 'listen', 'castle', 'pencil'. Focus on clarity." },
+        { name: "Listen and repeat", emoji: "👂", reps: 8, modality: "caregiver_note", notes: "Listen and repeat: 'sink/think', 'sum/thumb', 'sank/thank' — caregiver notes how it went." },
+        { name: "Sentence superstar", emoji: "⭐", reps: 5, modality: "video", notes: "Record a video: 'I saw the sun.' Repeat 5 times, improving each time." }
       ]
     },
     Tuesday: {
@@ -68,7 +68,7 @@ export default function Exercises() {
       exercises: [
         { name: "Rrrrr words!", emoji: "🐰", reps: 12, notes: "Record clearly: 'red', 'run', 'road', 'rabbit', 'rain', 'ring'" },
         { name: "Rabbit phrases", emoji: "🌧️", reps: 8, notes: "Record phrases: 'red rabbit', 'run on the road', 'rain and rivers'" },
-        { name: "Compare & cheer", emoji: "🎯", reps: 5, notes: "Listen to correct /r/ production, then record your own and compare" },
+        { name: "Compare & cheer", emoji: "🎯", reps: 5, modality: "photo", notes: "Listen to correct /r/ production, then upload a photo of your mouth position and compare" },
         { name: "Super sentence", emoji: "🌟", reps: 5, notes: "Record: 'The rabbit ran across the road in the rain.'" }
       ]
     },
@@ -126,7 +126,7 @@ export default function Exercises() {
   const selectedProgram = mockWeeklyPlan[selectedDay];
   const todayDate = new Date().toISOString().split('T')[0];
 
-  const handleExerciseComplete = async (exercise) => {
+  const handleExerciseComplete = async (exercise, payload = {}) => {
     await logExerciseMutation.mutateAsync({
       logged_by_client_id: user.id,
       workout_plan_id: selectedProgram.id,
@@ -134,6 +134,12 @@ export default function Exercises() {
       completed_date: todayDate,
       sets_completed: exercise.sets || 0,
       reps_completed: exercise.reps || 0,
+      modality: payload.modality || exercise.modality || "audio",
+      submission_url: payload.submission_url || undefined,
+      goal_id: exercise.goal_id || undefined,
+      metric_type: exercise.metric_type || undefined,
+      metric_value: payload.metric_value != null ? payload.metric_value : undefined,
+      notes: payload.notes || undefined,
     });
   };
 
@@ -312,7 +318,7 @@ export default function Exercises() {
         isCompleted={openExercise?.isCompleted}
         open={!!openExercise}
         onOpenChange={(o) => !o && setOpenExercise(null)}
-        onComplete={() => openExercise && handleExerciseComplete(openExercise.exercise)}
+        onComplete={(payload) => openExercise && handleExerciseComplete(openExercise.exercise, payload)}
       />
     </div>
   );

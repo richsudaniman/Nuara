@@ -6,6 +6,7 @@ import { Flame, Sparkles, Star, TrendingUp, Gamepad2, ArrowRight, CheckCircle2, 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import WeeklySummaryCard from "@/components/shared/WeeklySummaryCard";
 
 export default function Home() {
   const { data: user, isLoading: userLoading } = useQuery({
@@ -90,6 +91,8 @@ export default function Home() {
         </h1>
         <p className="text-[15px] text-[#6B6B75] font-normal">Let's practice together today!</p>
       </div>
+
+      <WeeklySummaryCard title="This week" />
 
       {/* Points Card */}
       <div className="bg-white border border-[#EFEFF2] rounded-2xl p-5 space-y-4">
