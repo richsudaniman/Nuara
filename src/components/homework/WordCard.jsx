@@ -1,16 +1,20 @@
 import React from "react";
 import { Check } from "lucide-react";
 import { POSITIONS } from "@/lib/wordBank";
+import RepsStepper from "@/components/homework/RepsStepper";
 
-export default function WordCard({ card, selected, onToggle }) {
+export default function WordCard({ card, selected, onToggle, reps, onRepsChange }) {
   const [before, target, after] = card.ipa.split(/[{}]/);
   const pos = POSITIONS.find((p) => p.id === card.position);
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onToggle(card.id)}
-      className={`relative bg-white rounded-2xl border-2 p-5 flex flex-col items-center gap-2 text-center transition-all hover:-translate-y-0.5 hover:shadow-md ${
-        selected ? "border-purple-400 shadow-md" : "border-gray-100 shadow-sm"
+      onKeyDown={(e) => e.key === "Enter" && onToggle(card.id)}
+      className={`relative cursor-pointer bg-white rounded-2xl border-2 p-5 flex flex-col items-center gap-2 text-center transition-all hover:-translate-y-0.5 hover:shadow-md ${
+        selected ? "border-purple-400 shadow-md" : "border-gray-100 shadow-sm opacity-70"
       }`}
     >
       {selected && (
@@ -26,6 +30,9 @@ export default function WordCard({ card, selected, onToggle }) {
       <span className={`px-2 py-0.5 rounded-md border text-[11px] font-semibold ${pos.chip}`}>
         /{card.phonemeIpa}/ {pos.short}
       </span>
-    </button>
+      <div className="mt-1">
+        <RepsStepper value={reps} onChange={(n) => onRepsChange(card.id, n)} />
+      </div>
+    </div>
   );
 }

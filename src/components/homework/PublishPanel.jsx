@@ -6,7 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export default function PublishPanel({ clients, clientId, onClientChange, lockedClient, days, onToggleDay, note, onNoteChange, selectedCount, saving, saved, onPublish }) {
+export default function PublishPanel({ clients, clientId, onClientChange, lockedClient, days, onToggleDay, note, onNoteChange, selectedCount, itemLabel = "word cards", saving, saved, onPublish }) {
   const canPublish = !!clientId && selectedCount > 0 && days.length > 0 && !saving;
 
   return (
@@ -54,7 +54,7 @@ export default function PublishPanel({ clients, clientId, onClientChange, locked
 
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <p className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-900">{selectedCount}</span> word cards · {days.length} days / week
+          <span className="font-semibold text-gray-900">{selectedCount}</span> {itemLabel} · {days.length} days / week
         </p>
         <div className="flex items-center gap-3">
           {saved && (

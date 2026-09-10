@@ -27,6 +27,20 @@
       "type": "string",
       "description": "Type of therapy session (e.g., Articulation, Fluency, Target sounds: /p/ I)"
     },
+    "homework_type": {
+      "type": "string",
+      "enum": [
+        "articulation",
+        "fluency",
+        "reading"
+      ],
+      "default": "articulation",
+      "description": "Kind of homework this plan delivers"
+    },
+    "strategy_target": {
+      "type": "string",
+      "description": "Fluency/reading strategy focus (e.g., Easy onsets, Slow rate) and optional target rate"
+    },
     "exercises": {
       "type": "array",
       "description": "List of therapy tasks for the day",
@@ -35,7 +49,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Task name or target word"
+            "description": "Task name, target word, or sentence to read"
           },
           "reps": {
             "type": "integer",
@@ -66,7 +80,7 @@
           },
           "metric_type": {
             "type": "string",
-            "description": "Metric this task produces (e.g., articulation_accuracy, sentence_length)"
+            "description": "Metric this task produces (e.g., articulation_accuracy, fluency_rate, reading_accuracy)"
           },
           "phoneme": {
             "type": "string",
