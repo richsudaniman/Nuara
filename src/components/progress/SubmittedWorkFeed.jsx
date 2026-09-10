@@ -10,9 +10,11 @@ const MODALITY_META = {
 
 // Lists submitted work (TherapyLog entries) feeding a metric/goal.
 export default function SubmittedWorkFeed({ entries = [] }) {
+  const [showAll, setShowAll] = React.useState(false);
   const sorted = [...entries].sort((a, b) =>
     a.completed_date < b.completed_date ? 1 : a.completed_date > b.completed_date ? -1 : 0
   );
+  const visible = showAll ? sorted : sorted.slice(0, 3);
 
   return (
     <div className="bg-white border border-[#EFEFF2] rounded-2xl p-5">
@@ -23,7 +25,7 @@ export default function SubmittedWorkFeed({ entries = [] }) {
         <p className="text-[13px] text-[#9CA3AF] text-center py-6">No submissions logged yet.</p>
       ) : (
         <div className="space-y-2.5">
-          {sorted.slice(0, 12).map((e) => {
+          {visible.map((e) => {
             const meta = MODALITY_META[e.modality] || MODALITY_META.audio;
             const Icon = meta.icon;
             return (
@@ -54,6 +56,14 @@ export default function SubmittedWorkFeed({ entries = [] }) {
               </div>
             );
           })}
+          {sorted.length > 3 && (
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="w-full text-[12px] font-semibold text-[#A78BFA] py-2 hover:underline"
+            >
+              {showAll ? "Show less" : `See all ${sorted.length} submissions`}
+            </button>
+          )}
         </div>
       )}
     </div>
