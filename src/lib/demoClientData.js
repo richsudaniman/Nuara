@@ -3,7 +3,8 @@ import { format, subDays } from "date-fns";
 const d = (daysAgo) => format(subDays(new Date(), daysAgo), "yyyy-MM-dd");
 
 const AUDIO = "https://www.w3schools.com/html/horse.mp3";
-const VIDEO = "https://www.w3schools.com/html/mov_bbb.mp4";
+const VIDEO = "https://media.base44.com/videos/public/69584915d97c08282e76fc48/c53a1f103_Child_Reading.mp4";
+const VIDEO_2 = "https://media.base44.com/videos/public/69584915d97c08282e76fc48/3b37a97a8_Child_Reading_Aloud.mp4";
 const PHOTO = "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80";
 
 export const DEMO_CLIENT = {
@@ -80,7 +81,7 @@ export const DEMO_SESSIONS = [
   { id: "p4", exercise_name: "Baseline probe — /k/ vs /t/", completed_date: d(20), modality: "audio", goal_id: "demo-goal-pairs", metric_type: "contrast_accuracy", metric_value: 40, submission_url: AUDIO },
 
   // Fluency
-  { id: "f1", exercise_name: "Easy onset passage read", completed_date: d(0), modality: "video", goal_id: "demo-goal-fluency", metric_type: "fluency_rate", metric_value: 112, submission_url: VIDEO, notes: "Smooth starts on most sentences" },
+  { id: "f1", exercise_name: "Easy onset passage read", completed_date: d(0), modality: "video", goal_id: "demo-goal-fluency", metric_type: "fluency_rate", metric_value: 112, submission_url: VIDEO_2, notes: "Smooth starts on most sentences" },
   { id: "f2", exercise_name: "Easy onset sentences", completed_date: d(5), modality: "audio", goal_id: "demo-goal-fluency", metric_type: "fluency_rate", metric_value: 98, submission_url: AUDIO },
   { id: "f3", exercise_name: "Home routine check-in", completed_date: d(11), modality: "caregiver_note", goal_id: "demo-goal-fluency", metric_type: "fluency_rate", metric_value: 84, notes: "Practised at dinner, needed 2 cues" },
   { id: "f4", exercise_name: "Baseline read — rate probe", completed_date: d(22), modality: "audio", goal_id: "demo-goal-fluency", metric_type: "fluency_rate", metric_value: 68, submission_url: AUDIO },

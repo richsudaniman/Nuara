@@ -56,7 +56,7 @@ export default function RecordingsGallery({ entries = [] }) {
             const meta = ICONS[e.modality] || ICONS.audio;
             const Icon = meta.icon;
             return (
-              <div key={e.id} className="bg-white border border-[#EFEFF2] rounded-2xl p-4 space-y-3">
+              <div key={e.id} className="bg-white border border-[#EFEFF2] rounded-2xl p-3.5 space-y-3 hover:border-[#DDD6FE] hover:shadow-[0_2px_12px_rgba(167,139,250,0.10)] transition-all">
                 <div className="flex items-start gap-2.5">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${meta.color}`}>
                     <Icon className="w-4 h-4" strokeWidth={2.25} />
