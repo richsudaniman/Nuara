@@ -2,8 +2,8 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Target } from "lucide-react";
-import WeeklySummaryCard from "@/components/shared/WeeklySummaryCard";
+import ProgressHero from "@/components/progress/ProgressHero";
+import AchievementBadges from "@/components/progress/AchievementBadges";
 import GoalMetricTrend from "@/components/progress/GoalMetricTrend";
 import SubmittedWorkFeed from "@/components/progress/SubmittedWorkFeed";
 import { demoGoals, demoLogs } from "@/lib/demoProgressData";
@@ -43,6 +43,11 @@ export default function Progress() {
     logs.filter((l) => new Date(l.completed_date) >= last7).map((l) => l.completed_date)
   ).size;
 
+  const scored = logs.filter((l) => typeof l.metric_value === "number");
+  const avgAccuracy = scored.length
+    ? Math.round(scored.reduce((s, l) => s + l.metric_value, 0) / scored.length)
+    : null;
+
   // Sessions tied to a goal (by goal_id or metric_type match)
   const sessionsForGoal = (g) =>
     logs.filter(
@@ -59,28 +64,22 @@ export default function Progress() {
   return (
     <div className="bg-[#FAFAFB] min-h-screen px-5 py-6 space-y-5">
       <div className="space-y-1">
-        <h1 className="text-[26px] font-bold text-[#0F0F12] tracking-tight leading-tight">My Progress</h1>
-        <p className="text-[14px] text-[#6B6B75]">Track your growth toward each goal over time.</p>
+        <h1 className="text-[26px] font-bold text-[#0F0F12] tracking-tight leading-tight">My Progress 🌟</h1>
+        <p className="text-[14px] text-[#6B6B75]">Look how far you've come!</p>
       </div>
 
-      {/* Practice analytics */}
-      <div className="grid grid-cols-3 gap-2.5">
-        <div className="bg-white border border-[#EFEFF2] rounded-2xl p-4">
-          <Target className="w-4 h-4 text-[#A78BFA] mb-2" strokeWidth={2.25} />
-          <p className="text-[24px] font-bold text-[#0F0F12] leading-none">{goals.length}</p>
-          <p className="text-[11px] text-[#6B6B75] mt-1.5">Active goals</p>
-        </div>
-        <div className="bg-white border border-[#EFEFF2] rounded-2xl p-4">
-          <p className="text-[24px] font-bold text-[#0F0F12] leading-none mt-6">{practiceDays}/5</p>
-          <p className="text-[11px] text-[#6B6B75] mt-1.5">Days practiced this week</p>
-        </div>
-        <div className="bg-white border border-[#EFEFF2] rounded-2xl p-4">
-          <p className="text-[24px] font-bold text-[#0F0F12] leading-none mt-6">{logs.length}</p>
-          <p className="text-[11px] text-[#6B6B75] mt-1.5">Total submissions</p>
-        </div>
-      </div>
+      <ProgressHero
+        practiceDays={practiceDays}
+        totalSubmissions={logs.length}
+        activeGoals={goals.length}
+        avgAccuracy={avgAccuracy}
+      />
 
-      <WeeklySummaryCard title="This week" />
+      <AchievementBadges
+        practiceDays={practiceDays}
+        totalSubmissions={logs.length}
+        goalsCount={goals.length}
+      />
 
       {isLoading ? (
         <div className="space-y-3">
