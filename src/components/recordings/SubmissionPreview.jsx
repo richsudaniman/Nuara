@@ -29,20 +29,20 @@ export default function SubmissionPreview({ entry, compact = false }) {
     const isVideo = entry.modality === "video";
     return (
       <>
-        <div className="relative rounded-xl overflow-hidden bg-[#0F0F12] flex items-center justify-center">
+        <div className={`relative rounded-xl overflow-hidden bg-[#F6F5FB] ${compact ? "h-44" : "h-64"}`}>
           {isVideo ? (
             <video
               src={url}
               controls
               playsInline
               preload="metadata"
-              className={`${compact ? "h-44" : "h-64"} w-auto max-w-full object-contain`}
+              className="w-full h-full object-cover"
             />
           ) : (
             <img
               src={url}
               alt={entry.exercise_name}
-              className={`${compact ? "h-44" : "h-64"} w-auto max-w-full object-contain`}
+              className="w-full h-full object-cover"
             />
           )}
           <button
@@ -55,11 +55,11 @@ export default function SubmissionPreview({ entry, compact = false }) {
         </div>
 
         <Dialog open={expanded} onOpenChange={setExpanded}>
-          <DialogContent className="max-w-md p-2 bg-[#0F0F12] border-0">
+          <DialogContent className="max-w-md p-0 bg-white border-0 overflow-hidden rounded-2xl">
             {isVideo ? (
-              <video src={url} controls autoPlay playsInline className="w-full max-h-[78vh] rounded-lg" />
+              <video src={url} controls autoPlay playsInline className="w-full max-h-[80vh] block" />
             ) : (
-              <img src={url} alt={entry.exercise_name} className="w-full max-h-[78vh] object-contain rounded-lg" />
+              <img src={url} alt={entry.exercise_name} className="w-full max-h-[80vh] object-contain block" />
             )}
           </DialogContent>
         </Dialog>
