@@ -8,7 +8,7 @@ import { contrastError } from "@/lib/minimalPairsBank";
 export default function MinimalPairsPanel({
   sound1, sound2, onSoundChange, pattern, onPatternChange,
   positions, onTogglePosition, excluded, onToggleExcluded,
-  filters, onFiltersChange, onClear, onCreate,
+  filters, onFiltersChange, onClear, onCreate, generating,
 }) {
   const error = contrastError(sound1, sound2);
   const ready = !!sound1 && !!sound2 && !error;
@@ -44,8 +44,8 @@ export default function MinimalPairsPanel({
         <Button variant="outline" onClick={onClear} className="h-12 px-6 rounded-xl border-gray-200 text-gray-500 font-semibold">
           Clear Filters
         </Button>
-        <Button onClick={onCreate} disabled={!ready} className="h-12 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 text-white text-base font-bold disabled:opacity-60">
-          Create Word Cards →
+        <Button onClick={onCreate} disabled={!ready || generating} className="h-12 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 text-white text-base font-bold disabled:opacity-60">
+          {generating ? "Generating…" : "Create Word Cards →"}
         </Button>
       </div>
     </div>

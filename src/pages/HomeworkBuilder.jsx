@@ -11,6 +11,7 @@ import PassageBuilder, { STRATEGIES, splitSentences } from "@/components/homewor
 import MinimalPairsPanel from "@/components/homework/MinimalPairsPanel";
 import MinimalPairsGrid from "@/components/homework/MinimalPairsGrid";
 import { getMinimalPairs, soundIpa, ERROR_PATTERNS } from "@/lib/minimalPairsBank";
+import { generateMinimalPairsWithAI } from "@/lib/aiMinimalPairs";
 import PublishPanel from "@/components/homework/PublishPanel";
 
 const DAY_NAMES = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
@@ -41,6 +42,7 @@ export default function HomeworkBuilder() {
   const [positions, setPositions] = useState(["initial"]);
   const [excluded, setExcluded] = useState([]);
   const [pairs, setPairs] = useState(null);
+  const [generating, setGenerating] = useState(false);
   // fluency / reading
   const [passage, setPassage] = useState("");
   const [sentences, setSentences] = useState([]);
@@ -109,12 +111,20 @@ export default function HomeworkBuilder() {
     setCardReps({});
   };
 
-  const handleCreatePairs = () => {
-    const found = getMinimalPairs(sound1, sound2, { positions, excluded, ...filters });
+  const handleCreatePairs = async () => {
+    setSaved(false);
+    setCardReps({});
+    let found = getMinimalPairs(sound1, sound2, { positions, excluded, ...filters });
+    if (found.length === 0) {
+      setGenerating(true);
+      try {
+        found = await generateMinimalPairsWithAI(sound1, sound2, { positions, ...filters });
+      } finally {
+        setGenerating(false);
+      }
+    }
     setPairs(found);
     setSelectedIds(found.map((p) => p.id));
-    setCardReps({});
-    setSaved(false);
   };
 
   const toggleCard = (id) => {
@@ -277,8 +287,12 @@ export default function HomeworkBuilder() {
               onFiltersChange={setFilters}
               onClear={handleClearPairs}
               onCreate={handleCreatePairs}
+              generating={generating}
             />
-            {pairs && (
+            {generating && (
+              <p className="text-center text-sm font-medium text-purple-600">Generating minimal pairs with AI…</p>
+            )}
+            {pairs && !generating && (
               <MinimalPairsGrid
                 pairs={pairs}
                 sound1={sound1}
