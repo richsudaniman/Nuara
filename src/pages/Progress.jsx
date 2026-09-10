@@ -6,6 +6,7 @@ import { Target } from "lucide-react";
 import WeeklySummaryCard from "@/components/shared/WeeklySummaryCard";
 import GoalMetricTrend from "@/components/progress/GoalMetricTrend";
 import SubmittedWorkFeed from "@/components/progress/SubmittedWorkFeed";
+import { demoGoals, demoLogs } from "@/lib/demoProgressData";
 
 export default function Progress() {
   const { data: user } = useQuery({
@@ -14,7 +15,7 @@ export default function Progress() {
     staleTime: 30 * 60 * 1000,
   });
 
-  const { data: goals = [], isLoading: goalsLoading } = useQuery({
+  const { data: realGoals = [], isLoading: goalsLoading } = useQuery({
     queryKey: ["myTherapyGoals", user?.id],
     queryFn: () =>
       base44.entities.TherapyGoal.filter({ assigned_to_client_id: user.id, is_active: true }),
@@ -22,7 +23,7 @@ export default function Progress() {
     staleTime: 60 * 1000,
   });
 
-  const { data: logs = [], isLoading: logsLoading } = useQuery({
+  const { data: realLogs = [], isLoading: logsLoading } = useQuery({
     queryKey: ["myTherapyLogs", user?.id],
     queryFn: () =>
       base44.entities.TherapyLog.filter({ logged_by_client_id: user.id }, "-completed_date", 300),
@@ -31,6 +32,10 @@ export default function Progress() {
   });
 
   const isLoading = goalsLoading || logsLoading;
+
+  // Demo fallback so the page shows meaningful progress before real data exists
+  const goals = realGoals.length > 0 ? realGoals : demoGoals;
+  const logs = realLogs.length > 0 ? realLogs : demoLogs;
 
   const last7 = new Date();
   last7.setDate(last7.getDate() - 7);
