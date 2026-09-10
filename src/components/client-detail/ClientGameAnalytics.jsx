@@ -1,122 +1,107 @@
 import React from "react";
-import { format, parseISO, differenceInCalendarDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { parseISO, differenceInCalendarDays } from "date-fns";
+import { LineChart, Line, ResponsiveContainer } from "recharts";
+import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { demoGamePlays, DEMO_GAMES } from "@/lib/demoGamePlays";
 
-const COLORS = ["#A78BFA", "#10b981", "#f59e0b"];
-
-// Faster completion time = improvement. Compare first 3 vs last 3 plays.
 const avg = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
 
 export default function ClientGameAnalytics({ plays = demoGamePlays }) {
-  const byGame = DEMO_GAMES.map((g, i) => {
+  const rows = DEMO_GAMES.map((g) => {
     const gamePlays = plays.filter((p) => p.game_id === g.id);
     const times = gamePlays.map((p) => p.duration_seconds);
     const first = avg(times.slice(0, 3));
     const last = avg(times.slice(-3));
-    const deltaPct = first ? Math.round(((first - last) / first) * 100) : 0;
+    const deltaSec = Math.round(first - last);
+    const last14 = gamePlays.filter((p) => differenceInCalendarDays(new Date(), parseISO(p.played_date)) <= 14).length;
     return {
       ...g,
-      color: COLORS[i % COLORS.length],
       plays: gamePlays.length,
-      bestTime: times.length ? Math.min(...times) : null,
-      lastTime: times.length ? times[times.length - 1] : null,
+      last14,
       accuracy: Math.round(avg(gamePlays.map((p) => p.accuracy))),
-      deltaPct,
+      currentTime: times.length ? Math.round(last) : null,
+      deltaSec,
+      spark: times.map((t, i) => ({ i, t })),
+      status: deltaSec >= 3 ? "improving" : deltaSec <= -3 ? "slower" : "steady",
     };
   });
 
-  const last30 = plays.filter((p) => differenceInCalendarDays(new Date(), parseISO(p.played_date)) <= 30);
-  const lastPlay = plays.length ? plays[plays.length - 1] : null;
-  const daysSince = lastPlay ? differenceInCalendarDays(new Date(), parseISO(lastPlay.played_date)) : null;
+  const totalLast14 = rows.reduce((s, r) => s + r.last14, 0);
+  const improving = rows.filter((r) => r.status === "improving").length;
 
-  // Chart: one series per game, time in seconds by play date
-  const dates = [...new Set(plays.map((p) => p.played_date))].sort();
-  const chartData = dates.map((date) => {
-    const row = { date: format(parseISO(date), "MMM d") };
-    plays.filter((p) => p.played_date === date).forEach((p) => {
-      row[p.game_title] = p.duration_seconds;
-    });
-    return row;
-  });
+  const STATUS = {
+    improving: { label: "Improving", cls: "bg-emerald-50 text-emerald-700", Icon: ArrowDown, line: "#10b981" },
+    slower: { label: "Slipping", cls: "bg-orange-50 text-orange-700", Icon: ArrowUp, line: "#f97316" },
+    steady: { label: "Plateaued", cls: "bg-gray-100 text-gray-600", Icon: Minus, line: "#9CA3AF" },
+  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <h2 className="text-base font-bold text-gray-900">Practice games</h2>
-          <p className="text-sm text-gray-500 mt-0.5">How often games are played and whether times are improving</p>
-        </div>
-        <div className="text-right">
-          <p className="text-2xl font-bold text-gray-900 leading-none">{last30.length}</p>
-          <p className="text-[11px] text-gray-400 mt-1">plays in 30 days</p>
-        </div>
+      <div className="mb-5">
+        <h2 className="text-base font-bold text-gray-900">Practice games</h2>
+        <p className="text-sm text-gray-500 mt-0.5">
+          {totalLast14} plays in the last 2 weeks · {improving} of {rows.length} games getting faster
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        {byGame.map((g) => {
-          const improving = g.deltaPct > 3;
-          const slower = g.deltaPct < -3;
-          const Icon = improving ? TrendingUp : slower ? TrendingDown : Minus;
+      {/* Column headers */}
+      <div className="hidden md:grid grid-cols-12 gap-4 px-3 pb-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+        <div className="col-span-4">Game</div>
+        <div className="col-span-2">Plays (2 wks)</div>
+        <div className="col-span-2">Avg time now</div>
+        <div className="col-span-2">Trend</div>
+        <div className="col-span-2 text-right">Accuracy</div>
+      </div>
+
+      <div className="divide-y divide-gray-100">
+        {rows.map((r) => {
+          const s = STATUS[r.status];
           return (
-            <div key={g.id} className="border border-gray-100 rounded-lg p-4 bg-gray-50/60">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-lg">{g.emoji}</span>
-                <p className="text-sm font-semibold text-gray-900 leading-tight">{g.title}</p>
+            <div key={r.id} className="grid grid-cols-2 md:grid-cols-12 gap-4 items-center px-3 py-4">
+              <div className="col-span-2 md:col-span-4 flex items-center gap-2.5">
+                <span className="text-lg">{r.emoji}</span>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 leading-tight">{r.title}</p>
+                  <p className="text-[11px] text-gray-400">{r.plays} plays total</p>
+                </div>
               </div>
-              <div className="flex items-baseline gap-2">
-                <p className="text-xl font-bold text-gray-900">{g.lastTime}s</p>
-                <span
-                  className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
-                    improving ? "text-emerald-600" : slower ? "text-orange-600" : "text-gray-400"
-                  }`}
-                >
-                  <Icon className="w-3 h-3" />
-                  {improving ? `${g.deltaPct}% faster` : slower ? `${Math.abs(g.deltaPct)}% slower` : "steady"}
+
+              <div className="md:col-span-2">
+                <p className="text-sm font-bold text-gray-900">{r.last14}</p>
+                <p className="text-[11px] text-gray-400">{r.last14 >= 3 ? "on track" : "below target"}</p>
+              </div>
+
+              <div className="md:col-span-2">
+                <p className="text-sm font-bold text-gray-900">{r.currentTime}s</p>
+                <p className="text-[11px] text-gray-400">
+                  {r.deltaSec > 0 ? `${r.deltaSec}s faster` : r.deltaSec < 0 ? `${Math.abs(r.deltaSec)}s slower` : "no change"}
+                </p>
+              </div>
+
+              <div className="md:col-span-2 flex items-center gap-2">
+                <div className="w-14 h-7">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={r.spark}>
+                      <Line type="monotone" dataKey="t" stroke={s.line} strokeWidth={1.75} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${s.cls}`}>
+                  <s.Icon className="w-3 h-3" />
+                  {s.label}
                 </span>
               </div>
-              <p className="text-[11px] text-gray-400 mt-1.5">
-                {g.plays} plays · best {g.bestTime}s · {g.accuracy}% accuracy
-              </p>
+
+              <div className="md:col-span-2 md:text-right">
+                <p className="text-sm font-bold text-gray-900">{r.accuracy}%</p>
+              </div>
             </div>
           );
         })}
       </div>
 
-      <div className="h-52">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 4, right: 8, left: -22, bottom: 0 }}>
-            <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-            <YAxis
-              tick={{ fontSize: 10, fill: "#9CA3AF" }}
-              axisLine={false}
-              tickLine={false}
-              label={{ value: "sec", angle: -90, position: "insideLeft", fontSize: 10, fill: "#9CA3AF" }}
-            />
-            <Tooltip
-              contentStyle={{ borderRadius: 12, border: "1px solid #E5E7EB", fontSize: 12 }}
-              formatter={(v) => [`${v}s`, "completion time"]}
-            />
-            <Legend wrapperStyle={{ fontSize: 11 }} iconType="plainline" />
-            {byGame.map((g) => (
-              <Line
-                key={g.id}
-                type="monotone"
-                dataKey={g.title}
-                stroke={g.color}
-                strokeWidth={2}
-                dot={{ r: 2.5 }}
-                connectNulls
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
       <p className="text-[11px] text-gray-400 mt-4 pt-4 border-t border-gray-100">
-        Lower completion times indicate faster, more automatic responses.
-        {daysSince !== null && ` Last game played ${daysSince === 0 ? "today" : `${daysSince} days ago`}.`}
+        "Avg time now" is the average of the last 3 plays; a shorter time means faster, more automatic responses.
       </p>
     </div>
   );
