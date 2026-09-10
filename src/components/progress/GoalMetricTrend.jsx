@@ -1,5 +1,4 @@
 import React from "react";
-import HomeworkTypeBadge from "@/components/progress/HomeworkTypeBadge";
 
 // Shows the last N session metric values for a goal as a mini trend.
 // props: goal, sessions (array of { completed_date, metric_value, session_label })
@@ -20,19 +19,16 @@ export default function GoalMetricTrend({ goal, sessions = [] }) {
     <div className="bg-white border border-[#EFEFF2] rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <HomeworkTypeBadge type={goal?.homework_type} />
-            <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.12em]">
-              {goal?.metric_label || goal?.goal_title || "Metric"}
-            </p>
-          </div>
+          <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.12em]">
+            {goal?.metric_label || goal?.goal_title || "Metric"}
+          </p>
           <h3 className="text-[15px] font-semibold text-[#0F0F12] leading-tight mt-0.5">
             {goal?.goal_title}
           </h3>
         </div>
         <div className="text-right flex-shrink-0">
           <p className="text-[20px] font-bold text-[#A78BFA] leading-none">
-            {latest != null ? `${latest}${unit === "%" ? "%" : ` ${unit}`}` : "—"}
+            {latest != null ? `${latest}${unit === "%" ? "%" : ""}` : "—"}
           </p>
           {delta != null && (
             <p className={`text-[11px] font-semibold mt-1 ${delta >= 0 ? "text-emerald-600" : "text-red-500"}`}>
