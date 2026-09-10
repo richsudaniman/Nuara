@@ -111,24 +111,63 @@ const BANK = {
 };
 
 const VOWEL_RE = /[iɪuʊeɛoəɔæɑaɜ]+/g;
+const VOWELS = "iɪuʊeɛoəɔæɑaɜ";
 export const countSyllables = (ipa) => (ipa.replace(/[{}]/g, "").match(VOWEL_RE) || []).length || 1;
 
 export const selectionKey = (s) => `${s.phonemeId}-${s.position}`;
 
+export const STRUCTURE_PRESETS = [
+  { id: "vowel_initial", label: "Vowel Initial" },
+  { id: "singleton_initial", label: "Singleton Initial" },
+  { id: "cluster_initial", label: "Cluster Initial" },
+  { id: "singleton_final", label: "Singleton Final" },
+  { id: "cluster_final", label: "Cluster Final" },
+];
+
+/** Converts an IPA string to a C/V pattern, e.g. "spun" -> "CCVC" */
+export const cvPattern = (ipa) =>
+  ipa
+    .replace(/[{}\s-]/g, "")
+    .split("")
+    .map((ch) => (VOWELS.includes(ch) ? "V" : "C"))
+    .join("")
+    .replace(/V+/g, "V");
+
+const matchesStructure = (ipa, token) => {
+  const p = cvPattern(ipa);
+  switch (token) {
+    case "vowel_initial":
+      return p.startsWith("V");
+    case "singleton_initial":
+      return /^CV/.test(p);
+    case "cluster_initial":
+      return /^CC/.test(p);
+    case "singleton_final":
+      return /VC$/.test(p);
+    case "cluster_final":
+      return /CC$/.test(p);
+    default:
+      return p === token.toUpperCase().replace(/[^CV]/g, "");
+  }
+};
+
 /**
  * selections: [{ phonemeId, position }]
- * filters: { syllables: "any" | "1" | "2" | "3+", maxPerSound: number | null }
+ * filters: { syllables: string[], structures: string[], maxPerSound: number | null }
  */
 export function getWordCards(selections, filters = {}) {
-  const { syllables = "any", maxPerSound = null } = filters;
+  const { syllables = [], structures = [], maxPerSound = null } = filters;
   return selections.flatMap((sel) => {
     const phoneme = ALL_PHONEMES.find((p) => p.id === sel.phonemeId);
     let words = BANK[sel.phonemeId]?.[sel.position] || [];
-    if (syllables !== "any") {
+    if (syllables.length) {
       words = words.filter((wd) => {
         const n = countSyllables(wd.ipa);
-        return syllables === "3+" ? n >= 3 : n === Number(syllables);
+        return syllables.some((s) => (s === "5+" ? n >= 5 : n === Number(s)));
       });
+    }
+    if (structures.length) {
+      words = words.filter((wd) => structures.some((t) => matchesStructure(wd.ipa, t)));
     }
     if (maxPerSound) words = words.slice(0, maxPerSound);
     return words.map((wd) => ({

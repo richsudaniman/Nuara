@@ -25,7 +25,7 @@ export default function HomeworkBuilder() {
   const [type, setType] = useState(null);
   // articulation
   const [selections, setSelections] = useState([]);
-  const [filters, setFilters] = useState({ syllables: "any", maxPerSound: null });
+  const [filters, setFilters] = useState({ syllables: [], structures: [], maxPerSound: null });
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [cards, setCards] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -83,7 +83,7 @@ export default function HomeworkBuilder() {
 
   const handleClear = () => {
     setSelections([]);
-    setFilters({ syllables: "any", maxPerSound: null });
+    setFilters({ syllables: [], structures: [], maxPerSound: null });
     setCards(null);
     setSelectedIds([]);
     setCardReps({});
