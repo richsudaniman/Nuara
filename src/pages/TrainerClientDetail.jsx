@@ -12,6 +12,7 @@ import ClientStatsGrid from "@/components/client-detail/ClientStatsGrid";
 import ClientMetricChart from "@/components/client-detail/ClientMetricChart";
 import ClientGoalProgress from "@/components/client-detail/ClientGoalProgress";
 import SubmittedWorkFeed from "@/components/progress/SubmittedWorkFeed";
+import RecordingsGallery from "@/components/recordings/RecordingsGallery";
 import ClientNotes from "@/components/trainer/ClientNotes";
 import { downloadReportPdf } from "@/lib/progressReport";
 import { DEMO_CLIENT, DEMO_GOALS, DEMO_SESSIONS } from "@/lib/demoClientData";
@@ -148,6 +149,14 @@ export default function TrainerClientDetail() {
           <p className="text-sm text-gray-500 mt-0.5">Latest submissions across all goals</p>
         </div>
         <SubmittedWorkFeed entries={sessions} />
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-base font-bold text-gray-900">All recordings</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Preview every submission by type</p>
+        </div>
+        <RecordingsGallery entries={sessions} />
       </div>
 
       <div className="space-y-4">

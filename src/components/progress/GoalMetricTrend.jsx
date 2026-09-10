@@ -1,4 +1,5 @@
 import React from "react";
+import { HOMEWORK_TYPE_LABELS } from "@/lib/modalityMeta";
 
 // Shows the last N session metric values for a goal as a mini trend.
 // props: goal, sessions (array of { completed_date, metric_value, session_label })
@@ -19,9 +20,16 @@ export default function GoalMetricTrend({ goal, sessions = [] }) {
     <div className="bg-white border border-[#EFEFF2] rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
-          <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.12em]">
-            {goal?.metric_label || goal?.goal_title || "Metric"}
-          </p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.12em]">
+              {goal?.metric_label || goal?.goal_title || "Metric"}
+            </p>
+            {HOMEWORK_TYPE_LABELS[goal?.homework_type] && (
+              <span className="text-[10px] font-bold text-[#7C5CD6] bg-[#F3EFFE] px-2 py-0.5 rounded-full">
+                {HOMEWORK_TYPE_LABELS[goal.homework_type]}
+              </span>
+            )}
+          </div>
           <h3 className="text-[15px] font-semibold text-[#0F0F12] leading-tight mt-0.5">
             {goal?.goal_title}
           </h3>
