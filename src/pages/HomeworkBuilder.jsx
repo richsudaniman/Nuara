@@ -1,19 +1,28 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Sparkles, CheckCircle2, User } from "lucide-react";
-import ActivityLibrary from "@/components/homework/ActivityLibrary";
-import AssignmentBuilder from "@/components/homework/AssignmentBuilder";
+import { User } from "lucide-react";
+import { getWordCards, selectionKey, ALL_PHONEMES } from "@/lib/wordBank";
+import TargetSoundsPanel from "@/components/homework/TargetSoundsPanel";
+import PhonemeSelectorDialog from "@/components/homework/PhonemeSelectorDialog";
+import WordCardGrid from "@/components/homework/WordCardGrid";
+import PublishPanel from "@/components/homework/PublishPanel";
+
+const DAY_NAMES = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
+const DAY_ORDER = Object.keys(DAY_NAMES);
 
 export default function HomeworkBuilder() {
   const urlParams = new URLSearchParams(window.location.search);
   const patientId = urlParams.get("patientId");
 
-  const [assigned, setAssigned] = useState([
-    { id: "sound-drill-r", name: "Sound drill — /r/ words", reps: 20, icon: () => null, color: "bg-purple-500" },
-    { id: "sentence-builder-3", name: "Sentence builder level 3", reps: 5, icon: () => null, color: "bg-emerald-500" },
-  ]);
+  const [selections, setSelections] = useState([]);
+  const [filters, setFilters] = useState({ syllables: "any", maxPerSound: null });
+  const [selectorOpen, setSelectorOpen] = useState(false);
+  const [cards, setCards] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [clientId, setClientId] = useState(patientId || "");
+  const [days, setDays] = useState(["Tue", "Wed", "Fri"]);
+  const [note, setNote] = useState("Practice each word card 5 times. Go slowly and listen for the target sound.");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -23,137 +32,130 @@ export default function HomeworkBuilder() {
     staleTime: 30 * 60 * 1000,
   });
 
-  const { data: patient } = useQuery({
-    queryKey: ["patient", patientId],
-    queryFn: async () => {
-      const all = await base44.entities.User.list();
-      return all.find((u) => u.id === patientId) || null;
-    },
-    enabled: !!patientId,
+  const { data: assignments = [] } = useQuery({
+    queryKey: ["trainerAssignments", therapist?.id],
+    queryFn: () => base44.entities.PractitionerPatientAssignment.filter({ trainer_id: therapist.id, is_active: true }),
+    enabled: !!therapist?.id,
   });
 
-  const { data: patientGoals = [] } = useQuery({
-    queryKey: ["patientGoals", patientId],
-    queryFn: () =>
-      base44.entities.TherapyGoal.filter({ assigned_to_client_id: patientId, is_active: true }),
-    enabled: !!patientId,
-    staleTime: 60 * 1000,
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["allUsers"],
+    queryFn: () => base44.entities.User.list(),
+    enabled: !!therapist?.id,
   });
 
-  const handleSelect = (activity) => {
+  const caseloadIds = assignments.map((a) => a.client_id);
+  const clients = allUsers.filter((u) => caseloadIds.includes(u.id));
+  const lockedClient = patientId ? allUsers.find((u) => u.id === patientId) : null;
+
+  const handleCreate = () => {
+    const generated = getWordCards(selections, filters);
+    setCards(generated);
+    setSelectedIds(generated.map((c) => c.id));
     setSaved(false);
-    setAssigned((prev) => {
-      if (prev.find((a) => a.id === activity.id)) return prev;
-      return [...prev, { ...activity, reps: 10, modality: activity.modality || "audio", goal_id: null, metric_type: activity.metric_type || null, activity_id: activity.id || activity.activity_id }];
-    });
   };
 
-  const handleRemove = (id) => {
+  const handleClear = () => {
+    setSelections([]);
+    setFilters({ syllables: "any", maxPerSound: null });
+    setCards(null);
+    setSelectedIds([]);
+  };
+
+  const toggleCard = (id) => {
     setSaved(false);
-    setAssigned((prev) => prev.filter((a) => a.id !== id));
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const handleUpdateReps = (id, reps) => {
-    setAssigned((prev) => prev.map((a) => (a.id === id ? { ...a, reps } : a)));
-  };
+  const toggleDay = (d) => setDays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
 
-  const handleUpdateModality = (id, modality) => {
-    setSaved(false);
-    setAssigned((prev) => prev.map((a) => (a.id === id ? { ...a, modality } : a)));
-  };
-
-  const handleUpdateGoal = (id, goalId) => {
-    setSaved(false);
-    setAssigned((prev) =>
-      prev.map((a) => {
-        if (a.id !== id) return a;
-        const goal = patientGoals.find((g) => g.id === goalId);
-        return {
-          ...a,
-          goal_id: goalId || null,
-          metric_type: goal?.metric_type || goal?.linked_metric_type || a.metric_type || null,
-        };
-      })
-    );
-  };
-
-  const handleAssign = async () => {
-    if (!patientId || assigned.length === 0) return;
+  const handlePublish = async () => {
+    const chosen = cards.filter((c) => selectedIds.includes(c.id));
+    const soundLabels = selections
+      .map((s) => `/${ALL_PHONEMES.find((p) => p.id === s.phonemeId)?.ipa}/ ${s.position[0].toUpperCase()}`)
+      .join(", ");
     setSaving(true);
     try {
-      await base44.entities.TherapyPlan.create({
-        assigned_to_client_id: patientId,
-        created_by_trainer_id: therapist?.id,
-        day_of_week: "Monday",
-        workout_type: "Homework",
-        order: 1,
-        exercises: assigned.map((a) => ({
-          name: a.name,
-          reps: a.reps,
-          sets: 1,
-          modality: a.modality || "audio",
-          activity_id: a.activity_id || undefined,
-          goal_id: a.goal_id || undefined,
-          metric_type: a.metric_type || undefined,
-        })),
-      });
+      await base44.entities.TherapyPlan.bulkCreate(
+        DAY_ORDER.filter((d) => days.includes(d)).map((d) => ({
+          assigned_to_client_id: clientId,
+          created_by_trainer_id: therapist?.id,
+          day_of_week: DAY_NAMES[d],
+          workout_type: `Target sounds: ${soundLabels}`,
+          order: DAY_ORDER.indexOf(d) + 1,
+          exercises: chosen.map((c) => ({
+            name: c.word,
+            reps: 5,
+            sets: 1,
+            modality: "audio",
+            metric_type: "articulation_accuracy",
+            phoneme: c.phonemeIpa,
+            position: c.position,
+            ipa: c.ipa.replace(/[{}]/g, ""),
+            notes: note,
+          })),
+        }))
+      );
       setSaved(true);
     } finally {
       setSaving(false);
     }
   };
 
-  const selectedId = assigned.length > 0 ? assigned[assigned.length - 1].id : null;
-
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="min-h-full bg-orange-50/30">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-bold text-gray-900">Homework builder</h1>
-          {patient ? (
+          {lockedClient ? (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full">
-              <User className="w-3.5 h-3.5" />
-              {patient.full_name}
+              <User className="w-3.5 h-3.5" /> {lockedClient.full_name}
             </span>
           ) : (
-            <span className="text-sm text-gray-400">Assign activities to clients</span>
+            <span className="text-sm text-gray-400">Build word cards by target sound</span>
           )}
         </div>
-        <Button variant="outline" size="sm" className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-50">
-          <Sparkles className="w-4 h-4" />
-          Ask AI
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <ActivityLibrary selectedId={selectedId} onSelect={handleSelect} />
-        <AssignmentBuilder
-          assignedActivities={assigned}
-          onRemove={handleRemove}
-          onUpdateReps={handleUpdateReps}
-          onUpdateModality={handleUpdateModality}
-          onUpdateGoal={handleUpdateGoal}
-          goals={patientGoals}
+        <TargetSoundsPanel
+          selections={selections}
+          onOpenSelector={() => setSelectorOpen(true)}
+          onRemoveSelection={(s) => setSelections((prev) => prev.filter((x) => selectionKey(x) !== selectionKey(s)))}
+          filters={filters}
+          onFiltersChange={setFilters}
+          onClear={handleClear}
+          onCreate={handleCreate}
         />
-      </div>
 
-      {patient && (
-        <div className="flex items-center justify-end gap-3">
-          {saved && (
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600">
-              <CheckCircle2 className="w-4 h-4" />
-              Assigned to {patient.full_name}
-            </span>
-          )}
-          <Button
-            onClick={handleAssign}
-            disabled={saving || assigned.length === 0}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            {saving ? "Assigning..." : `Assign ${assigned.length} activities`}
-          </Button>
-        </div>
-      )}
+        <PhonemeSelectorDialog open={selectorOpen} onOpenChange={setSelectorOpen} selections={selections} onChange={setSelections} />
+
+        {cards && (
+          <>
+            <WordCardGrid
+              cards={cards}
+              selectedIds={selectedIds}
+              onToggle={toggleCard}
+              onSelectAll={() => setSelectedIds(cards.map((c) => c.id))}
+              onClearSelection={() => setSelectedIds([])}
+            />
+            {cards.length > 0 && (
+              <PublishPanel
+                clients={clients}
+                clientId={clientId}
+                onClientChange={setClientId}
+                lockedClient={lockedClient}
+                days={days}
+                onToggleDay={toggleDay}
+                note={note}
+                onNoteChange={setNote}
+                selectedCount={selectedIds.length}
+                saving={saving}
+                saved={saved}
+                onPublish={handlePublish}
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

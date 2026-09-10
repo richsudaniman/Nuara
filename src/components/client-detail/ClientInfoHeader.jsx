@@ -46,17 +46,11 @@ export default function ClientInfoHeader({ client, clientId, age, sinceDate, foc
               <Mic className="w-4 h-4" /> View recordings
             </Button>
           </Link>
-          {clientId ? (
-            <Link to={`${createPageUrl("HomeworkBuilder")}?patientId=${clientId}`}>
-              <Button size="sm" className="gap-2 bg-purple-600 hover:bg-purple-700 text-white">
-                <ClipboardList className="w-4 h-4" /> Assign homework
-              </Button>
-            </Link>
-          ) : (
-            <Button size="sm" disabled className="gap-2 bg-purple-600 text-white">
+          <Link to={clientId ? `${createPageUrl("HomeworkBuilder")}?patientId=${clientId}` : createPageUrl("HomeworkBuilder")}>
+            <Button size="sm" className="gap-2 bg-purple-600 hover:bg-purple-700 text-white">
               <ClipboardList className="w-4 h-4" /> Assign homework
             </Button>
-          )}
+          </Link>
         </div>
       </div>
 

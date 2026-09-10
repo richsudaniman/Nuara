@@ -25,7 +25,7 @@
     },
     "workout_type": {
       "type": "string",
-      "description": "Type of therapy session (e.g., Articulation, Fluency, Language)"
+      "description": "Type of therapy session (e.g., Articulation, Fluency, Target sounds: /p/ I)"
     },
     "exercises": {
       "type": "array",
@@ -35,7 +35,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Task name"
+            "description": "Task name or target word"
           },
           "reps": {
             "type": "integer",
@@ -67,6 +67,23 @@
           "metric_type": {
             "type": "string",
             "description": "Metric this task produces (e.g., articulation_accuracy, sentence_length)"
+          },
+          "phoneme": {
+            "type": "string",
+            "description": "Target phoneme in IPA (e.g., p, \u0283, sp) for word-card homework"
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "initial",
+              "medial",
+              "final"
+            ],
+            "description": "Word position of the target phoneme"
+          },
+          "ipa": {
+            "type": "string",
+            "description": "IPA transcription of the target word"
           },
           "video_url": {
             "type": "string",
