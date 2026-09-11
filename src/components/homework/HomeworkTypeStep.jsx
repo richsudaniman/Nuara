@@ -13,11 +13,11 @@ export default function HomeworkTypeStep({ value, onChange }) {
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm px-7 py-6">
       <div className="flex items-center gap-4 mb-5">
-        <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-purple-500 text-white">START</span>
+        <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-purple-500 text-white">STEP 2</span>
         <span className="text-lg font-bold text-gray-900">What are you assigning?</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {HOMEWORK_TYPES.map((t) => {
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {HOMEWORK_TYPES.filter((t) => t.id !== "resource").map((t) => {
           const Icon = t.icon;
           const active = value === t.id;
           return (

@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Mic, Square, Play, Send, Trash2, CheckCircle2, Repeat, Info, Camera, Video, StickyNote, Upload, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import ExtraUploadSection from "@/components/exercises/ExtraUploadSection";
 
 // Modality-aware completion dialog. Calls onComplete(payload) where payload
 // contains { modality, submissionUrl, metricValue, notes } captured from the patient.
@@ -12,6 +13,7 @@ export default function AssignmentDetailDialog({ exercise, open, onOpenChange, o
   const [seconds, setSeconds] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [submissionUrl, setSubmissionUrl] = useState(null);
+  const [extraUrl, setExtraUrl] = useState(null);
   const [caregiverNote, setCaregiverNote] = useState("");
   const [metricValue, setMetricValue] = useState("");
   const intervalRef = useRef(null);
@@ -31,6 +33,7 @@ export default function AssignmentDetailDialog({ exercise, open, onOpenChange, o
         setRecordingState("idle");
         setSeconds(0);
         setSubmissionUrl(null);
+        setExtraUrl(null);
         setCaregiverNote("");
         setMetricValue("");
       }, 200);
@@ -63,8 +66,8 @@ export default function AssignmentDetailDialog({ exercise, open, onOpenChange, o
 
   const buildPayload = () => ({
     modality,
-    submission_url: submissionUrl,
-    notes: modality === "caregiver_note" ? caregiverNote : undefined,
+    submission_url: submissionUrl || extraUrl,
+    notes: caregiverNote || undefined,
     metric_value: metricValue !== "" ? Number(metricValue) : undefined,
   });
 
@@ -205,6 +208,19 @@ export default function AssignmentDetailDialog({ exercise, open, onOpenChange, o
               />
             </>
           )}
+        </div>
+
+        {/* Anything else the patient wants to send */}
+        <div className="bg-white border-2 border-gray-100 rounded-xl p-5">
+          <p className="text-sm font-bold text-gray-900 mb-1">Add anything else</p>
+          <p className="text-xs text-gray-500 mb-3">Attach an audio clip, image or video, or leave a note</p>
+          <ExtraUploadSection
+            fileUrl={extraUrl}
+            onFileUrl={setExtraUrl}
+            notes={caregiverNote}
+            onNotes={setCaregiverNote}
+            hideNotes={modality === "caregiver_note"}
+          />
         </div>
 
         {/* Optional metric capture */}

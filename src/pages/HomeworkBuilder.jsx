@@ -14,6 +14,7 @@ import { getMinimalPairs, soundIpa, ERROR_PATTERNS } from "@/lib/minimalPairsBan
 import { generateMinimalPairsWithAI } from "@/lib/aiMinimalPairs";
 import PublishPanel from "@/components/homework/PublishPanel";
 import ResourcePickerPanel from "@/components/homework/ResourcePickerPanel";
+import HomeworkSourceStep from "@/components/homework/HomeworkSourceStep";
 
 const DAY_NAMES = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
 const DAY_ORDER = Object.keys(DAY_NAMES);
@@ -29,6 +30,7 @@ export default function HomeworkBuilder() {
   const urlParams = new URLSearchParams(window.location.search);
   const patientId = urlParams.get("patientId");
 
+  const [source, setSource] = useState(null);
   const [type, setType] = useState(null);
   // articulation
   const [selections, setSelections] = useState([]);
@@ -82,6 +84,17 @@ export default function HomeworkBuilder() {
   const lockedClient = patientId ? allUsers.find((u) => u.id === patientId) : null;
   const typeMeta = HOMEWORK_TYPES.find((t) => t.id === type);
   const isPassage = type === "fluency" || type === "reading";
+
+  const handleSourceChange = (s) => {
+    setSource(s);
+    setSaved(false);
+    if (s === "library") {
+      setType("resource");
+      setNote(DEFAULT_NOTES.resource);
+    } else {
+      setType(null);
+    }
+  };
 
   const handleTypeChange = (t) => {
     setType(t);
@@ -261,7 +274,9 @@ export default function HomeworkBuilder() {
           )}
         </div>
 
-        <HomeworkTypeStep value={type} onChange={handleTypeChange} />
+        <HomeworkSourceStep value={source} onChange={handleSourceChange} />
+
+        {source === "on_the_fly" && <HomeworkTypeStep value={type} onChange={handleTypeChange} />}
 
         {type === "articulation" && (
           <>
