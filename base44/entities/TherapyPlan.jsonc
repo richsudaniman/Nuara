@@ -33,7 +33,8 @@
         "articulation",
         "minimal_pairs",
         "fluency",
-        "reading"
+        "reading",
+        "resource"
       ],
       "default": "articulation",
       "description": "Kind of homework this plan delivers"

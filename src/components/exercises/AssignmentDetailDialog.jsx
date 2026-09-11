@@ -105,6 +105,10 @@ export default function AssignmentDetailDialog({ exercise, open, onOpenChange, o
           </div>
         )}
 
+        {exercise.video_url && (
+          <video src={exercise.video_url} controls className="w-full rounded-xl border border-gray-100 bg-black" />
+        )}
+
         {/* Modality-specific submission */}
         <div className="bg-white border-2 border-gray-100 rounded-xl p-5">
           {modality === "audio" && (

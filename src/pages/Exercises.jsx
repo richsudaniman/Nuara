@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Activity, CheckCircle2, Play, Mic, Sparkles, Star } from "lucide-react";
+import { Activity, CheckCircle2, Play, Mic, Camera, Video, StickyNote, Sparkles, Star } from "lucide-react";
+
+const MODALITY_ICONS = { audio: Mic, photo: Camera, video: Video, caregiver_note: StickyNote };
+const MODALITY_LABELS = { audio: "Record", photo: "Photo", video: "Video", caregiver_note: "Note" };
 import EmptyState from "../components/EmptyState";
 import AssignmentDetailDialog from "../components/exercises/AssignmentDetailDialog";
 
@@ -236,6 +239,8 @@ export default function Exercises() {
                 log.exercise_name === exercise.name
               );
 
+              const ModalityIcon = MODALITY_ICONS[exercise.modality || "audio"];
+
               return (
                 <button
                   key={idx}
@@ -256,8 +261,8 @@ export default function Exercises() {
                       {exercise.name}
                     </p>
                     <div className="flex items-center gap-1.5 text-[12px] text-[#6B6B75] mt-1">
-                      <Mic className="w-3 h-3" strokeWidth={2.25} />
-                      <span>{exercise.reps} times</span>
+                      <ModalityIcon className="w-3 h-3" strokeWidth={2.25} />
+                      <span>{MODALITY_LABELS[exercise.modality || "audio"]} · {exercise.reps} times</span>
                       {isCompleted && (
                         <>
                           <span className="text-[#D1D1D6]">·</span>

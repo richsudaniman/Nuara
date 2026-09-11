@@ -13,6 +13,7 @@ import MinimalPairsGrid from "@/components/homework/MinimalPairsGrid";
 import { getMinimalPairs, soundIpa, ERROR_PATTERNS } from "@/lib/minimalPairsBank";
 import { generateMinimalPairsWithAI } from "@/lib/aiMinimalPairs";
 import PublishPanel from "@/components/homework/PublishPanel";
+import ResourcePickerPanel from "@/components/homework/ResourcePickerPanel";
 
 const DAY_NAMES = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
 const DAY_ORDER = Object.keys(DAY_NAMES);
@@ -21,6 +22,7 @@ const DEFAULT_NOTES = {
   minimal_pairs: "Say both words in each pair clearly so they sound different. Listen carefully to the contrast.",
   fluency: "Read each sentence using the strategy we practiced. Take your time and breathe before each one.",
   reading: "Read each sentence aloud clearly. It's okay to pause and try again.",
+  resource: "Complete each activity and send your submission the way it asks (voice, video, photo or a caregiver note).",
 };
 
 export default function HomeworkBuilder() {
@@ -48,6 +50,8 @@ export default function HomeworkBuilder() {
   const [sentences, setSentences] = useState([]);
   const [strategy, setStrategy] = useState("");
   const [targetRate, setTargetRate] = useState("");
+  // resource library
+  const [resourceTasks, setResourceTasks] = useState([]);
   // publish
   const [clientId, setClientId] = useState(patientId || "");
   const [days, setDays] = useState(["Tue", "Wed", "Fri"]);
@@ -171,6 +175,18 @@ export default function HomeworkBuilder() {
           notes: note,
         }));
     }
+    if (type === "resource") {
+      return resourceTasks.map((t) => ({
+        name: t.title,
+        reps: t.reps,
+        sets: 1,
+        modality: t.modality,
+        activity_id: t.id,
+        metric_type: t.metric_type || undefined,
+        video_url: t.video_url || undefined,
+        notes: t.description || note,
+      }));
+    }
     return sentences.map((s) => ({
       name: s.text,
       reps: s.reps,
@@ -192,6 +208,8 @@ export default function HomeworkBuilder() {
       ? `Target sounds: ${selections.map((s) => `/${ALL_PHONEMES.find((p) => p.id === s.phonemeId)?.ipa}/ ${s.position[0].toUpperCase()}`).join(", ")}`
       : type === "minimal_pairs"
       ? `Minimal pairs: /${soundIpa(sound1)}/ vs /${soundIpa(sound2)}/`
+      : type === "resource"
+      ? `Library activities (${resourceTasks.length})`
       : `${typeMeta?.label}: ${strategy}`;
 
   const handlePublish = async () => {
@@ -216,14 +234,18 @@ export default function HomeworkBuilder() {
     }
   };
 
-  const exerciseCount = type === "articulation" || type === "minimal_pairs" ? selectedIds.length : sentences.length;
+  const exerciseCount =
+    type === "articulation" || type === "minimal_pairs" ? selectedIds.length : type === "resource" ? resourceTasks.length : sentences.length;
   const showPublish =
     type === "articulation"
       ? cards && cards.length > 0
       : type === "minimal_pairs"
       ? pairs && pairs.length > 0
+      : type === "resource"
+      ? resourceTasks.length > 0
       : isPassage && sentences.length > 0;
-  const itemLabel = type === "articulation" ? "word cards" : type === "minimal_pairs" ? "pairs" : "sentences";
+  const itemLabel =
+    type === "articulation" ? "word cards" : type === "minimal_pairs" ? "pairs" : type === "resource" ? "activities" : "sentences";
 
   return (
     <div className="min-h-full bg-orange-50/30">
@@ -306,6 +328,30 @@ export default function HomeworkBuilder() {
               />
             )}
           </>
+        )}
+
+        {type === "resource" && (
+          <ResourcePickerPanel
+            tasks={resourceTasks}
+            onAdd={(r) =>
+              setResourceTasks((prev) => [
+                ...prev,
+                {
+                  id: r.id,
+                  title: r.title,
+                  category: r.category,
+                  description: r.description,
+                  video_url: r.video_url,
+                  metric_type: r.default_metric_type,
+                  modality: r.default_modality || "audio",
+                  reps: 1,
+                },
+              ])
+            }
+            onRemove={(id) => setResourceTasks((prev) => prev.filter((t) => t.id !== id))}
+            onModalityChange={(id, m) => setResourceTasks((prev) => prev.map((t) => (t.id === id ? { ...t, modality: m } : t)))}
+            onRepsChange={(id, n) => setResourceTasks((prev) => prev.map((t) => (t.id === id ? { ...t, reps: n } : t)))}
+          />
         )}
 
         {isPassage && (
