@@ -48,7 +48,7 @@ export default function Layout({ children, currentPageName }) {
     if (!user) return 'client';
     
     // Check current page name to determine context
-    const trainerPages = ['HomeworkBuilder', 'Recordings', 'ProgressGoals', 'ResourceLibrary'];
+    const trainerPages = ['HomeworkBuilder', 'ResourceLibrary'];
     if (currentPageName?.startsWith('Trainer') || trainerPages.includes(currentPageName)) {
       return 'trainer';
     }
@@ -95,10 +95,8 @@ export default function Layout({ children, currentPageName }) {
   const trainerNavItems = [
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home, group: "CLINIC" },
     { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 14 },
-    { name: "Recordings", path: createPageUrl("Recordings"), icon: Mic, group: "CLINIC", badge: 6 },
     { name: "Homework builder", path: createPageUrl("HomeworkBuilder"), icon: ClipboardList, group: "CLINIC" },
     { name: "Resource library", path: createPageUrl("ResourceLibrary"), icon: Library, group: "CLINIC" },
-    { name: "Progress & goals", path: createPageUrl("ProgressGoals"), icon: BarChart2, group: "REPORTS" },
     { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, group: "REPORTS", badge: unreadCount || 0 },
   ];
 
