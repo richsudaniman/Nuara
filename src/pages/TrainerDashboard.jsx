@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles } from "lucide-react";
 import { format, subDays, startOfWeek } from "date-fns";
 
 import DashboardStatCards from "@/components/slp/DashboardStatCards";
@@ -288,10 +287,6 @@ export default function TrainerDashboard() {
             {todayFormatted} · {finalSessionCount} session{finalSessionCount !== 1 ? "s" : ""} today
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors self-start">
-          <Sparkles className="w-4 h-4" />
-          Ask AI
-        </button>
       </div>
 
       {/* Stat Cards */}
