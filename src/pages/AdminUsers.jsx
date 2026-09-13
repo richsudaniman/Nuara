@@ -49,6 +49,12 @@ export default function AdminUsers() {
     return User;
   };
 
+  const getRoleLabel = (role) => {
+    if (role === 'admin') return 'ADMIN';
+    if (role === 'trainer') return 'CLINICIAN';
+    return 'CLIENT';
+  };
+
   const getRoleColor = (role) => {
     if (role === 'admin') return "text-purple-700 bg-purple-100";
     if (role === 'trainer') return "text-teal-700 bg-teal-100";
@@ -175,12 +181,12 @@ export default function AdminUsers() {
                             )}
                         </div>
                         <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full tracking-wide ${roleColor}`}>
-                            {user.role || 'CLIENT'}
+                            {getRoleLabel(user.role)}
                         </span>
                     </div>
 
                     <div className="mb-4">
-                        <h3 className="font-bold text-gray-900 truncate text-lg">{user.full_name || 'Unnamed User'}</h3>
+                        <h3 className="font-bold text-gray-900 truncate text-lg">{user.full_name || 'Unnamed Client'}</h3>
                         <p className="text-sm text-gray-500 truncate">{user.email}</p>
                         <p className="text-xs text-gray-400 mt-1 font-mono">ID: {user.id.slice(0, 8)}</p>
                     </div>
