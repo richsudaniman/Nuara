@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Building2, CalendarClock, Bell, Stethoscope, Save, Loader2, Check, Database, Download } from "lucide-react";
+import { Building2, CalendarClock, Bell, Stethoscope, Save, Loader2, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -176,25 +176,6 @@ export default function AdminSettings() {
       {/* Clinical categories */}
       <SettingsSection icon={Stethoscope} title="Clinical categories" description="Areas of focus offered by your practice" color="#F472B6">
         <CategoryChips selected={form.clinical_categories} onChange={(v) => set("clinical_categories", v)} />
-      </SettingsSection>
-
-      {/* Data Management */}
-      <SettingsSection icon={Database} title="Data management" description="Export your clinical and application data" color="#F59E0B">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-          <div>
-            <Label className="text-sm font-semibold text-gray-900">PostgreSQL Export</Label>
-            <p className="text-xs text-gray-500 mt-1">Download all application data as SQL statements compatible with Supabase and PostgreSQL.</p>
-          </div>
-          <Button 
-            variant="outline" 
-            onClick={handleExportPostgres}
-            disabled={isExporting}
-            className="gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50 whitespace-nowrap"
-          >
-            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-gray-500" />}
-            Export SQL
-          </Button>
-        </div>
       </SettingsSection>
 
       {/* Bottom save */}

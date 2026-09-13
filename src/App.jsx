@@ -6,6 +6,7 @@ import VisualEditAgent from '@/lib/VisualEditAgent'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import ResourceLibrary from './pages/ResourceLibrary'
+import DeveloperExport from './pages/DeveloperExport'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -64,6 +65,11 @@ const AuthenticatedApp = () => {
       <Route path="/ResourceLibrary" element={
         <LayoutWrapper currentPageName="ResourceLibrary">
           <ResourceLibrary />
+        </LayoutWrapper>
+      } />
+      <Route path="/DeveloperExport" element={
+        <LayoutWrapper currentPageName="DeveloperExport">
+          <DeveloperExport />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
