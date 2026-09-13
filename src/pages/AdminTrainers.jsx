@@ -85,13 +85,13 @@ export default function AdminTrainers() {
   };
 
   const handleDeactivate = async (trainerId) => {
-    if (confirm('Deactivate this trainer? Their clients will remain but the trainer will lose access.')) {
+    if (confirm('Deactivate this clinician? Their clients will remain but the clinician will lose access.')) {
       await toggleTrainerStatusMutation.mutateAsync({ userId: trainerId, newUserType: 'client' });
     }
   };
 
   const handleActivate = async (userId) => {
-    if (confirm('Activate this user as a trainer?')) {
+    if (confirm('Activate this user as a clinician?')) {
       await toggleTrainerStatusMutation.mutateAsync({ userId: userId, newUserType: 'trainer' });
     }
   };
@@ -118,14 +118,14 @@ export default function AdminTrainers() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Trainer Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Clinician Management</h1>
           <p className="text-sm text-gray-500 mt-1">Manage fitness professionals and their assignments</p>
         </div>
         <div className="flex gap-2">
           <Link to={createPageUrl("AdminInviteUser")}>
             <Button className="bg-[#14b8a6] hover:bg-[#0f766e] text-white shadow-sm rounded-lg font-bold">
               <UserPlus className="w-4 h-4 mr-2" />
-              Invite Trainer
+              Invite Clinician
             </Button>
           </Link>
           <Button
@@ -147,14 +147,14 @@ export default function AdminTrainers() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Total Trainers */}
+        {/* Total Clinicians */}
         <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-shadow rounded-2xl overflow-hidden group">
             <CardContent className="p-6 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <Award className="w-16 h-16 text-teal-600" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Trainers</span>
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Clinicians</span>
                     <div className="flex items-baseline gap-2 mt-2">
                         <span className="text-4xl font-black text-teal-600">{trainers.length}</span>
                         <span className="text-xs text-teal-600/70 font-bold bg-teal-50 px-2 py-0.5 rounded-full">ACTIVE PROS</span>
@@ -186,7 +186,7 @@ export default function AdminTrainers() {
                     <UserCheck className="w-16 h-16 text-purple-600" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Avg Clients / Trainer</span>
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Avg Clients / Clinician</span>
                     <div className="flex items-baseline gap-2 mt-2">
                         <span className="text-4xl font-black text-purple-600">
                           {trainers.length > 0 ? Math.round(assignments.length / trainers.length) : 0}
@@ -203,7 +203,7 @@ export default function AdminTrainers() {
         <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden mb-6">
           <CardContent className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-gray-900 text-lg">Edit Trainer Details</h3>
+              <h3 className="font-bold text-gray-900 text-lg">Edit Clinician Details</h3>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -219,7 +219,7 @@ export default function AdminTrainers() {
 
             <div className="mb-6 p-4 bg-teal-50 border-l-4 border-teal-500 rounded-r-lg">
               <p className="text-sm text-teal-800">
-                <strong>Tip:</strong> To create a new trainer, use the "Invite Trainer" button above. Use this form to edit existing trainer details.
+                <strong>Tip:</strong> To create a new clinician, use the "Invite Clinician" button above. Use this form to edit existing clinician details.
               </p>
             </div>
 
@@ -247,7 +247,7 @@ export default function AdminTrainers() {
                     disabled={true}
                   />
                   {!editingTrainer && (
-                    <p className="text-xs text-gray-400 mt-1">Select a trainer to edit their details.</p>
+                    <p className="text-xs text-gray-400 mt-1">Select a clinician to edit their details.</p>
                   )}
                 </div>
 
@@ -266,7 +266,7 @@ export default function AdminTrainers() {
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Bio / About</label>
                   <Textarea
-                    placeholder="Tell clients about this trainer's experience and expertise..."
+                    placeholder="Tell clients about this clinician's experience and expertise..."
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     className="bg-white border-gray-200 h-32 resize-none"
@@ -304,7 +304,7 @@ export default function AdminTrainers() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
-              placeholder="Search trainers by name or email..."
+              placeholder="Search clinicians by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-white border-gray-200 focus:border-teal-500 rounded-xl h-11"
@@ -339,7 +339,7 @@ export default function AdminTrainers() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="font-bold text-gray-900 text-lg truncate">{trainer.full_name || 'Trainer'}</h3>
+                                <h3 className="font-bold text-gray-900 text-lg truncate">{trainer.full_name || 'Clinician'}</h3>
                                 <p className="text-sm text-gray-500 truncate">{trainer.email}</p>
                             </div>
                              {isExpanded ? (
@@ -445,7 +445,7 @@ export default function AdminTrainers() {
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-gray-400">
                     <Search className="w-6 h-6" />
                 </div>
-                <p className="text-gray-500 font-medium">No trainers found</p>
+                <p className="text-gray-500 font-medium">No clinicians found</p>
             </div>
           )}
         </div>
@@ -456,9 +456,9 @@ export default function AdminTrainers() {
                 <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
                     <h3 className="font-bold text-white text-lg flex items-center gap-2">
                         <UserCheck className="w-5 h-5" />
-                        Promote to Trainer
+                        Promote to Clinician
                     </h3>
-                    <p className="text-purple-100 text-xs mt-1">Grant trainer access to existing users</p>
+                    <p className="text-purple-100 text-xs mt-1">Grant clinician access to existing users</p>
                 </div>
                 <CardContent className="p-0 max-h-[calc(100vh-350px)] overflow-y-auto">
                     {regularUsers.length > 0 ? (
@@ -482,7 +482,7 @@ export default function AdminTrainers() {
                                     disabled={toggleTrainerStatusMutation.isPending}
                                     className="w-full bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800 font-bold text-xs h-8"
                                 >
-                                    Make Trainer
+                                    Make Clinician
                                 </Button>
                             </div>
                         ))}

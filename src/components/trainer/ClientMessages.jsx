@@ -81,8 +81,8 @@ export default function ClientMessages({ clientId, trainerId }) {
       try {
         await base44.integrations.Core.SendEmail({
           to: client.email,
-          subject: 'New Message from Your Trainer',
-          body: `You have a new message from your trainer:\n\n"${text}"\n\nLog in to your EJT Fitness account to reply.`,
+          subject: 'New Message from Your Clinician',
+          body: `You have a new message from your clinician:\n\n"${text}"\n\nLog in to your EJT Fitness account to reply.`,
         });
       } catch (error) {
         console.error('Error sending email notification:', error);

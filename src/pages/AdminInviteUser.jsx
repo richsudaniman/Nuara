@@ -100,7 +100,7 @@ export default function AdminInviteUser() {
     }
 
     if (formData.role === 'user' && !formData.assigned_trainer_id) {
-      setErrorMessage("Clients must be assigned to a trainer. Please select a trainer or create one first.");
+      setErrorMessage("Clients must be assigned to a clinician. Please select a clinician or create one first.");
       return;
     }
 
@@ -132,7 +132,7 @@ export default function AdminInviteUser() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Invite New User</h1>
-          <p className="text-sm text-gray-500 mt-1">Add trainers, clients, or administrators to the platform</p>
+          <p className="text-sm text-gray-500 mt-1">Add clinicians, clients, or administrators to the platform</p>
         </div>
         <Link to={createPageUrl("AdminDashboard")}>
           <Button variant="ghost" className="text-gray-500 hover:text-gray-900">
@@ -190,13 +190,13 @@ export default function AdminInviteUser() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="user">Client</SelectItem>
-                        <SelectItem value="trainer">Trainer</SelectItem>
+                        <SelectItem value="trainer">Clinician</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
                     <p className="text-[11px] text-gray-400">
                       {formData.role === 'trainer' && "Can manage clients and create plans"}
-                      {formData.role === 'user' && "Follows plans assigned by a trainer"}
+                      {formData.role === 'user' && "Follows plans assigned by a clinician"}
                       {formData.role === 'admin' && "Has full system access"}
                     </p>
                   </div>
@@ -248,7 +248,7 @@ export default function AdminInviteUser() {
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-500 uppercase">Bio / About</label>
                       <Textarea
-                        placeholder="Trainer's background and expertise..."
+                        placeholder="Clinician's background and expertise..."
                         value={formData.bio}
                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                         className="bg-white border-gray-200 min-h-[100px] resize-none"
@@ -260,13 +260,13 @@ export default function AdminInviteUser() {
                 {formData.role === 'user' && (
                   <div className="space-y-6 pt-4 border-t border-gray-50">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-500 uppercase">Assign Trainer</label>
+                      <label className="text-xs font-bold text-gray-500 uppercase">Assign Clinician</label>
                       <Select
                         value={formData.assigned_trainer_id}
                         onValueChange={(value) => setFormData({ ...formData, assigned_trainer_id: value })}
                       >
                         <SelectTrigger className="bg-white border-gray-200 h-10">
-                          <SelectValue placeholder="Select a trainer..." />
+                          <SelectValue placeholder="Select a clinician..." />
                         </SelectTrigger>
                         <SelectContent>
                           {trainers.map(trainer => (
@@ -278,7 +278,7 @@ export default function AdminInviteUser() {
                       </Select>
                       {trainers.length === 0 && (
                         <p className="text-xs text-orange-500 font-medium mt-1">
-                          No trainers available. Please invite a trainer first.
+                          No clinicians available. Please invite a clinician first.
                         </p>
                       )}
                     </div>
@@ -338,7 +338,7 @@ export default function AdminInviteUser() {
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold">•</span>
-                    <span>Trainers are automatically notified when a new client is assigned.</span>
+                    <span>Clinicians are automatically notified when a new client is assigned.</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold">•</span>
@@ -366,7 +366,7 @@ export default function AdminInviteUser() {
                 <Link to={createPageUrl("AdminTrainers")}>
                   <Button variant="ghost" className="w-full justify-start text-gray-600 hover:text-purple-600 hover:bg-purple-50">
                     <Shield className="w-4 h-4 mr-2" />
-                    Manage Trainers
+                    Manage Clinicians
                   </Button>
                 </Link>
               </div>

@@ -146,7 +146,7 @@ export default function PlansDiagnostic() {
               <span className="truncate">{results.user?.email}</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-gray-600">Trainer ID:</span>
+              <span className="text-gray-600">Clinician ID:</span>
               <span className={`font-mono ${results.user?.assigned_trainer_id ? 'text-green-600 font-bold' : 'text-red-600'}`}>
                 {results.user?.assigned_trainer_id || 'NOT SET ❌'}
               </span>

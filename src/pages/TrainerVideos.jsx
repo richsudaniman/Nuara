@@ -420,7 +420,7 @@ export default function TrainerVideos() {
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9]"></div>
-                      Trainer Notes
+                      Clinician Notes
                     </span>
                     <span className="text-[10px] text-[#0ea5e9] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       <div className="w-1 h-1 rounded-full bg-current animate-pulse"></div>

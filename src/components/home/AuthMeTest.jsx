@@ -125,9 +125,9 @@ export default function AuthMeTest() {
 
               {authMeResult.assigned_trainer_id && (
                 <div className="mt-3 p-3 bg-green-100 rounded border border-green-300">
-                  <div className="font-bold text-green-900 text-xs mb-1">✅ TRAINER ASSIGNED!</div>
+                  <div className="font-bold text-green-900 text-xs mb-1">✅ CLINICIAN ASSIGNED!</div>
                   <div className="text-[10px] text-green-800">
-                    Your trainer ID is properly set.
+                    Your clinician ID is properly set.
                   </div>
                 </div>
               )}

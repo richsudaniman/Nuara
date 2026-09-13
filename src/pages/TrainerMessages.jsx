@@ -79,10 +79,10 @@ export default function TrainerMessages() {
         await base44.integrations.Core.SendEmail({
           from_name: 'EJT Fitness',
           to: client.email,
-          subject: `🔔 Important Message from Your Trainer`,
+          subject: `🔔 Important Message from Your Clinician`,
           body: `Hi ${client.full_name},
 
-Your trainer ${trainer.full_name} sent you an important message:
+Your clinician ${trainer.full_name} sent you an important message:
 
 "${data.message}"
 
@@ -134,10 +134,10 @@ EJT Fitness Team`
         await base44.integrations.Core.SendEmail({
           from_name: 'EJT Fitness',
           to: client.email,
-          subject: `New Message from Your Trainer`,
+          subject: `New Message from Your Clinician`,
           body: `Hi ${client.full_name},
 
-Your trainer ${trainer.full_name} sent you a message:
+Your clinician ${trainer.full_name} sent you a message:
 
 "${messageText.trim()}"
 

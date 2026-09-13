@@ -135,7 +135,7 @@ export default function AdminVideos() {
 
   const getTrainerName = (trainerId) => {
     const trainer = allUsers.find(u => u.id === trainerId);
-    return trainer?.full_name || 'Unknown Trainer';
+    return trainer?.full_name || 'Unknown Clinician';
   };
 
   const filteredVideos = videos.filter(video =>
@@ -472,7 +472,7 @@ export default function AdminVideos() {
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]"></div>
-                      Admin/Trainer Notes
+                      Admin/Clinician Notes
                     </span>
                     <span className="text-[10px] text-teal-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       <div className="w-1 h-1 rounded-full bg-current animate-pulse"></div>

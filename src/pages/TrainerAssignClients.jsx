@@ -47,7 +47,7 @@ export default function TrainerAssignClients() {
       // Check if client is already assigned to ANOTHER trainer
       const existingAssignment = allAssignments.find(a => a.client_id === clientId && a.is_active);
       if (existingAssignment && existingAssignment.trainer_id !== trainer.id) {
-        throw new Error('This client is already assigned to another trainer');
+        throw new Error('This client is already assigned to another clinician');
       }
       
       // ALWAYS update the User entity with the trainer ID (even for re-assignments)
@@ -171,7 +171,7 @@ export default function TrainerAssignClients() {
                       </h3>
                       <p className="text-sm text-gray-500 truncate">{client.email}</p>
                       {assignedToOther && (
-                        <p className="text-xs text-red-500 font-medium mt-0.5">Assigned to other trainer</p>
+                        <p className="text-xs text-red-500 font-medium mt-0.5">Assigned to other clinician</p>
                       )}
                     </div>
 

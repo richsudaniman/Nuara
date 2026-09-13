@@ -47,7 +47,7 @@ export default function SwitchRole() {
     },
     {
       id: 'trainer',
-      name: 'Trainer Portal',
+      name: 'Clinician Portal',
       description: 'Manage your clients and their programs',
       icon: Award,
       bgColor: 'bg-purple-600',
@@ -56,7 +56,7 @@ export default function SwitchRole() {
     {
       id: 'admin',
       name: 'Admin Portal',
-      description: 'Manage users, trainers, and platform settings',
+      description: 'Manage users, clinicians, and platform settings',
       icon: Shield,
       bgColor: 'bg-red-600',
       textColor: 'text-red-600',

@@ -172,7 +172,7 @@ export default function AdminAnnouncements() {
              <div>
                 <h3 className="font-bold text-gray-900 mb-1">Communication Hub</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Send important updates to all users, specific groups (trainers or clients), 
+                  Send important updates to all users, specific groups (clinicians or clients), 
                   or schedule messages. Recipients will receive email notifications and see 
                   announcements on their dashboard.
                 </p>
@@ -253,7 +253,7 @@ export default function AdminAnnouncements() {
                             All Users ({getAudienceCount('all')})
                         </SelectItem>
                         <SelectItem value="trainers">
-                            Trainers Only ({getAudienceCount('trainers')})
+                            Clinicians Only ({getAudienceCount('trainers')})
                         </SelectItem>
                         <SelectItem value="clients">
                             Clients Only ({getAudienceCount('clients')})

@@ -152,10 +152,10 @@ export default function DiagnosticTool() {
       <Card className="bg-gradient-to-r from-blue-500 to-blue-600 border-none">
         <CardContent className="p-6">
           <h1 className="text-2xl font-bold text-white mb-2">
-            Trainer Assignment Diagnostic Tool
+            Clinician Assignment Diagnostic Tool
           </h1>
           <p className="text-blue-100 text-sm">
-            Check why a client can't see their assigned trainer
+            Check why a client can't see their assigned clinician
           </p>
         </CardContent>
       </Card>

@@ -131,9 +131,9 @@ export default function Messages() {
         <Card className="bg-yellow-50 border-2 border-yellow-300">
           <CardContent className="p-6 text-center">
             <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
-            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-2">No Trainer Assigned</h3>
+            <h3 className="font-black italic text-[#1a1a1a] text-lg mb-2">No Clinician Assigned</h3>
             <p className="text-sm text-gray-600">
-              You don't have a trainer assigned yet. Once a trainer is assigned to you, you'll be able to message them here.
+              You don't have a clinician assigned yet. Once a clinician is assigned to you, you'll be able to message them here.
             </p>
           </CardContent>
         </Card>
@@ -167,7 +167,7 @@ export default function Messages() {
                 )}
               </div>
               <div className="flex-1">
-                <p className="text-xs text-white/70 uppercase font-bold">Your Trainer</p>
+                <p className="text-xs text-white/70 uppercase font-bold">Your Clinician</p>
                 <h3 className="text-xl font-black italic text-white">{trainer.full_name}</h3>
                 <p className="text-sm text-white/80">{trainer.email}</p>
               </div>
@@ -219,7 +219,7 @@ export default function Messages() {
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <MessageCircle className="w-16 h-16 text-gray-300 mb-4" />
                   <p className="text-gray-500 italic">No messages yet</p>
-                  <p className="text-sm text-gray-400 mt-2">Send your trainer a message below</p>
+                  <p className="text-sm text-gray-400 mt-2">Send your clinician a message below</p>
                 </div>
               )}
             </div>
@@ -256,7 +256,7 @@ export default function Messages() {
         <CardContent className="p-4">
           <h4 className="font-bold text-sm text-gray-700 mb-2">💡 Messaging Tips</h4>
           <ul className="text-xs text-gray-600 space-y-1">
-            <li>• Your trainer receives email notifications when you send a message</li>
+            <li>• Your clinician receives email notifications when you send a message</li>
             <li>• Messages refresh automatically every 30 seconds</li>
             <li>• Use this to ask questions about your workout or nutrition plan</li>
             <li>• Share your progress updates and achievements!</li>

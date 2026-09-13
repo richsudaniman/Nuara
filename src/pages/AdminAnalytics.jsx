@@ -60,7 +60,7 @@ export default function AdminAnalytics() {
   // Role distribution
   const roleData = [
     { name: 'Clients', value: clients.length, color: '#0ea5e9' },
-    { name: 'Trainers', value: trainers.length, color: '#8b5cf6' },
+    { name: 'Clinicians', value: trainers.length, color: '#8b5cf6' },
     { name: 'Admins', value: allUsers.filter(u => u.role === 'admin').length, color: '#ef4444' },
   ];
 
@@ -172,7 +172,7 @@ export default function AdminAnalytics() {
                 <div className="absolute top-0 right-0 p-3 opacity-20">
                     <Users className="w-12 h-12" />
                 </div>
-                <p className="text-xs font-bold opacity-80 uppercase tracking-wide">Avg Clients/Trainer</p>
+                <p className="text-xs font-bold opacity-80 uppercase tracking-wide">Avg Clients/Clinician</p>
                 <div className="flex items-baseline gap-2 mt-2">
                     <p className="text-3xl font-black">{trainers.length > 0 ? Math.round(assignments.length / trainers.length) : 0}</p>
                 </div>
@@ -201,7 +201,7 @@ export default function AdminAnalytics() {
 
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="font-bold text-gray-700">Trainer Utilization</span>
+                    <span className="font-bold text-gray-700">Clinician Utilization</span>
                     <span className="text-purple-600 font-black">
                       {trainers.length > 0 ? Math.round((assignments.length / (trainers.length * 10)) * 100) : 0}%
                     </span>
@@ -212,7 +212,7 @@ export default function AdminAnalytics() {
                       style={{ width: `${trainers.length > 0 ? Math.min((assignments.length / (trainers.length * 10)) * 100, 100) : 0}%` }}
                     ></div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Assuming 10 clients per trainer capacity</p>
+                  <p className="text-xs text-gray-500 mt-1">Assuming 10 clients per clinician capacity</p>
                 </div>
               </div>
             </CardContent>

@@ -89,14 +89,14 @@ export default function AdminClientAssignments() {
             from_name: 'EJT Fitness',
             to: trainer.email,
             subject: `New Client Assigned: ${client.full_name}`,
-            body: `Hi ${trainer.full_name || 'Trainer'},
+            body: `Hi ${trainer.full_name || 'Clinician'},
 
 A new client has been assigned to you:
 
 Client Name: ${client.full_name}
 Client Email: ${client.email}
 
-Please log in to the trainer portal to start creating their workout and nutrition plans.
+Please log in to the clinician portal to start creating their workout and nutrition plans.
 
 Best regards,
 EJT Fitness Team`
@@ -107,15 +107,15 @@ EJT Fitness Team`
           await base44.integrations.Core.SendEmail({
             from_name: 'EJT Fitness',
             to: client.email,
-            subject: `Your New Trainer: ${trainer.full_name}`,
+            subject: `Your New Clinician: ${trainer.full_name}`,
             body: `Hi ${client.full_name},
 
-You've been assigned a new trainer:
+You've been assigned a new clinician:
 
-Trainer Name: ${trainer.full_name}
-Trainer Email: ${trainer.email}
+Clinician Name: ${trainer.full_name}
+Clinician Email: ${trainer.email}
 
-Your trainer will be creating customized workout and nutrition plans for you. Stay tuned!
+Your clinician will be creating customized workout and nutrition plans for you. Stay tuned!
 
 Best regards,
 EJT Fitness Team`
@@ -204,7 +204,7 @@ EJT Fitness Team`
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Client Assignments</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage relationships between trainers and clients</p>
+            <p className="text-sm text-gray-500 mt-1">Manage relationships between clinicians and clients</p>
           </div>
         </div>
       </div>
@@ -225,7 +225,7 @@ EJT Fitness Team`
 
         <Card className="bg-white border-none shadow-sm rounded-xl overflow-hidden">
           <CardContent className="p-6">
-            <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Active Trainers</p>
+            <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Active Clinicians</p>
             <div className="flex items-end gap-3">
               <p className="text-4xl font-black text-[#1a1a1a]">{trainers.length}</p>
               <div className="mb-1 px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 text-xs font-bold">
@@ -267,7 +267,7 @@ EJT Fitness Team`
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Trainers</SelectItem>
+                <SelectItem value="all">All Clinicians</SelectItem>
                 <SelectItem value="unassigned">Show Unassigned Only</SelectItem>
                 {trainers.map(trainer => (
                   <SelectItem key={trainer.id} value={trainer.id}>
@@ -309,7 +309,7 @@ EJT Fitness Team`
                             
                             {trainer ? (
                               <div className="flex items-center gap-1.5 text-xs">
-                                <span className="text-gray-400">Trainer:</span>
+                                <span className="text-gray-400">Clinician:</span>
                                 <div className="flex items-center gap-1 font-semibold text-[#0ea5e9] bg-blue-50 px-2 py-0.5 rounded-full">
                                   {trainer.full_name || trainer.email}
                                 </div>
@@ -331,7 +331,7 @@ EJT Fitness Team`
                             : "bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold"}
                         >
                           <RefreshCw className="w-4 h-4 mr-2" />
-                          {trainer ? 'Reassign' : 'Assign Trainer'}
+                          {trainer ? 'Reassign' : 'Assign Clinician'}
                         </Button>
                       </div>
                     </CardContent>
@@ -358,7 +358,7 @@ EJT Fitness Team`
             <CardContent className="p-6">
               <h3 className="font-bold text-[#1a1a1a] text-lg mb-6 flex items-center gap-2">
                 <Users className="w-5 h-5 text-gray-400" />
-                Trainer Capacity
+                Clinician Capacity
               </h3>
               
               <div className="space-y-6">
@@ -390,7 +390,7 @@ EJT Fitness Team`
                             {trainer.full_name?.charAt(0) || 'T'}
                           </div>
                           <p className="font-semibold text-sm text-gray-900 group-hover:text-[#0ea5e9] transition-colors cursor-default">
-                            {trainer.full_name || 'Trainer'}
+                            {trainer.full_name || 'Clinician'}
                           </p>
                         </div>
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${bgClass} ${textClass}`}>
@@ -408,7 +408,7 @@ EJT Fitness Team`
                 })}
 
                 {trainers.length === 0 && (
-                  <p className="text-sm text-gray-500 text-center py-4 italic">No trainers active</p>
+                  <p className="text-sm text-gray-500 text-center py-4 italic">No clinicians active</p>
                 )}
               </div>
               
@@ -416,7 +416,7 @@ EJT Fitness Team`
                 <Link to={createPageUrl("AdminInviteUser")}>
                   <Button variant="outline" className="w-full text-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-blue-50 border-blue-100">
                     <UserPlus className="w-4 h-4 mr-2" />
-                    Invite New Trainer
+                    Invite New Clinician
                   </Button>
                 </Link>
               </div>
@@ -433,7 +433,7 @@ EJT Fitness Team`
               <h3 className="font-black italic text-[#1a1a1a] text-xl mb-1">
                 {getClientTrainer(selectedClient.id) ? 'REASSIGN CLIENT' : 'ASSIGN CLIENT'}
               </h3>
-              <p className="text-gray-500 text-sm mb-6">Select a trainer for this client</p>
+              <p className="text-gray-500 text-sm mb-6">Select a clinician for this client</p>
 
               <div className="bg-gray-50 p-4 rounded-xl mb-6 flex items-center gap-3 border border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-gray-400 border border-gray-200 shadow-sm">
@@ -453,10 +453,10 @@ EJT Fitness Team`
               )}
 
               <div className="mb-6">
-                <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Available Trainers</label>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Available Clinicians</label>
                 <Select value={newTrainerId} onValueChange={setNewTrainerId}>
                   <SelectTrigger className="bg-white border-gray-200 h-11">
-                    <SelectValue placeholder="Choose a trainer..." />
+                    <SelectValue placeholder="Choose a clinician..." />
                   </SelectTrigger>
                   <SelectContent>
                     {trainers.map(trainer => {

@@ -101,7 +101,7 @@ export default function AdminUsers() {
                     <Award className="w-16 h-16 text-teal-500" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Trainers & Admins</span>
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Clinicians & Admins</span>
                     <div className="flex items-baseline gap-2 mt-2">
                         <span className="text-3xl font-black text-gray-900">{trainersCount + adminsCount}</span>
                         <span className="text-[11px] text-teal-700 font-bold bg-teal-100 px-1.5 py-0.5 rounded-md">STAFF</span>
@@ -145,7 +145,7 @@ export default function AdminUsers() {
             <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="admin">Admins</SelectItem>
-                <SelectItem value="trainer">Trainers</SelectItem>
+                <SelectItem value="trainer">Clinicians</SelectItem>
                 <SelectItem value="user">Clients</SelectItem>
             </SelectContent>
             </Select>
@@ -197,7 +197,7 @@ export default function AdminUsers() {
                                 </SelectTrigger>
                                 <SelectContent>
                                 <SelectItem value="admin">Admin</SelectItem>
-                                <SelectItem value="trainer">Trainer</SelectItem>
+                                <SelectItem value="trainer">Clinician</SelectItem>
                                 <SelectItem value="user">Client</SelectItem>
                                 </SelectContent>
                             </Select>
