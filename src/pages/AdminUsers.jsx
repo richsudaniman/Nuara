@@ -61,6 +61,7 @@ export default function AdminUsers() {
     return "text-emerald-700 bg-emerald-100";
   };
 
+  const clientsCount = allUsers.filter(u => u.role === 'user' || !u.role).length;
   const trainersCount = allUsers.filter(u => u.role === 'trainer').length;
   const adminsCount = allUsers.filter(u => u.role === 'admin').length;
   const newThisMonth = allUsers.filter(u => {
@@ -86,7 +87,22 @@ export default function AdminUsers() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden group">
+            <CardContent className="p-5 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <User className="w-16 h-16 text-emerald-500" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Clients</span>
+                    <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-3xl font-black text-gray-900">{clientsCount}</span>
+                        <span className="text-[11px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-md">CLIENTS</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
         <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden group">
             <CardContent className="p-5 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
