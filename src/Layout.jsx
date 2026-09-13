@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Home, Activity, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, Mic, ClipboardList, BarChart2, UserCheck, Library } from "lucide-react";
+import { Home, Activity, TrendingUp, Users, MessageCircle, Menu, X, LogOut, Settings, Gamepad2, ClipboardList, Library, ListChecks, Megaphone } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import AuthGuard from "@/components/AuthGuard";
@@ -48,7 +48,12 @@ export default function Layout({ children, currentPageName }) {
     if (!user) return 'client';
     
     // Check current page name to determine context
-    const trainerPages = ['HomeworkBuilder', 'ResourceLibrary'];
+    // Pages shared by both portals — the user's role decides which shell to show
+    if (currentPageName === 'ResourceLibrary') {
+      return user.role === 'admin' ? 'admin' : 'trainer';
+    }
+
+    const trainerPages = ['HomeworkBuilder'];
     if (currentPageName?.startsWith('Trainer') || trainerPages.includes(currentPageName)) {
       return 'trainer';
     }
@@ -104,8 +109,9 @@ export default function Layout({ children, currentPageName }) {
   const adminNavItems = [
     { name: "Dashboard", path: createPageUrl("AdminDashboard"), icon: Home },
     { name: "Users", path: createPageUrl("AdminUsers"), icon: Users },
-    { name: "Trainers", path: createPageUrl("AdminTrainers"), icon: Award },
-    { name: "Videos", path: createPageUrl("AdminVideos"), icon: Video },
+    { name: "Waitlist", path: createPageUrl("AdminClientAssignments"), icon: ListChecks },
+    { name: "Announcements", path: createPageUrl("AdminAnnouncements"), icon: Megaphone },
+    { name: "Resource library", path: createPageUrl("ResourceLibrary"), icon: Library },
     { name: "Settings", path: createPageUrl("AdminSettings"), icon: Settings },
   ];
 

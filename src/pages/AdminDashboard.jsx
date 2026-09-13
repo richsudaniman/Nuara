@@ -2,9 +2,7 @@ import React, { useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { UserPlus, Megaphone, ListChecks, GraduationCap, ChevronRight, Settings, Users, Activity, TrendingUp } from "lucide-react";
+
 import { 
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ComposedChart, Legend, Cell, PieChart, Pie, Sector 
@@ -12,14 +10,6 @@ import {
 import WaitlistPanel from "@/components/admin/WaitlistPanel";
 import OutcomesPanel from "@/components/admin/OutcomesPanel";
 import FamilyEngagementPanel from "@/components/admin/FamilyEngagementPanel";
-
-const QUICK_ACTIONS = [
-  { label: "Invite user", desc: "Add clinicians or staff", icon: UserPlus, page: "AdminInviteUser" },
-  { label: "Waitlist", desc: "Manage waitlisted families", icon: ListChecks, page: "AdminClientAssignments" },
-  { label: "Announce", desc: "Send practice alerts", icon: Megaphone, page: "AdminAnnouncements" },
-  { label: "Education", desc: "Manage learning materials", icon: GraduationCap, page: "AdminEducationalContent" },
-  { label: "Settings", desc: "Practice configuration", icon: Settings, page: "AdminSettings" },
-];
 
 const COLORS = {
   primary: "#14b8a6", // teal-500
@@ -288,27 +278,6 @@ export default function AdminDashboard() {
       </div>
       <OutcomesPanel outcomes={outcomes} />
 
-      {/* Quick actions styled like Trainer layout */}
-      <div>
-        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Quick actions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {QUICK_ACTIONS.map((a, idx) => {
-            const Icon = a.icon;
-            const color = CHART_PALETTE[idx % CHART_PALETTE.length];
-            return (
-              <Link key={a.label} to={createPageUrl(a.page)}>
-                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-teal-200 transition-all cursor-pointer h-full group">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-gray-50 group-hover:bg-teal-50 transition-colors">
-                    <Icon className="w-5 h-5 text-gray-500 group-hover:text-teal-600" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 text-sm leading-tight">{a.label}</h4>
-                  <p className="text-[11px] text-gray-400 mt-1 line-clamp-2">{a.desc}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }
