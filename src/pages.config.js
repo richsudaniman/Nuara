@@ -5,7 +5,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminEducationalContent from './pages/AdminEducationalContent';
 import AdminInviteUser from './pages/AdminInviteUser';
 import AdminSettings from './pages/AdminSettings';
-import AdminTrainers from './pages/AdminTrainers';
 import AdminUsers from './pages/AdminUsers';
 import AdminVideos from './pages/AdminVideos';
 import DiagnosticTool from './pages/DiagnosticTool';
@@ -37,7 +36,6 @@ export const PAGES = {
     "AdminEducationalContent": AdminEducationalContent,
     "AdminInviteUser": AdminInviteUser,
     "AdminSettings": AdminSettings,
-    "AdminTrainers": AdminTrainers,
     "AdminUsers": AdminUsers,
     "AdminVideos": AdminVideos,
     "DiagnosticTool": DiagnosticTool,

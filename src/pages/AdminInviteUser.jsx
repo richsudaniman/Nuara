@@ -363,12 +363,6 @@ export default function AdminInviteUser() {
                     View All Users
                   </Button>
                 </Link>
-                <Link to={createPageUrl("AdminTrainers")}>
-                  <Button variant="ghost" className="w-full justify-start text-gray-600 hover:text-purple-600 hover:bg-purple-50">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Manage Clinicians
-                  </Button>
-                </Link>
               </div>
             </CardContent>
           </Card>

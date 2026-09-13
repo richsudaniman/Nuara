@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import EmptyState from "../components/EmptyState";
+import UserEditDialog from "../components/admin/UserEditDialog";
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
@@ -31,8 +32,8 @@ export default function AdminUsers() {
     },
   });
 
-  const handleRoleChange = async (userId, newRole) => {
-    await updateUserMutation.mutateAsync({ userId, data: { role: newRole } });
+  const handleSaveProfile = async (data) => {
+    await updateUserMutation.mutateAsync({ userId: editingUser.id, data });
   };
 
   const filteredUsers = allUsers.filter(user => {
@@ -160,7 +161,6 @@ export default function AdminUsers() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredUsers.map(user => {
                 const RoleIcon = getRoleIcon(user.role);
-                const isEditing = editingUser?.id === user.id;
                 const roleColor = getRoleColor(user.role);
                 
                 return (
@@ -186,51 +186,15 @@ export default function AdminUsers() {
                     </div>
 
                     <div className="pt-4 border-t border-gray-50">
-                        {isEditing ? (
-                            <div className="flex flex-col gap-2">
-                            <Select
-                                value={editingUser.role || 'user'}
-                                onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}
-                            >
-                                <SelectTrigger className="w-full h-9 bg-gray-50 border-gray-200">
-                                <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                <SelectItem value="admin">Admin</SelectItem>
-                                <SelectItem value="trainer">Clinician</SelectItem>
-                                <SelectItem value="user">Client</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <div className="flex gap-2">
-                                <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => setEditingUser(null)}
-                                className="flex-1 h-8 text-gray-500"
-                                >
-                                Cancel
-                                </Button>
-                                <Button
-                                size="sm"
-                                onClick={() => handleRoleChange(user.id, editingUser.role)}
-                                disabled={updateUserMutation.isPending}
-                                className="flex-1 h-8 bg-[#14b8a6] hover:bg-[#0f766e] text-white"
-                                >
-                                Save
-                                </Button>
-                            </div>
-                            </div>
-                        ) : (
-                            <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setEditingUser(user)}
-                            className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#14b8a6]/5 group-hover:text-teal-500 transition-colors"
-                            >
-                                <span className="text-xs font-medium">Manage Role</span>
-                                <Edit className="w-3.5 h-3.5" />
-                            </Button>
-                        )}
+                        <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setEditingUser(user)}
+                        className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#14b8a6]/5 group-hover:text-teal-500 transition-colors"
+                        >
+                            <span className="text-xs font-medium">Edit profile & role</span>
+                            <Edit className="w-3.5 h-3.5" />
+                        </Button>
                     </div>
                     </CardContent>
                 </Card>
@@ -246,6 +210,17 @@ export default function AdminUsers() {
             />
         )}
       </div>
+
+      {editingUser && (
+        <UserEditDialog
+          key={editingUser.id}
+          user={editingUser}
+          open={true}
+          onClose={() => setEditingUser(null)}
+          onSave={handleSaveProfile}
+          isSaving={updateUserMutation.isPending}
+        />
+      )}
     </div>
   );
 }
