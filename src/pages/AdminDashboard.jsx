@@ -78,7 +78,8 @@ export default function AdminDashboard() {
   }
 
   // Fall back to the shared sample clinic when the practice has no client data yet
-  const metrics = data.overview?.totalClients > 0 ? data : MOCK_ADMIN_METRICS;
+  const hasRealData = data?.clinicianUtilization?.length > 0 && data?.overview?.weeklyCompliance > 0;
+  const metrics = hasRealData ? data : MOCK_ADMIN_METRICS;
   const { overview, weeklyTrend, clinicianUtilization, caseload, waitlist, outcomes, family } = metrics;
   
   const complianceTrend = overview.weeklyCompliance - overview.prevWeeklyCompliance;
