@@ -50,6 +50,9 @@ export default function Layout({ children, currentPageName }) {
     // Check current page name to determine context
     // Pages shared by both portals — the user's role decides which shell to show
     if (currentPageName === 'ResourceLibrary') {
+      const portal = new URLSearchParams(location.search).get('portal');
+      if (portal === 'trainer') return 'trainer';
+      if (portal === 'admin') return 'admin';
       return user.role === 'admin' ? 'admin' : 'trainer';
     }
 
@@ -101,7 +104,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home, group: "CLINIC" },
     { name: "Caseload", path: createPageUrl("TrainerClients"), icon: Users, group: "CLINIC", badge: trainerAssignments?.length || 14 },
     { name: "Homework builder", path: createPageUrl("HomeworkBuilder"), icon: ClipboardList, group: "CLINIC" },
-    { name: "Resource library", path: createPageUrl("ResourceLibrary"), icon: Library, group: "CLINIC" },
+    { name: "Resource library", path: `${createPageUrl("ResourceLibrary")}?portal=trainer`, icon: Library, group: "CLINIC" },
     { name: "Messages", path: createPageUrl("TrainerMessages"), icon: MessageCircle, group: "REPORTS", badge: unreadCount || 0 },
   ];
 
@@ -111,14 +114,14 @@ export default function Layout({ children, currentPageName }) {
     { name: "Users", path: createPageUrl("AdminUsers"), icon: Users },
     { name: "Waitlist", path: createPageUrl("AdminClientAssignments"), icon: ListChecks },
     { name: "Announcements", path: createPageUrl("AdminAnnouncements"), icon: Megaphone },
-    { name: "Resource library", path: createPageUrl("ResourceLibrary"), icon: Library },
+    { name: "Resource library", path: `${createPageUrl("ResourceLibrary")}?portal=admin`, icon: Library },
     { name: "Settings", path: createPageUrl("AdminSettings"), icon: Settings },
   ];
 
   const navItems = isAdminView ? adminNavItems : (isTrainerView ? trainerNavItems : clientNavItems);
 
   const isNavItemActive = (navPath) => {
-    return location.pathname === navPath;
+    return location.pathname === navPath.split('?')[0];
   };
 
   const getHomePath = () => {
