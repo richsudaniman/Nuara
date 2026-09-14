@@ -48,7 +48,8 @@ export default function TrainerClients() {
   const realClients = allUsers.filter((u) => clientIds.includes(u.id));
 
   // Sample caseload preview when the clinician has no assignments yet
-  const isDemo = !assignmentsLoading && assignments.length === 0;
+  const hasClientActivity = workoutLogs.some((l) => clientIds.includes(l.logged_by_client_id));
+  const isDemo = !assignmentsLoading && (assignments.length === 0 || !hasClientActivity);
   const clients = isDemo ? MOCK_CLINICIAN_CASELOAD : realClients;
 
   const filtered = clients.filter(

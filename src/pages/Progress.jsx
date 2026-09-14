@@ -33,8 +33,9 @@ export default function Progress() {
   const isLoading = goalsLoading || logsLoading;
 
   // Demo fallback so the page shows meaningful progress before real data exists
-  const goals = realGoals.length > 0 ? realGoals : demoGoals;
-  const logs = realLogs.length > 0 ? realLogs : demoLogs;
+  const hasRealData = realGoals.length > 0 && realLogs.length > 0;
+  const goals = hasRealData ? realGoals : demoGoals;
+  const logs = hasRealData ? realLogs : demoLogs;
 
   const last7 = new Date();
   last7.setDate(last7.getDate() - 7);
