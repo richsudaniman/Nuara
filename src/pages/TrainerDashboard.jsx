@@ -69,8 +69,10 @@ export default function TrainerDashboard() {
 
   // --- Demo data fallback for empty caseload ---
   // Show the sample clinic until there is real caseload activity to display
-  const hasClientActivity = workoutLogs.some((l) => clientIds.includes(l.logged_by_client_id));
-  const isDemo = !isLoading && (assignments.length === 0 || !hasClientActivity);
+  const clientsWithActivity = new Set(
+    workoutLogs.filter((l) => clientIds.includes(l.logged_by_client_id)).map((l) => l.logged_by_client_id)
+  ).size;
+  const isDemo = !isLoading && clientsWithActivity < 3;
 
   // --- Greeting ---
   const hour = new Date().getHours();

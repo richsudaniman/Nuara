@@ -70,7 +70,7 @@ export default function TrainerClientDetail() {
   });
 
   // Demo fallback so the whole dashboard reads well when no client is selected
-  const isDemo = !clientId || (!clientLoading && (!client || realSessions.length === 0));
+  const isDemo = !clientId || (!clientLoading && (!client || realSessions.length < 5));
   const displayClient = client || DEMO_CLIENT;
   const goals = isDemo ? DEMO_GOALS : realGoals;
   const sessions = isDemo ? DEMO_SESSIONS : realSessions;
