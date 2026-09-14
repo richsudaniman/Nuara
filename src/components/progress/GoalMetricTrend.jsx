@@ -38,21 +38,24 @@ export default function GoalMetricTrend({ goal, sessions = [] }) {
         </div>
       </div>
 
-      <div className="flex items-end gap-2 h-16 mb-2">
+      <div className="h-24 mb-2">
         {values.length === 0 ? (
           <p className="text-[12px] text-[#9CA3AF]">No session data yet.</p>
         ) : (
-          values.map((v, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <div className="w-full bg-[#F1F1F4] rounded-md overflow-hidden flex items-end" style={{ height: "100%" }}>
-                <div
-                  className="w-full bg-[#A78BFA] rounded-md transition-all"
-                  style={{ height: `${Math.min(v, 100)}%` }}
-                />
-              </div>
-              <span className="text-[10px] font-semibold text-[#6B6B75]">{v}{unit === "%" ? "%" : ""}</span>
-            </div>
-          ))
+          <div className="flex items-end gap-3 h-full">
+            {values.map((v, i) => {
+              const scale = target || Math.max(...values, 1);
+              const pct = Math.max(8, Math.min(100, Math.round((v / scale) * 100)));
+              return (
+                <div key={i} className="flex-1 h-full flex flex-col items-center justify-end gap-1">
+                  <div className="w-full flex-1 flex items-end bg-[#F1F1F4] rounded-md overflow-hidden">
+                    <div className="w-full bg-[#A78BFA] rounded-md" style={{ height: `${pct}%` }} />
+                  </div>
+                  <span className="text-[10px] font-semibold text-[#6B6B75]">{v}{unit === "%" ? "%" : ""}</span>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
