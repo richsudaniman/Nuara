@@ -10,6 +10,12 @@ import TodaysSessionsPanel from "@/components/slp/TodaysSessionsPanel";
 import ComplianceTrendPanel from "@/components/slp/ComplianceTrendPanel";
 import CaseloadComplianceList from "@/components/slp/CaseloadComplianceList";
 import { createPageUrl } from "@/utils";
+import { MOCK_ACTIVE_CLIENTS, MOCK_TODAY_SESSIONS, MOCK_WEEKLY_TREND } from "@/lib/mockClinic";
+
+const MOCK_CLINICIAN_CASELOAD = MOCK_ACTIVE_CLIENTS.filter((c) => c.clinician_id === "mock-clin-1");
+const MOCK_CLINICIAN_AVG = Math.round(
+  MOCK_CLINICIAN_CASELOAD.reduce((s, c) => s + c.compliance, 0) / MOCK_CLINICIAN_CASELOAD.length
+);
 
 export default function TrainerDashboard() {
   const queryClient = useQueryClient();
@@ -185,22 +191,17 @@ export default function TrainerDashboard() {
     });
   });
 
-  // --- Demo overrides ---
+  // --- Demo overrides (shared mock clinic roster) ---
   const DEMO_DATA = {
     statData: {
-      activeClients: 14,
-      onHold: 2,
-      avgCompliance: 78,
+      activeClients: MOCK_CLINICIAN_CASELOAD.length,
+      onHold: 1,
+      avgCompliance: MOCK_CLINICIAN_AVG,
       complianceChange: 5,
       pendingRecordings: 6,
       plansExpiring: 3,
     },
-    todaySessions: [
-      { time: "09:00", clientName: "Jalal Abdelrahim", sessionType: "Articulation · /r/ /s/", tag: "In 1h", tagType: "soon" },
-      { time: "10:30", clientName: "Mia Chen", sessionType: "Language · sentence building", tag: "Prep needed", tagType: "prep" },
-      { time: "13:00", clientName: "Noah Patel", sessionType: "Fluency · easy onset", tag: "Afternoon", tagType: "afternoon" },
-      { time: "14:30", clientName: "Sophia Reyes", sessionType: "Reassessment", tag: "Afternoon", tagType: "afternoon" },
-    ],
+    todaySessions: MOCK_TODAY_SESSIONS,
     alerts: [
       {
         type: "urgent",
@@ -231,22 +232,14 @@ export default function TrainerDashboard() {
         linkTo: createPageUrl("HomeworkBuilder"),
       },
     ],
-    weeklyTrendData: [
-      { label: "W1", value: 64 },
-      { label: "W2", value: 70 },
-      { label: "W3", value: 73 },
-      { label: "W4", value: 75 },
-      { label: "Now", value: 78 },
-    ],
-    caseloadCompliance: [
-      { id: "d1", name: "Jalal Abdelrahim", focusArea: "Articulation · /r/ /s/", compliance: 86 },
-      { id: "d2", name: "Mia Chen", focusArea: "Language", compliance: 82 },
-      { id: "d3", name: "Noah Patel", focusArea: "Fluency", compliance: 76 },
-      { id: "d4", name: "Sophia Reyes", focusArea: "Articulation · /th/", compliance: 68 },
-      { id: "d5", name: "Olivia Brooks", focusArea: "Language · vocabulary", compliance: 32 },
-      { id: "d6", name: "Liam Garcia", focusArea: "Articulation · /l/", compliance: 0 },
-    ],
-    totalCaseload: 14,
+    weeklyTrendData: MOCK_WEEKLY_TREND,
+    caseloadCompliance: MOCK_CLINICIAN_CASELOAD.map((c) => ({
+      id: c.id,
+      name: c.full_name,
+      focusArea: c.therapy_focus,
+      compliance: c.compliance,
+    })),
+    totalCaseload: MOCK_CLINICIAN_CASELOAD.length,
   };
 
   const finalStatData = isDemo ? DEMO_DATA.statData : statData;

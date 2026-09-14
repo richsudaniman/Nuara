@@ -6,6 +6,7 @@ import { Flame, Sparkles, Star, TrendingUp, Gamepad2, ArrowRight, CheckCircle2, 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { PRIMARY_CLIENT, PRIMARY_GOALS } from "@/lib/mockClinic";
 
 export default function Home() {
   const { data: user, isLoading: userLoading } = useQuery({
@@ -74,7 +75,7 @@ export default function Home() {
   const progressPct = Math.round((points / nextLevelPoints) * 100);
 
   const firstName = user?.full_name || "Friend";
-  const therapistName = provider?.full_name || "Dr. Emily Chen";
+  const therapistName = provider?.full_name || PRIMARY_CLIENT.clinician_name;
   const therapistInitial = therapistName.charAt(0);
 
   const todayActivities = todayWorkout?.exercises || mockTodayActivities;
@@ -253,27 +254,21 @@ export default function Home() {
           </div>
 
           <div className="space-y-3.5">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[14px] font-semibold text-[#0F0F12]">/r/ Sound Accuracy</p>
-                <span className="text-[15px] font-bold text-[#A78BFA]">78%</span>
-              </div>
-              <div className="h-1.5 bg-[#F1F1F4] rounded-full overflow-hidden">
-                <div className="h-full bg-[#A78BFA] rounded-full" style={{ width: '78%' }} />
-              </div>
-              <p className="text-[11px] text-[#9CA3AF] mt-1.5">Target: 90% accuracy by March 2026</p>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[14px] font-semibold text-[#0F0F12]">Sentence Complexity</p>
-                <span className="text-[15px] font-bold text-[#A78BFA]">65%</span>
-              </div>
-              <div className="h-1.5 bg-[#F1F1F4] rounded-full overflow-hidden">
-                <div className="h-full bg-[#A78BFA] rounded-full" style={{ width: '65%' }} />
-              </div>
-              <p className="text-[11px] text-[#9CA3AF] mt-1.5">Target: 7-word sentences consistently</p>
-            </div>
+            {PRIMARY_GOALS.map((goal) => {
+              const current = parseInt(goal.current_value, 10) || 0;
+              return (
+                <div key={goal.id}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[14px] font-semibold text-[#0F0F12]">{goal.metric_label}</p>
+                    <span className="text-[15px] font-bold text-[#A78BFA]">{goal.current_value}</span>
+                  </div>
+                  <div className="h-1.5 bg-[#F1F1F4] rounded-full overflow-hidden">
+                    <div className="h-full bg-[#A78BFA] rounded-full" style={{ width: `${current}%` }} />
+                  </div>
+                  <p className="text-[11px] text-[#9CA3AF] mt-1.5">Target: {goal.target_value}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </Link>

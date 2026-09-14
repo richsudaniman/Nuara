@@ -9,6 +9,7 @@ import { Users, Search, UserPlus, RefreshCw, CheckCircle2, AlertCircle, ArrowRig
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { MOCK_CLIENTS, MOCK_CLINICIANS } from "@/lib/mockClinic";
 
 export default function AdminClientAssignments() {
   const queryClient = useQueryClient();
@@ -30,8 +31,14 @@ export default function AdminClientAssignments() {
     initialData: [],
   });
 
-  const trainers = allUsers.filter(u => u.user_type === 'trainer');
-  const clients = allUsers.filter(u => u.user_type !== 'trainer' && u.role !== 'admin' && u.role !== 'trainer');
+  const trainers = [
+    ...allUsers.filter(u => u.user_type === 'trainer'),
+    ...MOCK_CLINICIANS.map(c => ({ ...c, is_sample: true })),
+  ];
+  const clients = [
+    ...allUsers.filter(u => u.user_type !== 'trainer' && u.role !== 'admin' && u.role !== 'trainer'),
+    ...MOCK_CLIENTS.map(c => ({ ...c, is_sample: true })),
+  ];
 
   const assignClientMutation = useMutation({
     mutationFn: async ({ clientId, trainerId }) => {
@@ -136,13 +143,18 @@ EJT Fitness Team`
   });
 
   const getClientTrainer = (clientId) => {
+    const sample = clients.find(c => c.id === clientId && c.is_sample);
+    if (sample) return trainers.find(t => t.id === sample.clinician_id) || null;
     const assignment = assignments.find(a => a.client_id === clientId && a.is_active);
     if (!assignment) return null;
     return trainers.find(t => t.id === assignment.trainer_id);
   };
 
   const getTrainerClientCount = (trainerId) => {
-    return assignments.filter(a => a.trainer_id === trainerId && a.is_active).length;
+    return (
+      assignments.filter(a => a.trainer_id === trainerId && a.is_active).length +
+      MOCK_CLIENTS.filter(c => c.clinician_id === trainerId).length
+    );
   };
 
   const unassignedClients = clients.filter(client => !getClientTrainer(client.id));
@@ -325,6 +337,7 @@ EJT Fitness Team`
 
                         <Button
                           onClick={() => handleAssignClick(client)}
+                          disabled={client.is_sample}
                           variant={trainer ? "outline" : "default"}
                           className={trainer 
                             ? "border-gray-200 text-gray-600 hover:text-[#0ea5e9] hover:border-[#0ea5e9]" 

@@ -10,6 +10,7 @@ import {
 import WaitlistPanel from "@/components/admin/WaitlistPanel";
 import OutcomesPanel from "@/components/admin/OutcomesPanel";
 import FamilyEngagementPanel from "@/components/admin/FamilyEngagementPanel";
+import { MOCK_ADMIN_METRICS } from "@/lib/mockAdminMetrics";
 
 const COLORS = {
   primary: "#14b8a6", // teal-500
@@ -76,7 +77,9 @@ export default function AdminDashboard() {
     );
   }
 
-  const { overview, weeklyTrend, clinicianUtilization, caseload, waitlist, outcomes, family } = data;
+  // Fall back to the shared sample clinic when the practice has no client data yet
+  const metrics = data.overview?.totalClients > 0 ? data : MOCK_ADMIN_METRICS;
+  const { overview, weeklyTrend, clinicianUtilization, caseload, waitlist, outcomes, family } = metrics;
   
   const complianceTrend = overview.weeklyCompliance - overview.prevWeeklyCompliance;
 

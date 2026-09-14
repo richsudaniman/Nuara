@@ -11,6 +11,13 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import EmptyState from "../components/EmptyState";
 import UserEditDialog from "../components/admin/UserEditDialog";
+import { MOCK_CLIENTS, MOCK_CLINICIANS } from "@/lib/mockClinic";
+
+// Sample roster shown alongside real accounts so all three portals show the same clinic
+const SAMPLE_USERS = [
+  ...MOCK_CLINICIANS.map((c) => ({ ...c, is_sample: true, created_date: "2026-02-01" })),
+  ...MOCK_CLIENTS.map((c) => ({ ...c, role: "user", is_sample: true, created_date: "2026-03-01" })),
+];
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
@@ -36,7 +43,9 @@ export default function AdminUsers() {
     await updateUserMutation.mutateAsync({ userId: editingUser.id, data });
   };
 
-  const filteredUsers = allUsers.filter(user => {
+  const displayUsers = [...allUsers, ...SAMPLE_USERS];
+
+  const filteredUsers = displayUsers.filter(user => {
     const matchesSearch = user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          user.email?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = roleFilter === "all" || user.role === roleFilter || (!user.role && roleFilter === "user");
@@ -61,10 +70,10 @@ export default function AdminUsers() {
     return "text-emerald-700 bg-emerald-100";
   };
 
-  const clientsCount = allUsers.filter(u => u.role === 'user' || !u.role).length;
-  const trainersCount = allUsers.filter(u => u.role === 'trainer').length;
-  const adminsCount = allUsers.filter(u => u.role === 'admin').length;
-  const newThisMonth = allUsers.filter(u => {
+  const clientsCount = displayUsers.filter(u => u.role === 'user' || !u.role).length;
+  const trainersCount = displayUsers.filter(u => u.role === 'trainer').length;
+  const adminsCount = displayUsers.filter(u => u.role === 'admin').length;
+  const newThisMonth = displayUsers.filter(u => {
       const created = new Date(u.created_date);
       const now = new Date();
       return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
@@ -111,7 +120,7 @@ export default function AdminUsers() {
                 <div className="flex flex-col">
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Users</span>
                     <div className="flex items-baseline gap-2 mt-2">
-                        <span className="text-3xl font-black text-gray-900">{allUsers.length}</span>
+                        <span className="text-3xl font-black text-gray-900">{displayUsers.length}</span>
                         <span className="text-[11px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-md">ACTIVE</span>
                     </div>
                 </div>
@@ -212,6 +221,7 @@ export default function AdminUsers() {
                         size="sm"
                         variant="ghost"
                         onClick={() => setEditingUser(user)}
+                        disabled={user.is_sample}
                         className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#14b8a6]/5 group-hover:text-teal-500 transition-colors"
                         >
                             <span className="text-xs font-medium">Edit profile & role</span>

@@ -9,6 +9,9 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { subDays } from "date-fns";
 import AddClientDialog from "@/components/caseload/AddClientDialog";
+import { MOCK_ACTIVE_CLIENTS } from "@/lib/mockClinic";
+
+const MOCK_CLINICIAN_CASELOAD = MOCK_ACTIVE_CLIENTS.filter((c) => c.clinician_id === "mock-clin-1");
 
 export default function TrainerClients() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,7 +45,11 @@ export default function TrainerClients() {
   });
 
   const clientIds = assignments.map((a) => a.client_id);
-  const clients = allUsers.filter((u) => clientIds.includes(u.id));
+  const realClients = allUsers.filter((u) => clientIds.includes(u.id));
+
+  // Sample caseload preview when the clinician has no assignments yet
+  const isDemo = !assignmentsLoading && assignments.length === 0;
+  const clients = isDemo ? MOCK_CLINICIAN_CASELOAD : realClients;
 
   const filtered = clients.filter(
     (c) =>
@@ -51,6 +58,7 @@ export default function TrainerClients() {
   );
 
   const getCompliance = (clientId) => {
+    if (isDemo) return clients.find((c) => c.id === clientId)?.compliance ?? 0;
     const sevenDaysAgo = subDays(new Date(), 7);
     const logs = workoutLogs.filter(
       (l) => l.logged_by_client_id === clientId && new Date(l.completed_date) >= sevenDaysAgo
@@ -68,7 +76,7 @@ export default function TrainerClients() {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Caseload</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{assignments.length} active clients</p>
+          <p className="text-sm text-gray-500 mt-0.5">{clients.length} active clients</p>
         </div>
         <Button onClick={() => setShowAddClient(true)} className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
           <Plus className="w-4 h-4" />
@@ -102,7 +110,7 @@ export default function TrainerClients() {
             return (
               <Link
                 key={client.id}
-                to={`${createPageUrl("TrainerClientDetail")}?clientId=${client.id}`}
+                to={isDemo ? createPageUrl("TrainerClientDetail") : `${createPageUrl("TrainerClientDetail")}?clientId=${client.id}`}
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
               >
                 <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-sm flex-shrink-0">
