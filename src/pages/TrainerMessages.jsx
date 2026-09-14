@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { MOCK_MESSAGE_CLIENTS, MOCK_MESSAGE_THREADS } from "@/lib/mockMessages";
 
 export default function TrainerMessages() {
   const queryClient = useQueryClient();
@@ -102,13 +103,25 @@ EJT Fitness Team`
     },
   });
 
-  const client = clients.find(c => c.id === selectedClient);
-  const clientMessages = selectedClient ? allMessages.filter(msg => 
-    (msg.sender_id === selectedClient && msg.receiver_id === trainer?.id) ||
-    (msg.sender_id === trainer?.id && msg.receiver_id === selectedClient)
-  ).sort((a, b) => new Date(a.created_date) - new Date(b.created_date)) : [];
+  // Show a sample clinic inbox until the clinician has live threads
+  const isDemo = !assignmentsLoading && !clientsLoading && clients.length === 0;
+  const [demoThreads, setDemoThreads] = useState(MOCK_MESSAGE_THREADS);
+  const displayClients = isDemo ? MOCK_MESSAGE_CLIENTS : clients;
+
+  const client = displayClients.find(c => c.id === selectedClient);
+  const clientMessages = !selectedClient ? [] : isDemo
+    ? (demoThreads[selectedClient] || [])
+    : allMessages.filter(msg =>
+        (msg.sender_id === selectedClient && msg.receiver_id === trainer?.id) ||
+        (msg.sender_id === trainer?.id && msg.receiver_id === selectedClient)
+      ).sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+
+  const isMine = (msg) => (isDemo ? msg.sender_id === "me" : msg.sender_id === trainer?.id);
 
   const getUnreadCount = (clientId) => {
+    if (isDemo) {
+      return (demoThreads[clientId] || []).filter(msg => msg.sender_id !== "me" && !msg.is_read).length;
+    }
     return allMessages.filter(msg => 
       msg.sender_id === clientId && 
       msg.receiver_id === trainer?.id && 
@@ -116,8 +129,25 @@ EJT Fitness Team`
     ).length;
   };
 
+  const appendDemoMessage = (text, type) => {
+    setDemoThreads(prev => ({
+      ...prev,
+      [selectedClient]: [
+        ...(prev[selectedClient] || []),
+        { id: `demo-${Date.now()}`, sender_id: "me", message: text, message_type: type, is_read: false, created_date: new Date().toISOString() },
+      ],
+    }));
+  };
+
   const handleSendMessage = async () => {
-    if (!messageText.trim() || !trainer?.id || !selectedClient) return;
+    if (!messageText.trim() || !selectedClient) return;
+
+    if (isDemo) {
+      appendDemoMessage(messageText.trim(), "text");
+      setMessageText("");
+      return;
+    }
+    if (!trainer?.id) return;
 
     await sendMessageMutation.mutateAsync({
       sender_id: trainer.id,
@@ -153,7 +183,15 @@ EJT Fitness Team`
   };
 
   const handleSendNotification = async () => {
-    if (!notificationText.trim() || !trainer?.id || !selectedClient) return;
+    if (!notificationText.trim() || !selectedClient) return;
+
+    if (isDemo) {
+      appendDemoMessage(notificationText.trim(), "notification");
+      setNotificationText("");
+      setShowNotificationForm(false);
+      return;
+    }
+    if (!trainer?.id) return;
 
     await sendNotificationMutation.mutateAsync({
       sender_id: trainer.id,
@@ -181,7 +219,7 @@ EJT Fitness Team`
 
   // Mark messages as read when viewing
   useEffect(() => {
-    if (selectedClient && trainer?.id) {
+    if (selectedClient && trainer?.id && !isDemo) {
       const unreadMessages = clientMessages.filter(msg => 
         msg.sender_id === selectedClient && 
         msg.receiver_id === trainer.id && 
@@ -212,9 +250,9 @@ EJT Fitness Team`
           <div className="space-y-3">
             {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-lg bg-gray-100" />)}
           </div>
-        ) : clients.length > 0 ? (
+        ) : displayClients.length > 0 ? (
           <div className="space-y-3">
-            {clients.map(client => {
+            {displayClients.map(client => {
               const unreadCount = getUnreadCount(client.id);
               return (
                 <Card 
@@ -343,7 +381,7 @@ EJT Fitness Team`
           </div>
         ) : clientMessages.length > 0 ? (
           clientMessages.map(msg => {
-            const isSentByMe = msg.sender_id === trainer?.id;
+            const isSentByMe = isMine(msg);
             return (
               <div key={msg.id} className={`flex ${isSentByMe ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[75%] ${isSentByMe ? 'bg-[#0ea5e9] text-white' : 'bg-gray-100 text-[#1a1a1a]'} rounded-2xl p-3`}>
