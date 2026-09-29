@@ -9,7 +9,6 @@
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
 ![TanStack Query](https://img.shields.io/badge/TanStack_Query-5-FF4154?logo=reactquery&logoColor=white)
-![Base44](https://img.shields.io/badge/Built_with-Base44-000000)
 
 **[▶️ Watch the demo](https://youtu.be/J8V_Hfshahs)**
 
